@@ -15,6 +15,11 @@ def about():
     # Dummy about page
     return render_template('about.html')
 
+@app.route('/home')
+def home():
+    # Dummy about page
+    return render_template('home.html')    
+
 
 if __name__ == '__main__':
     app.run(debug=True)

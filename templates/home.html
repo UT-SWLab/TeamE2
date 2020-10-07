@@ -1,78 +1,35 @@
-<!DOCTYPE html>
-<html lang = "en">
-<body>
-    <!-- Header -->
-    <!--NAVBAR DIV-->
-    <div>
-        <nav class="navbar navbar-expand-md bg-danger">
-            <!-- Brand -->
-            <a class="navbar-brand" href="#">Navbar</a>
-          
-            <!-- Toggler/collapsibe Button -->
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
-              <span class="navbar-toggler-icon"></span>
-            </button>
-          
-            <!-- Navbar links -->
-            <div class="collapse navbar-collapse" id="collapsibleNavbar">
-              <ul class="navbar-nav">
-                <li class="nav-item">
-                  <a class="nav-link" href="#">Drivers</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="#">Constructors</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="#">Circuits</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">About</a>
-                  </li>  
-              </ul>
-            </div> 
-          </nav>
-    </div>
-
+{% extends 'base.html' %}
+{% block head %}
+{% endblock %}
+{% block body %}
     <div class="container">
 
-        <h2 class="text-center mt-3">Carousel</h2>
-        <div id="myCarousel" class="carousel slide" data-ride="carousel">
+      <h2 class="text-center mt-3">Carousel</h2>
+      <div id="myCarousel" class="carousel slide" data-ride="carousel">
+      
+        <!-- Indicators -->
+        <ul class="carousel-indicators">
+          <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+          <li data-target="#myCarousel" data-slide-to="1"></li>
+          <li data-target="#myCarousel" data-slide-to="2"></li>
+        </ul>
         
-          <!-- Indicators -->
-          <ul class="carousel-indicators">
-            <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
-            <li data-target="#myCarousel" data-slide-to="1"></li>
-            <li data-target="#myCarousel" data-slide-to="2"></li>
-          </ul>
-          
-          <!-- The slideshow -->
-          <div class="carousel-inner">
-            <div class="carousel-item active">
-              <img src="car1.jpeg" alt="Los Angeles" width="200" height="300">
-            </div>
-            <div class="carousel-item">
-              <img src="car2.jpeg" alt="Chicago" width="200" height="300">
-            </div>
-            <div class="carousel-item">
-              <img src="car3.jpeg" alt="New York" width="200" height="300">
-            </div>
+        <!-- The slideshow -->
+        <div class="carousel-inner">
+          <div class="carousel-item active">
+            <img src="templates/images/car1.jpg" alt="Los Angeles" width="200" height="300">
           </div>
-          
-          <!-- Left and right controls -->
-          <a class="carousel-control-prev" href="#myCarousel" data-slide="prev">
-            <span class="carousel-control-prev-icon"></span>
-          </a>
-          <a class="carousel-control-next" href="#myCarousel" data-slide="next">
-            <span class="carousel-control-next-icon"></span>
-          </a>
         </div>
         
+        <!-- Left and right controls -->
+        <a class="carousel-control-prev" href="#myCarousel" data-slide="prev">
+          <span class="carousel-control-prev-icon"></span>
+        </a>
+        <a class="carousel-control-next" href="#myCarousel" data-slide="next">
+          <span class="carousel-control-next-icon"></span>
+        </a>
+      </div>
+      
     </div>
-
-    <div class="container" id="picture">
-
-    </div>
-        
-
-</body>
-</html>
+    </body>
+  {% endblock %}  
