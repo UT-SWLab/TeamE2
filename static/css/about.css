@@ -1,0 +1,33 @@
+.about-img{
+    min-height: 200px;
+    width: 100%;
+    object-fit: cover; 
+}
+
+.about-row{
+    padding: 0em 5em 5em 5em;
+}
+
+.about-card-deck{
+    padding: 2em; max-width: 110em; margin: auto;
+}
+
+.about-card{
+    min-width: 15em;
+    border: none;
+}
+
+.about-h3{
+    text-align: center;
+    padding-bottom: 1em;
+    padding-top: 2em;
+}
+
+.list-bullet{
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.mb-3{
+    min-width: 15em;
+}
