@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/drivers.css')}}">
+{% endblock %}
+
+{% block body %}
+<div class="container-lg mt-3 border">
+<h1>{{ name }}</h1>
+<img src="{{ url_for('static', filename=img_path) }}"gs height="30%" width="30%">
+<h2>Driver Code: {{ code }}</h2>
+<p>Date of Birth: {{ dob }}</p>
+<p>Nationality: {{ nation }}</p>
+</div>
+{% endblock %}  
