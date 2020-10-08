@@ -32,7 +32,7 @@ def driver_instance():
                 data = driver
                 break
     name = data['givenName'] + ' ' + data['familyName']
-    img_path = f'images/{driver_id}.jpg'
+    img_path = f'images/{driver_id}.jpg' 
     return render_template('drivers-instance.html', name=name, code=data['code'],\
         dob=data['dateOfBirth'], nation=data['nationality'], img_path=img_path)
 
