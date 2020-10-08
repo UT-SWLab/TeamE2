@@ -6,6 +6,17 @@
 {% endblock %}
 
 {% block body %}
+<!--
+    Requirements:
+    - Overview of each model
+    - Grid of instances
+    - grid instances require:
+        - image
+        - 3 or more attributes
+        - link to the instance page
+        - 9 instances per page
+        - allows for searching, sorting, and filtering
+-->
 <div class="container my-5">
     {% if drivers %}
         {% set index = 0 %}
@@ -20,6 +31,10 @@
                             <img src="{{ url_for('static', filename='images/'+imgpath) }}">
                             <br>
                             {{ drivers[4*i]['givenName'] }} {{ drivers[4*i]['familyName'] }}
+                            <br>
+                            {{drivers[4*i]['dateOfBirth']}}
+                            <br>
+                            {{drivers[4*i]['nationality']}}
                         </div>
                     </a>
                 </div>
@@ -33,6 +48,10 @@
                             <img src="{{ url_for('static', filename='images/'+imgpath) }}">
                             <br>
                             {{ drivers[4*i+1]['givenName'] }} {{ drivers[4*i+1]['familyName'] }}
+                            <br>
+                            {{drivers[4*i+1]['dateOfBirth']}}
+                            <br>
+                            {{drivers[4*i+1]['nationality']}}
                         </div>
                     </a>
                 </div>
@@ -46,6 +65,10 @@
                             <img src="{{ url_for('static', filename='images/'+imgpath) }}">
                             <br>
                             {{ drivers[4*i+2]['givenName'] }} {{ drivers[4*i+2]['familyName'] }}
+                            <br>
+                            {{drivers[4*i+2]['dateOfBirth']}}
+                            <br>
+                            {{drivers[4*i+2]['nationality']}}
                         </div>
                     </a>
                 </div>
@@ -59,6 +82,10 @@
                             <img src="{{ url_for('static', filename='images/'+imgpath) }}">
                             <br>
                             {{ drivers[4*i+3]['givenName'] }} {{ drivers[4*i+3]['familyName'] }}
+                            <br>
+                            {{drivers[4*i+3]['dateOfBirth']}}
+                            <br>
+                            {{drivers[4*i+3]['nationality']}}
                         </div>
                     </a>
                 </div>
