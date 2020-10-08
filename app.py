@@ -25,7 +25,7 @@ def driver_model():
 
 
 @app.route('/drivers')
-def drivers():
+def driver_instance():
     driver_id = request.args['id']
 
     # we need to change this to request from firebase db in the future
@@ -35,7 +35,6 @@ def drivers():
             if driver['driverId'] == driver_id:
                 data = driver
                 break
-    print(data)
     name = data['givenName'] + ' ' + data['familyName']
     img_path = f'images/{driver_id}.jpg'
     return render_template('drivers-instance.html', name=name, code=data['code'],\
@@ -43,7 +42,7 @@ def drivers():
 
 
 @app.route('/constructors')
-def constructors():
+def constructor_instance():
     constructor_id = request.args['id']
 
     # we need to change this to request from firebase db in the future
@@ -53,12 +52,15 @@ def constructors():
             if constructor['constructorId'] == constructor_id:
                 data = constructor
                 break
-    print(data)
-    return render_template('constructors-instance.html')
+    name = data['name']
+    nation = data['nationality']
+    img_path = f'images/{constructor_id}.jpg'
+    return render_template('constructors-instance.html', name=name, nation=nation,\
+        img_path=img_path)
 
 
 @app.route('/circuits')
-def circuits():
+def circuit_instance():
     circuit_id = request.args['id']
 
     # we need to change this to request from firebase db in the future
@@ -68,8 +70,16 @@ def circuits():
             if circuit['circuitId'] == circuit_id:
                 data = circuit
                 break
-    print(data)
-    return render_template('circuits-instance.html')
+    name = data['circuitName']
+    location = data['Location']
+    lat = location['lat']
+    long = location['long']
+    locality = location['locality']
+    country = location['country']
+
+    img_path = f'images/{circuit_id}.jpg'
+    return render_template('circuits-instance.html', name=name, lat=lat,\
+        long=long, locality=locality, country=country)
 
 
 if __name__ == '__main__':
