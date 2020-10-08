@@ -23,7 +23,17 @@ def home():
 @app.route('/driver')
 def driver():
     # Dummy about page
-    return render_template('driver.html')        
+    return render_template('driver.html')
+
+@app.route('/drivertwo')
+def drivertwo():
+    # Dummy about page
+    return render_template('drivertwo.html')
+
+@app.route('/driverthree')
+def driverthree():
+    # Dummy about page
+    return render_template('driverthree.html')                   
 
 
 if __name__ == '__main__':
