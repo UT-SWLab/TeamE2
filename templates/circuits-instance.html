@@ -8,11 +8,11 @@
 <div class="container-lg mt-3 border">
   <img src="{{ url_for('static', filename=img_path) }}"gs height="30%" width="30%">
   <h1>{{ name }}</h1>
-  <h2>Nationality: {{ nation }}</h2>
-  <h2>Current Drivers: </h2>
+  <h2>Location: {{ locality }}, {{ nation }}</h2>
+  <h2>Coordinates: ({{ lat }}, {{ long }})</h2>
 
   <div class="row">
-    <h2>Former Drivers: </h2>
+    <h2>Constructors who won here: </h2>
   </div>
   <div class="row">
     <ul>
@@ -22,7 +22,7 @@
     </ul>
   </div>
   <div class="row">
-    <h2>Victories: </h2>
+    <h2>Drivers who won here: </h2>
   </div>
   <div class="row">
     <ul>

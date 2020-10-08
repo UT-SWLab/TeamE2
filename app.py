@@ -64,7 +64,7 @@ def circuit_instance():
     circuit_id = request.args['id']
 
     # we need to change this to request from firebase db in the future
-    with open('data/drivers.json') as json_file:
+    with open('data/circuits.json') as json_file:
         circuits = json.load(json_file)
         for circuit in circuits:
             if circuit['circuitId'] == circuit_id:
@@ -79,7 +79,7 @@ def circuit_instance():
 
     img_path = f'images/{circuit_id}.jpg'
     return render_template('circuits-instance.html', name=name, lat=lat,\
-        long=long, locality=locality, country=country)
+        long=long, locality=locality, country=country, img_path=img_path)
 
 
 if __name__ == '__main__':
