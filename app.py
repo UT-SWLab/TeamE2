@@ -2,7 +2,12 @@
 import json
 
 # 3rd party packages
+<<<<<<< HEAD
 from flask import Flask, render_template, request
+=======
+from flask import Flask, render_template
+import json
+>>>>>>> Base outline of drivers page complete
 
 app = Flask(__name__)
 
@@ -15,6 +20,13 @@ def index():
 @app.route('/about')
 def about():
     return render_template('about.html')
+
+@app.route('/drivers')
+def drivers():
+    # Dummy modules page
+    with open('./data/drivers.json') as f:
+        drivers = json.load(f)
+    return render_template('drivers.html', drivers=drivers)
 
 
 @app.route('/drivers')
