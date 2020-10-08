@@ -82,5 +82,11 @@ def circuit_instance():
         long=long, locality=locality, country=country, img_path=img_path)
 
 
+@app.route('/home')
+def home():
+    # Dummy about page
+    return render_template('home.html')    
+
+
 if __name__ == '__main__':
     app.run(debug=True)
