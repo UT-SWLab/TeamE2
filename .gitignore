@@ -130,3 +130,9 @@ dmypy.json
 
 # temp vim files
 *.swp
+
+# script data subdirectory
+scripts/data
+
+# JSON files
+*.json

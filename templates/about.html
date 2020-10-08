@@ -1,12 +1,183 @@
 {% extends 'navbar.html' %}
 
-{% block head %}
-{% endblock %}
+<html lang="en">
 
-{% block body %}
-<div class="content">
-  <h1 style="text-align: center">Sample About Page</h1>
+<head>
+    <meta charset="utf-8">
 
-  <p style="text-align: center">Sample Text here</p>
-</div>
-{% endblock %}  
+    <title>About Page</title>
+    <meta name="The about page for EE 361L final project">
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <!-- Popper JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    
+    <!-- EE 461L CSS -->
+    <link rel="stylesheet" href="about.css">
+
+</head>
+<nav class="navbar navbar-expand-md bg-dark navbar-dark">
+    <a class="navbar-brand" href="#">Navbar</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="collapsibleNavbar">
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" href="#">Link</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Link</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Link</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<body>
+
+    <br>
+    <h1 style="text-align: center">About</h1>
+    <br>
+
+    <div class="row about-row">
+        <div class="col-md-6">
+            <div class="mr-md-5">
+                <div>
+                    <h3 class="about-h3">What is this site?</h3>
+                    <p style="margin: auto">This site displays Formula 1 statistics, aggregated from multiple public APIs. The site features hisotrical and current data for things ranging from drivers to constructors to circuits. The goal of the website is to combine all these components into one easy to access site. Users that would benefit from this site include Formula 1 team members, Formula 1 fans, sport analysts, or anyone else looking to improve their understanding of Formula 1. </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="ml-md-5">
+                <div>
+                    <h3 class = "about-h3">What did we find out?</h3>
+                    <p style="margin: auto">By integrating the data from multiple sources into one cohesive locataion, we hope to produce an accurate analysis of Formula 1 trends, including up-and-coming drivers, most successful constructors, and circuit timings. With enough data, the team might even be able to make predictions about future races. (**Note: This section will change after Phase 1, once we have a better idea of the exact data we are working with).
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <h2 style="text-align: center; padding-top: 1em">Team E2</h2>
+    <div class="card-deck about-card-deck">
+
+
+        <div class="col-3 mb-3" >
+            <div class="card mx-4 about-card">
+                <img class="about-img" src="/images/kevinMedina.jpg" alt="Kevin Medina">
+                <div class="card-body">
+                    <h3 class="card-title">Kevin Medina</h3>
+                    <h5 class="card-title">Front-end</h5>
+                    <h6>Electrical/Computer Engineering</h6>
+                    <em>
+                        <h6 class="card-title">Software Engineering and Design</h6>
+                    </em>
+                    <p class="card-text">Kevin is a 4th year ECE major at the University of Texas at Austin. He has been a big tech enthusiast all his life and loves learning about new topics in software engineering. Outside of school, he enjoys collecting sneakers, creating digital art, and going to indie rock concerts.
+                    </p><br>
+                    <a href="https://www.linkedin.com/in/kevin-medina-a165b0174/" class="btn btn-primary">LinkedIn</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-3 mb-3 ">
+            <div class="card mx-4 about-card">
+                <img class="about-img" src="/images/samuelYeboah.jpg" alt="Samuel Yeboah">
+                <div class="card-body">
+                    <h3 class="card-title">Samuel Yeboah</h3>
+                    <h5 class="card-title">Front-end</h5>
+                    <h6>Electrical/Computer Engineering</h6>
+                    <em>
+                        <h6 class="card-title">Software Engineering and Design</h6>
+                    </em>
+                    <p class="card-text">Sam is an outgoing 4th year ECE student at the University of Texas at Austin. He is able to grasp concepts quickly and possesses strong math and analytical skills. He is an innovative thinker who can adapt to changing environments.</p><br><br>
+                    <a href="https://www.linkedin.com/in/samuelyeboah" class="btn btn-primary">LinkedIn</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-3 mb-3">
+            <div class="card mx-4" style="min-width: 15em;border: none">
+                <img class="about-img" src="/images/alanZhang.jpg" alt="Alan Zhang">
+                <div class="card-body">
+                    <h3 class="card-title">Alan Zhang</h3>
+                    <h5 class="card-title">Back-end</h5>
+                    <h6>Electrical/Computer Engineering</h6>
+                    <em>
+                        <h6 class="card-title">Software Engineering and Design</h6>
+                    </em>
+                    <p class="card-text">Alan is a 3rd year ECE student at the University of Texas at Austin. He has experience working as a Product Engineering Intern at Texas Instruments, where he coordinated with the reliability lab to deploy Python automation scripts. Outside of school, Alan is a big car enthusiast.</p>
+                    <a href="https://www.linkedin.com/in/alan-zhang-3a22b5170/" class="btn btn-primary">LinkedIn</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-3 mb-3">
+            <div class="card mx-4" style="min-width: 15em;border: none">
+                <img class="about-img" src="/images/edieZhou.jpg" alt="Edie Zhou">
+                <div class="card-body">
+                    <h3 class="card-title">Edie Zhou</h3>
+                    <h5 class="card-title">Back-end</h5>
+                    <h6>Electrical/Computer Engineering</h6>
+                    <em>
+                        <h6 class="card-title">Software Engineering and Design</h6>
+
+                    </em>
+                    <p class="card-text">Edie is a 4th year student at the University of Texas at Austin. He's been programming for a few years now, and is always excited to commit his expertise to new projects. Outside of software engineering, Edie enjoys reading, playing soccer, and playing ultimate frisbee. </p><br>
+                    <a href="https://www.linkedin.com/in/edie-zhou/" class="btn btn-primary">LinkedIn</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br>
+
+    <div class="row about-row">
+        <div class="col-md-6">
+            <div class="mr-md-5">
+                <div>
+                    <h3 class ="about-h3">Tools Used</h3>
+                    <ul>
+                    
+                            <li class="list-bullet">Flask</li>
+                       
+                        <p>Flask is the Python web application microframework used for the site. Its lightweight characteristics allow for quick deployment of applications with minimum overhead.</p>
+                     
+                            <li  class="list-bullet">Bootstrap 4</li>
+                      
+                        <p>Bootstrap is an open-source CSS framework used to build responsive front-end designs. Its layout components allow the site to maintain its design regardless of screen size.</p>
+                        
+                            <li  class="list-bullet">Slack</li>
+                        <p>Slack is a business communication platform that offers IRC stlye feature. It allows teams easily maintain organized communication and integrate numerous third-party services. </p>
+                      <li  class="list-bullet">TBD</li>
+                        <p>More tools will be added as the phases continue.</p>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="ml-md-5">
+                <div>
+                    <h3 class="about-h3">Data Sources</h3>
+                    <p>The data was taken from public Formula 1 REST APIs using the Python requests library. The HTTP requests retrieve the relevant data in JSON form, which is then parsed into our own database structure. The data is then displayed to the user here on the site. More information will be added here, especially concerning how the data is stored, in the next phase(s).</p>
+                    <ul>
+                        <li class="list-bullet"><a href="https://ergast.com/mrd/">Ergast</a></li>
+                        <li class="list-bullet"><a href="https://developer.sportradar.com/docs/read/racing/Formula_1_v2">Sportradar</a></li>
+                        <li class="list-bullet"><a href="https://rapidapi.com/api-sports/api/api-formula-1">Rapid API</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br>
+    <h3 class="about-h3"> <a href="https://github.com/UT-SWLab/TeamE2">Check out our Github Repo here!</a></h3>
+
+</body>
+
+</html>
