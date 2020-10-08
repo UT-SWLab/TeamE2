@@ -5,6 +5,13 @@
 {% endblock %}
 
 {% block body %}
+<!--
+  Requirements:
+  - One page per model instance
+  - Contains data
+  - External Links
+  - Embedded images
+-->
 <div class="container-lg mt-3 border">
   <img src="{{ url_for('static', filename=img_path) }}"gs height="30%" width="30%">
   <h1>{{ name }}</h1>
