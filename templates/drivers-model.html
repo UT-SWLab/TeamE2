@@ -13,7 +13,7 @@
             <div class="row">
                 {% if drivers|length > 4*i %}
                 <div class="col-3">
-                    {% set link = 'drivers/?name='+drivers[4*i]['driverId'] %}
+                    {% set link = 'drivers?id='+drivers[4*i]['driverId'] %}
                     <a href={{link}}>
                         <div class="instanceCard">
                             {% set imgpath = drivers[4*i]['driverId'] + '.jpg' %}
@@ -26,7 +26,7 @@
                 {% endif %}
                 {% if drivers|length > 4*i+1%}
                 <div class="col-3">
-                    {% set link = 'drivers/?name='+drivers[4*i+1]['driverId'] %}
+                    {% set link = 'drivers?id='+drivers[4*i+1]['driverId'] %}
                     <a href={{link}}>
                         <div class="instanceCard">
                             {% set imgpath = drivers[4*i+1]['driverId'] + '.jpg' %}
@@ -39,7 +39,7 @@
                 {% endif %}
                 {% if drivers|length > 4*i+2 %}
                 <div class="col-3">
-                    {% set link = 'drivers/?name='+drivers[4*i+2]['driverId'] %}
+                    {% set link = 'drivers?id='+drivers[4*i+2]['driverId'] %}
                     <a href={{link}}>
                         <div class="instanceCard">
                             {% set imgpath = drivers[4*i+2]['driverId'] + '.jpg' %}
@@ -52,7 +52,7 @@
                 {% endif %}
                 {% if drivers|length > 4*i+3 %}
                 <div class="col-3">
-                    {% set link = 'drivers/?name='+drivers[4*i+3]['driverId'] %}
+                    {% set link = 'drivers?id='+drivers[4*i+3]['driverId'] %}
                     <a href={{link}}>
                         <div class="instanceCard">
                             {% set imgpath = drivers[4*i+3]['driverId'] + '.jpg' %}

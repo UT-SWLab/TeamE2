@@ -2,12 +2,7 @@
 import json
 
 # 3rd party packages
-<<<<<<< HEAD
 from flask import Flask, render_template, request
-=======
-from flask import Flask, render_template
-import json
->>>>>>> Base outline of drivers page complete
 
 app = Flask(__name__)
 
@@ -21,12 +16,12 @@ def index():
 def about():
     return render_template('about.html')
 
-@app.route('/drivers')
-def drivers():
-    # Dummy modules page
+@app.route('/models_drivers')
+def driver_model():
+    # Dummy models page
     with open('./data/drivers.json') as f:
         drivers = json.load(f)
-    return render_template('drivers.html', drivers=drivers)
+    return render_template('drivers-model.html', drivers=drivers)
 
 
 @app.route('/drivers')
@@ -43,7 +38,7 @@ def drivers():
     print(data)
     name = data['givenName'] + ' ' + data['familyName']
     img_path = f'images/{driver_id}.jpg'
-    return render_template('drivers.html', name=name, code=data['code'],\
+    return render_template('drivers-instance.html', name=name, code=data['code'],\
         dob=data['dateOfBirth'], nation=data['nationality'], img_path=img_path)
 
 
@@ -59,7 +54,7 @@ def constructors():
                 data = constructor
                 break
     print(data)
-    return render_template('constructors.html')
+    return render_template('constructors-instance.html')
 
 
 @app.route('/circuits')
@@ -74,7 +69,7 @@ def circuits():
                 data = circuit
                 break
     print(data)
-    return render_template('circuits.html')
+    return render_template('circuits-instance.html')
 
 
 if __name__ == '__main__':
