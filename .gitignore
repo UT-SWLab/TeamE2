@@ -133,3 +133,6 @@ dmypy.json
 
 # script data subdirectory
 scripts/data
+
+# JSON files
+*.json
