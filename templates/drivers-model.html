@@ -1,0 +1,71 @@
+
+{% extends 'base.html' %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/drivers-model.css')}}">
+{% endblock %}
+
+{% block body %}
+<div class="container my-5">
+    {% if drivers %}
+        {% set index = 0 %}
+        {% for i in range(1) %}
+            <div class="row">
+                {% if drivers|length > 4*i %}
+                <div class="col-3">
+                    {% set link = 'drivers?id='+drivers[4*i]['driverId'] %}
+                    <a href={{link}}>
+                        <div class="instanceCard">
+                            {% set imgpath = drivers[4*i]['driverId'] + '.jpg' %}
+                            <img src="{{ url_for('static', filename='images/'+imgpath) }}">
+                            <br>
+                            {{ drivers[4*i]['givenName'] }} {{ drivers[4*i]['familyName'] }}
+                        </div>
+                    </a>
+                </div>
+                {% endif %}
+                {% if drivers|length > 4*i+1%}
+                <div class="col-3">
+                    {% set link = 'drivers?id='+drivers[4*i+1]['driverId'] %}
+                    <a href={{link}}>
+                        <div class="instanceCard">
+                            {% set imgpath = drivers[4*i+1]['driverId'] + '.jpg' %}
+                            <img src="{{ url_for('static', filename='images/'+imgpath) }}">
+                            <br>
+                            {{ drivers[4*i+1]['givenName'] }} {{ drivers[4*i+1]['familyName'] }}
+                        </div>
+                    </a>
+                </div>
+                {% endif %}
+                {% if drivers|length > 4*i+2 %}
+                <div class="col-3">
+                    {% set link = 'drivers?id='+drivers[4*i+2]['driverId'] %}
+                    <a href={{link}}>
+                        <div class="instanceCard">
+                            {% set imgpath = drivers[4*i+2]['driverId'] + '.jpg' %}
+                            <img src="{{ url_for('static', filename='images/'+imgpath) }}">
+                            <br>
+                            {{ drivers[4*i+2]['givenName'] }} {{ drivers[4*i+2]['familyName'] }}
+                        </div>
+                    </a>
+                </div>
+                {% endif %}
+                {% if drivers|length > 4*i+3 %}
+                <div class="col-3">
+                    {% set link = 'drivers?id='+drivers[4*i+3]['driverId'] %}
+                    <a href={{link}}>
+                        <div class="instanceCard">
+                            {% set imgpath = drivers[4*i+3]['driverId'] + '.jpg' %}
+                            <img src="{{ url_for('static', filename='images/'+imgpath) }}">
+                            <br>
+                            {{ drivers[4*i+3]['givenName'] }} {{ drivers[4*i+3]['familyName'] }}
+                        </div>
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+    {% endif %}
+</div>
+{% endblock %}  
+>>>>>>> Base outline of drivers page complete

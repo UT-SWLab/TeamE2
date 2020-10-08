@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/instance.css')}}">
+{% endblock %}
+
+{% block body %}
+<div class="container-lg mt-3 border">
+  <img src="{{ url_for('static', filename=img_path) }}"gs height="30%" width="30%">
+  <h1>{{ name }}</h1>
+  <h2>Location: {{ locality }}, {{ nation }}</h2>
+  <h2>Coordinates: ({{ lat }}, {{ long }})</h2>
+
+  <div class="row">
+    <h2>Constructors who won here: </h2>
+  </div>
+  <div class="row">
+    <ul>
+      <li>(WIP) need to download more team data for this section.</li>
+      <li>Pierre Gasly</li>
+      <li>Alexander Albon</li>
+    </ul>
+  </div>
+  <div class="row">
+    <h2>Drivers who won here: </h2>
+  </div>
+  <div class="row">
+    <ul>
+      <li>(WIP) need to download more driver and circuit data for this section.</li>
+      <li>Barcelona</li>
+      <li>Catalunya</li>
+      <li>Hungaroring</li>
+    </ul>
+  </div>
+</div>
+{% endblock %}  
