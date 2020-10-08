@@ -18,7 +18,12 @@ def about():
 @app.route('/home')
 def home():
     # Dummy about page
-    return render_template('home.html')    
+    return render_template('home.html')
+
+@app.route('/driver')
+def driver():
+    # Dummy about page
+    return render_template('driver.html')        
 
 
 if __name__ == '__main__':
