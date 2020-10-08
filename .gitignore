@@ -136,3 +136,12 @@ scripts/data
 
 # JSON files
 *.json
+
+# Common image formats
+*.bmp
+*.svg
+*.png
+*.mpg
+*.mpeg
+*.jpg
+*.jpeg
