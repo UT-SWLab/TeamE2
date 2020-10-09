@@ -14,11 +14,21 @@ def about():
 
 @app.route('/models_drivers')
 def driver_model():
-    # Dummy models page
     with open('./data/drivers.json') as f:
         drivers = json.load(f)
     return render_template('drivers-model.html', drivers=drivers)
 
+@app.route('/models_constructors')
+def constructor_model():
+    with open('./data/constructors.json') as f:
+        constructors = json.load(f)
+    return render_template('constructors-model.html', constructors=constructors)
+
+@app.route('/models_circuits')
+def circuit_model():
+    with open('./data/circuits.json') as f:
+        circuits = json.load(f)
+    return render_template('circuits-model.html', circuits=circuits)
 
 @app.route('/drivers')
 def driver_instance():
