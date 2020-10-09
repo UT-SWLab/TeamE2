@@ -6,6 +6,17 @@
 {% endblock %}
 
 {% block body %}
+<!--
+    Requirements:
+    - Overview of each model
+    - Grid of instances
+    - grid instances require:
+        - image
+        - 3 or more attributes
+        - link to the instance page
+        - 9 instances per page
+        - allows for searching, sorting, and filtering
+-->
 <div class="container my-5">
   {% if drivers %}
   {% set index = 0 %}
@@ -86,4 +97,4 @@
   {% endif %}
 </div>
 {% endblock %}  
->>>>>>> Base outline of drivers page complete
+

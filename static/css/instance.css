@@ -4,3 +4,8 @@ img {
     float: right;
     margin: 10px 20px 10px 20px;
 }
+
+.row {
+    /* border-radius: 8px; */
+    margin: 10px 20px 10px 0px;
+}
