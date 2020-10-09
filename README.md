@@ -7,7 +7,8 @@ Edie Zhou
 Samuel Yeboah 
 
 ## Team Member EIDs:
-kom298 
+kom298. 
+
 adz343  
 ez3437  
 say438  
