@@ -7,30 +7,30 @@ Edie Zhou
 Samuel Yeboah 
 
 ## Team Member EIDs:
-kom298
-adz343
-ez3437
-say438
+kom298. 
+adz343. 
+ez3437. 
+say438. 
 
 ## Github Usernames:
-kvnmedina
-adz00
-edie-zhou
-samuel-akwesi-yeboah
+kvnmedina. 
+adz00. 
+edie-zhou. 
+samuel-akwesi-yeboah. 
 
 ## Website Link:
 
 # Estimated Completion times:
-Kevin Medina: 4
-Alan Zhang: 5
-Edie Zhou: 3
-Samuel Yeboah: 2
+Kevin Medina: 4. 
+Alan Zhang: 5. 
+Edie Zhou: 3. 
+Samuel Yeboah: 2. 
 
 # Actualy Completion Times:
-Kevin Medina: 4
-Alan Zhang: 5
-Edie Zhou: 5
-Samuel Yeboah: 3
+Kevin Medina: 4. 
+Alan Zhang: 5. 
+Edie Zhou: 5. 
+Samuel Yeboah: 3. 
 
 ## Environment Setup:
 You will need a working version of Python 3 installed on your computer. Create the virtual environment using this command:
