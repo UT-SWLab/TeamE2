@@ -1,7 +1,7 @@
 # F1 Database Application
 
 ## Team Member Names:
-Kevin Medina 
+Kevin Medina. 
 Alan Zhang 
 Edie Zhou 
 Samuel Yeboah 
