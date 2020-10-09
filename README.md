@@ -1,6 +1,6 @@
 # F1 Database Application
 
-Team Members
+#Team Members
 Kevin Medina kom298 kvnmedina
 Alan Zhang adz343 adz00
 Edie Zhou ez3437 edie0zhou
