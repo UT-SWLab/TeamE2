@@ -1,10 +1,22 @@
 # F1 Database Application
 
-# Team Members
-Kevin Medina kom298 kvnmedina
-Alan Zhang adz343 adz00
-Edie Zhou ez3437 edie0zhou
-Samuel Yeboah say438 samuel-akwesi-yeboah
+# Team Member Names
+Kevin Medina 
+Alan Zhang 
+Edie Zhou 
+Samuel Yeboah 
+
+# Team Member EIDs
+kom298
+adz343
+ez3437
+say438
+
+# Github Usernames
+kvnmedina
+adz00
+edie-zhou
+samuel-akwesi-yeboah
 
 # Website Link
 
