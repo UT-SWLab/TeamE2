@@ -1,10 +1,10 @@
 # F1 Database Application
 
 ## Team Member Names:
-Kevin Medina. 
-Alan Zhang 
-Edie Zhou 
-Samuel Yeboah 
+Kevin Medina.  
+Alan Zhang.  
+Edie Zhou.  
+Samuel Yeboah.  
 
 ## Team Member EIDs:
 kom298.  
