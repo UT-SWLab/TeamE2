@@ -8,11 +8,8 @@ Samuel Yeboah
 
 ## Team Member EIDs:
 kom298 
-
 adz343  
-
 ez3437  
-
 say438  
 
 ## Github Usernames:
