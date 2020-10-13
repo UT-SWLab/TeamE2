@@ -14,16 +14,20 @@ def about():
 
 @app.route('/models_drivers')
 def driver_model():
+    page = request.args.get('page', 1, type=int)
+    page = page - 1
     with open('./data/drivers.json') as f:
+        per_page = 8
         drivers = json.load(f)
-    return render_template('drivers-model.html', drivers=drivers)
+        pages = int(len(drivers)/per_page)
+        drivers = drivers[page*per_page : page*per_page+per_page]
+    return render_template('drivers-model.html', drivers=drivers, pages=pages, page=page)
 
 @app.route('/models_constructors')
 def constructor_model():
     with open('./data/constructors.json') as f:
         constructors = json.load(f)
     return render_template('constructors-model.html', constructors=constructors)
-
 @app.route('/models_circuits')
 def circuit_model():
     with open('./data/circuits.json') as f:
