@@ -8,8 +8,8 @@ from flask_pymongo import pymongo
 
 
 app = Flask(__name__)
-dbUsername = os.getenv('DBUSERNAME')
-dbPassword = os.getenv('DBPASSWORD')
+dbUsername = 'formulaOne'
+dbPassword = '0WpPVH6LdcHiwdct'
 CONNECTION_STRING = "mongodb+srv://"+dbUsername+":"+dbPassword+"@formulaonedb.bue6f.gcp.mongodb.net/<dbname>?retryWrites=true&w=majority"
 
 client = pymongo.MongoClient(CONNECTION_STRING)
