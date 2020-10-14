@@ -1,11 +1,27 @@
 # 1st party packages
 import json
+import os
 
 # 3rd party packages
 from flask import Flask, render_template, request
+from flask_pymongo import pymongo
+
 
 app = Flask(__name__)
+dbUsername = 'formulaOne'
+dbPassword = '0WpPVH6LdcHiwdct'
+CONNECTION_STRING = "mongodb+srv://"+dbUsername+":"+dbPassword+"@formulaonedb.bue6f.gcp.mongodb.net/<dbname>?retryWrites=true&w=majority"
 
+client = pymongo.MongoClient(CONNECTION_STRING)
+db = client.get_database('flask_mongodb_atlas')
+user_collection = pymongo.collection.Collection(db, 'user_collection')
+
+@app.route('/dbTest')
+def test():
+    print(dbUsername)
+    print(dbPassword)
+    db.db.collection.insert_one({"name": "John"})
+    return "Connected to the data base!"
 
 @app.route('/about')
 def about():
