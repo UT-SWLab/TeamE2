@@ -73,6 +73,8 @@ body, html {
 .card__info {
   z-index: 2;
   background-color: #fff;
+  border-top-left-radius: 0px;
+  border-top-right-radius: 0px;
   border-bottom-left-radius: 12px;
   border-bottom-right-radius: 12px;
   padding: 16px 24px 24px 24px;
@@ -99,13 +101,16 @@ body, html {
 }
 
 .card:hover .card__info {
-  background-color: transparent;
-  color: transparent;
+  background-color: #303030;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+  padding: 0px 12px 0px 12px;
+  color: white;
   position: relative;
 }
 
 .card:hover .card__category {
-  color: transparent;
+  color: #868686;
 }
 
 .card:hover .card__info-hover {
