@@ -12,13 +12,13 @@ https://f1stat-292509.uc.r.appspot.com/
 | Samuel Yeboah | say438 | samuel-akwesi-yeboah | 
 
 ## Phase 1 Completion Times:
-|   | Kevin Medine | Alan Zhang | Edie Zhou | Samuel Yeboah |
+|   | Kevin Medina | Alan Zhang | Edie Zhou | Samuel Yeboah |   
 | - | ------------ | ---------- | --------- | ------------- |
 | Estimated | 4 hrs. | 5 hrs. | 2 hrs. | 3 hrs. |
 | Actual | 4 hrs. | 5 hrs. | 5 hrs. | 3 hrs. |
 
 ## Phase 2 Completion Times:
-|   | Kevin Medine | Alan Zhang | Edie Zhou | Samuel Yeboah |
+|   | Kevin Medina | Alan Zhang | Edie Zhou | Samuel Yeboah |
 | - | ------------ | ---------- | --------- | ------------- |
 | Estimated | # hrs. | # hrs. | # hrs. | # hrs. |
 | Actual | # hrs. | # hrs. | # hrs. | # hrs. |
