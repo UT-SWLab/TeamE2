@@ -1,5 +1,8 @@
 # F1 Database Application
 
+## Website Link:
+https://f1stat-292509.uc.r.appspot.com/
+
 ## Team Member Names:
 Kevin Medina.  
 Alan Zhang.  
@@ -18,16 +21,13 @@ adz00.
 edie-zhou.   
 samuel-akwesi-yeboah.   
 
-## Website Link:
-https://f1-app-292016.uc.r.appspot.com
-
 # Estimated Completion times:
 Kevin Medina: 4 hours.   
 Alan Zhang: 5 hours.   
 Edie Zhou: 3 hours.   
 Samuel Yeboah: 2 hours.   
 
-# Actualy Completion Times:
+# Actual Completion Times:
 Kevin Medina: 4 hours.   
 Alan Zhang: 5 hours.   
 Edie Zhou: 5 hours.  
