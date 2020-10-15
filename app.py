@@ -32,7 +32,6 @@ def driver_model():
     drivers = []
     for driver in driver_list:
         drivers.append({'driverId' : str(driver['driverId']), 'surname': driver['surname'], 'forename': driver['forename']})
-    print(drivers)
     return render_template('drivers-model.html', drivers=drivers)
 
 @app.route('/models_constructors')
@@ -51,6 +50,7 @@ def driver_instance():
     driver_id = int(request.args['id'])
     driver = db.drivers.find_one({"driverId":driver_id})
 
+    #Gathers relevant information from database
     name = driver['forename'] + ' ' + driver['surname']
     dob = driver['dob']
     code = driver['code']
@@ -58,8 +58,21 @@ def driver_instance():
     number = driver['number']
     img_path = f'images/{driver_id}.jpg'
 
+    #Gathers the teams for the player
+    teamIds = db.results.distinct('constructorId',{ 'driverId':driver_id})
+    teams = []
+    for team in teamIds:
+        team = db.constructors.find_one({'constructorId' : team})
+        teams.append({'constructorId' : team['constructorId'], 'name' : team['name']})
+    print(teams)
+        
+    victoryIds = db.results.find({"driverId" : driver_id , "positionOrder" : 1})
+    for victory in victoryIds:
+        #raceId => races collection.circuitId =>  circuits collection 
+        print(victory)
+    
     return render_template('drivers-instance.html', name=name, code=code,\
-        dob=dob, nation=nationality, number=number,img_path=img_path)
+        dob=dob, nation=nationality, number=number, teams=teams, img_path=img_path)
 
 
 @app.route('/constructors')
