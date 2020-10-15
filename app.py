@@ -13,13 +13,10 @@ dbPassword = '0WpPVH6LdcHiwdct'
 CONNECTION_STRING = "mongodb+srv://"+dbUsername+":"+dbPassword+"@formulaonedb.bue6f.gcp.mongodb.net/<dbname>?retryWrites=true&w=majority"
 
 client = pymongo.MongoClient(CONNECTION_STRING)
-db = client.get_database('flask_mongodb_atlas')
-user_collection = pymongo.collection.Collection(db, 'user_collection')
+db = client.get_database('FormulaOneDB')
 
 @app.route('/dbTest')
 def test():
-    print(dbUsername)
-    print(dbPassword)
     db.db.collection.insert_one({"name": "John"})
     return "Connected to the data base!"
 
@@ -30,8 +27,12 @@ def about():
 
 @app.route('/models_drivers')
 def driver_model():
-    with open('./data/drivers.json') as f:
-        drivers = json.load(f)
+    #driverId, last name first name, picture
+    driver_list = db.drivers.find()
+    drivers = []
+    for driver in driver_list:
+        drivers.append({'driverId' : str(driver['driverId']), 'surname': driver['surname'], 'forename': driver['forename']})
+    print(drivers)
     return render_template('drivers-model.html', drivers=drivers)
 
 @app.route('/models_constructors')
@@ -45,22 +46,20 @@ def circuit_model():
     with open('./data/circuits.json') as f:
         circuits = json.load(f)
     return render_template('circuits-model.html', circuits=circuits)
-
 @app.route('/drivers')
 def driver_instance():
-    driver_id = request.args['id']
+    driver_id = int(request.args['id'])
+    driver = db.drivers.find_one({"driverId":driver_id})
 
-    # we need to change this to request from firebase db in the future
-    with open('data/drivers.json') as json_file:
-        drivers = json.load(json_file)
-        for driver in drivers:
-            if driver['driverId'] == driver_id:
-                data = driver
-                break
-    name = data['givenName'] + ' ' + data['familyName']
+    name = driver['forename'] + ' ' + driver['surname']
+    dob = driver['dob']
+    code = driver['code']
+    nationality = driver['nationality']
+    number = driver['number']
     img_path = f'images/{driver_id}.jpg'
-    return render_template('drivers-instance.html', name=name, code=data['code'],\
-        dob=data['dateOfBirth'], nation=data['nationality'], img_path=img_path)
+
+    return render_template('drivers-instance.html', name=name, code=code,\
+        dob=dob, nation=nationality, number=number,img_path=img_path)
 
 
 @app.route('/constructors')
