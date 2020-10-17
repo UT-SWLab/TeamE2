@@ -25,12 +25,6 @@ def test():
 def about():
     return render_template('about.html')
 
-@app.route('/models_circuits')
-def circuit_model():
-    with open('./data/circuits.json') as f:
-        circuits = json.load(f)
-    return render_template('circuits-model.html', circuits=circuits)
-
 @app.route('/models_drivers')
 def driver_model():
     #driverId, last name first name, picture
@@ -103,28 +97,31 @@ def constructor_instance():
     return render_template('constructors-instance.html', name=name, nation=nation,\
         drivers=teamDrivers, wins=wonCircuits, img_path=img_path)
 
+@app.route('/models_circuits')
+def circuit_model():
+    circuit_list = db.circuits.find()
+    circuits = []
+    for circuit in circuit_list:
+        print(circuit)
+        circuits.append({'circuitId' : str(circuit['circuitId']), 'circuitName':circuit['name']})
 
+    return render_template('circuits-model.html', circuits=circuits)
+
+#Add circuitID to results.csv to make it easier to find race participants and constructor winenrs
 @app.route('/circuits')
 def circuit_instance():
     circuit_id = request.args['id']
-
-    # we need to change this to request from firebase db in the future
-    with open('data/circuits.json') as json_file:
-        circuits = json.load(json_file)
-        for circuit in circuits:
-            if circuit['circuitId'] == circuit_id:
-                data = circuit
-                break
-    name = data['circuitName']
-    location = data['Location']
-    lat = location['lat']
-    long = location['long']
-    locality = location['locality']
-    country = location['country']
-
+    circuit = db.circuits.find_one({ 'circuitId' : int(circuit_id)})
+    
+    name = circuit['name']
+    location = circuit['location']
+    lat = circuit['lat']
+    longitude = circuit['lng']
+    country = circuit['country']
+ 
     img_path = f'images/{circuit_id}.jpg'
     return render_template('circuits-instance.html', name=name, lat=lat,\
-        long=long, locality=locality, country=country, img_path=img_path)
+        long=longitude, locality=location, country=country, img_path=img_path)
 
 
 @app.route('/')
