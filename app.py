@@ -64,7 +64,7 @@ def driver_instance():
         # raceId => races collection.circuitId =>  circuits collection
         print(victory)
 
-    return render_template('drivers-instance.html', name=name, code=code, \
+    return render_template('drivers-instance.html', name=name, code=code,
                            dob=dob, nation=nationality, number=number, teams=teams, img_path=img_path)
 
 
@@ -100,7 +100,7 @@ def constructor_instance():
         raceInfo = db.races.find_one({'raceId': victoryRace['raceId']})
         wonCircuits[raceInfo['circuitId']] = {'circuitId': raceInfo['circuitId'], 'ciruitName': raceInfo['name']}
     wonCircuits = list(wonCircuits.values())
-    return render_template('constructors-instance.html', name=name, nation=nation, \
+    return render_template('constructors-instance.html', name=name, nation=nation,
                            drivers=teamDrivers, wins=wonCircuits, img_path=img_path)
 
 
