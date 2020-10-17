@@ -1,6 +1,7 @@
 # 1st party packages
 import json
 import os
+from collections import defaultdict
 
 # 3rd party packages
 from flask import Flask, render_template, request
@@ -24,6 +25,11 @@ def test():
 def about():
     return render_template('about.html')
 
+@app.route('/models_circuits')
+def circuit_model():
+    with open('./data/circuits.json') as f:
+        circuits = json.load(f)
+    return render_template('circuits-model.html', circuits=circuits)
 
 @app.route('/models_drivers')
 def driver_model():
@@ -34,17 +40,6 @@ def driver_model():
         drivers.append({'driverId' : str(driver['driverId']), 'surname': driver['surname'], 'forename': driver['forename']})
     return render_template('drivers-model.html', drivers=drivers)
 
-@app.route('/models_constructors')
-def constructor_model():
-    with open('./data/constructors.json') as f:
-        constructors = json.load(f)
-    return render_template('constructors-model.html', constructors=constructors)
-
-@app.route('/models_circuits')
-def circuit_model():
-    with open('./data/circuits.json') as f:
-        circuits = json.load(f)
-    return render_template('circuits-model.html', circuits=circuits)
 @app.route('/drivers')
 def driver_instance():
     driver_id = int(request.args['id'])
@@ -70,27 +65,43 @@ def driver_instance():
     for victory in victoryIds:
         #raceId => races collection.circuitId =>  circuits collection 
         print(victory)
-    
+
     return render_template('drivers-instance.html', name=name, code=code,\
         dob=dob, nation=nationality, number=number, teams=teams, img_path=img_path)
+
+@app.route('/models_constructors')
+def constructor_model():
+    constructor_list = db.constructors.find()
+    constructors = []
+    for constructor in constructor_list:
+        constructors.append({'constructorId' : str(constructor['constructorId']), 'name' : constructor['name'], 'nationality' : constructor['nationality']})
+    
+    return render_template('constructors-model.html', constructors=constructors)
 
 
 @app.route('/constructors')
 def constructor_instance():
-    constructor_id = request.args['id']
+    constructor_id = int(request.args['id'])
 
-    # we need to change this to request from firebase db in the future
-    with open('data/constructors.json') as json_file:
-        constructors = json.load(json_file)
-        for constructor in constructors:
-            if constructor['constructorId'] == constructor_id:
-                data = constructor
-                break
-    name = data['name']
-    nation = data['nationality']
+    constructor = db.constructors.find_one({'constructorId' : constructor_id})
+    name = constructor['name']
+    nation = constructor['nationality']
     img_path = f'images/{constructor_id}.jpg'
+
+    driverIds = db.results.distinct('driverId',{'constructorId' : constructor_id})
+    teamDrivers = []
+    for driver in driverIds:
+        driver = db.drivers.find_one({'driverId' : driver})
+        teamDrivers.append({'driverId' : driver['driverId'] , 'name' : driver['forename'] + " " + driver['surname'] })
+    
+    victoryRaces = db.results.find({'constructorId' : constructor_id, 'positionOrder' : 1})
+    wonCircuits = defaultdict(list)
+    for victoryRace in victoryRaces:
+        raceInfo = db.races.find_one({'raceId' : victoryRace['raceId']})
+        wonCircuits[raceInfo['circuitId']] = {'circuitId' : raceInfo['circuitId'] , 'ciruitName' : raceInfo['name']}
+    wonCircuits = list(wonCircuits.values())
     return render_template('constructors-instance.html', name=name, nation=nation,\
-        img_path=img_path)
+        drivers=teamDrivers, wins=wonCircuits, img_path=img_path)
 
 
 @app.route('/circuits')
