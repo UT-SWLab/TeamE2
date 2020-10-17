@@ -12,32 +12,37 @@
   - External Links
   - Embedded images
 -->
-<div class="container-lg mt-3 border">
-  <img src="{{ url_for('static', filename=img_path) }}"gs height="30%" width="30%">
-  <h1>{{ name }}</h1>
-  <h2>Location: {{ locality }}, {{ nation }}</h2>
-  <h2>Coordinates: ({{ lat }}, {{ long }})</h2>
 
-  <div class="row">
-    <h2>Constructors who won here: </h2>
-  </div>
-  <div class="row">
-    <ul>
-      <li>(WIP) need to download more team data for this section.</li>
-      <li>Pierre Gasly</li>
-      <li>Alexander Albon</li>
-    </ul>
-  </div>
-  <div class="row">
-    <h2>Drivers who won here: </h2>
-  </div>
-  <div class="row">
-    <ul>
-      <li>(WIP) need to download more driver and circuit data for this section.</li>
-      <li>Barcelona</li>
-      <li>Catalunya</li>
-      <li>Hungaroring</li>
-    </ul>
-  </div>
+
+<div class="container-lg mt-3 border: 0px">
+    <h1 class="instance-header">{{ name }}</h1>
+    <img src="{{ url_for('static', filename=img_path) }}" gs height="30%" width="30%">
+
+
+    <p class="data-header">Location: &nbsp;</p>
+    <p class="data-text">{{ locality }}, {{ country }}</p>
+    <p class="data-subtext">Coordinates: ({{ lat }}, {{ long }})</p>
+
+    <div class="row">
+        {% if race_list |length > 1 %}
+        <p class="data-header" style="float:none">Races:</p>
+        
+        {% elif race_list |length == 1 %}
+        <p class="data-header">Race:&nbsp;</p>
+        <p class="data-text">{{ race_list[0] }}</p>
+        {% endif %}
+    </div>
+    {% if race_list |length > 1 %}
+    <div class="row">
+        <ul>
+            {% for race in race_list %}
+            <li class="list-element">{{race}}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+    <div class="row">
+        <p class="data-header"><a href="{{ url }}">Read More</a></p>
+    </div>
 </div>
-{% endblock %}  
+{% endblock %}

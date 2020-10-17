@@ -9,3 +9,33 @@ img {
     /* border-radius: 8px; */
     margin: 10px 20px 10px 0px;
 }
+
+.instance-header{
+    border-bottom: 1px solid black;
+}
+
+.data-header{ 
+    font-size: 36px; 
+    font-weight: 400;
+    float:left;
+}
+
+.data-text{
+    font-size: 36px; 
+    font-weight: 200;
+}
+
+.data-subtext{
+    font-size: 24px;
+    font-weight: 200;
+}
+
+.list-element{
+    font-size: 30px;
+    font-weight: 200;
+}
+
+ul{
+    list-style-type: none; 
+    padding-left: 0;
+}
