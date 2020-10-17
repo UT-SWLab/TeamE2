@@ -130,24 +130,48 @@ def circuit_instance():
     url = circuit['url']
     img_path = f'images/{circuit_id}.jpg'
 
-    races_list = db.races.find()
+    races_list = db.races.find({'circuitId': int(circuit_id)})  # Get all races held at this circuit
     races = []
-    # Get every race that happens in that circuit
-    # for race in races_list:
-    #     if race['circuitId'] == circuit_id:     # Only want the races that took place in that circuit
-    #         races.append({'raceId': str(race['raceId']), 'name': race['name'],
-    #                       'year': race['year'], 'url': race['url']})
-
-    # Get only race name since it repeats a lot anyway
     for race in races_list:
-        if race['circuitId'] == circuit_id:  # Only want the races that took place in that circuit
-            races.append(race['name'])
-    races = list(dict.fromkeys(races))  # Remove repeat race names (e.g. 2009 Spanish Grand
-    # Prix, 2010 Spanish Grand Prix, etc
+        races.append({'raceId': race['raceId'], 'name': race['name'], 'year': race['year'], 'url': race['url'],
+                      'date': race['date']})
+
+    latest_race_name = ""
+    results = None
+
+    races = sorted(races, key=lambda i: i['date'], reverse=True)
+    for race in races:
+        results = db.results.find({'raceId': race['raceId']})  # Results of the latest race
+        results = list(results)
+        if len(results) != 0:  # Ergast returns races that are scheduled for the future as well, so we have to make sure
+            # the latest race has actually happened
+            latest_race_name = str(race['year']) + " " + race['name']
+            break
+
+    driver_result_data = []
+    for result in results:
+        driver_result_data.append({'driverId': result['driverId'], 'driverName': '', 'position': result['position'],
+                                   'points': result['points'], 'laps': result['laps'], 'time': result['time'],
+                                   'constructorId': result['constructorId'], 'fastestLapTime': result['fastestLapTime'],
+                                   'fastestLapSpeed': result['fastestLapSpeed'], 'fastestLap': result['fastestLap'],
+                                   'rank': result['rank'], 'constructorName': ''})
+
+    # driver_result_data = sorted(driver_result_data, key=lambda i: i['position'])  # It seems drivers are returned
+    # # in order of position anyway, but might need to verify
+
+    # Find the name of the drivers
+    for driver_result in driver_result_data:
+        driver = db.drivers.find_one({'driverId': driver_result['driverId']})  # Should come up with a faster way
+        # to find a driver's name given their Id besides querying the db
+        constructor = db.constructors.find_one({'constructorId': driver_result['constructorId']})  # Should come up
+        # with a faster way to find a constructor's name given their ID besides querying the db
+        driver_result['driverName'] = driver['forename'] + " " + driver['surname']
+        driver_result['constructorName'] = constructor['name']
 
     return render_template('circuits-instance.html', name=name, lat=lat,
                            long=longitude, locality=location, country=country, url=url,
-                           img_path=img_path, circuit_id=circuit_id, race_list=races)
+                           img_path=img_path, circuit_id=circuit_id, latest_results=driver_result_data,
+                           latest_race_name=latest_race_name)
 
 
 @app.route('/')

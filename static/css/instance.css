@@ -17,7 +17,7 @@ img {
 .data-header{ 
     font-size: 36px; 
     font-weight: 400;
-    float:left;
+    
 }
 
 .data-text{
@@ -38,4 +38,14 @@ img {
 ul{
     list-style-type: none; 
     padding-left: 0;
+}
+
+thead{
+    background-color: #dc3546;
+    /* same as "navbar" */
+    color:white;
+}
+
+th{
+    font-weight: 600;
 }

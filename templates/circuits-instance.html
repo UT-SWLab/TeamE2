@@ -18,31 +18,50 @@
     <h1 class="instance-header">{{ name }}</h1>
     <img src="{{ url_for('static', filename=img_path) }}" gs height="30%" width="30%">
 
-
-    <p class="data-header">Location: &nbsp;</p>
-    <p class="data-text">{{ locality }}, {{ country }}</p>
-    <p class="data-subtext">Coordinates: ({{ lat }}, {{ long }})</p>
-
     <div class="row">
-        {% if race_list |length > 1 %}
-        <p class="data-header" style="float:none">Races:</p>
-        
-        {% elif race_list |length == 1 %}
-        <p class="data-header">Race:&nbsp;</p>
-        <p class="data-text">{{ race_list[0] }}</p>
-        {% endif %}
+        <div class="column">
+            <span class="data-header">Location: &nbsp;</span>
+            <span class="data-text">{{ locality }}, {{ country }}</span>
+            <p class="data-subtext">Coordinates: ({{ lat }}, {{ long }})</p>
+        </div>
     </div>
-    {% if race_list |length > 1 %}
     <div class="row">
-        <ul>
-            {% for race in race_list %}
-            <li class="list-element">{{race}}</li>
-            {% endfor %}
-        </ul>
+        <p class="data-text"><a href="{{ url }}">Read More</a></p>
     </div>
-    {% endif %}
     <div class="row">
-        <p class="data-header"><a href="{{ url }}">Read More</a></p>
+        <div class="column">
+            <span class="data-header">Latest Race: </span>
+            <span class="data-text">{{ latest_race_name }}</span>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <th scope="col">Position</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Constructor</th>
+                        <th scope="col">Points</th>
+                        <th scope="col">Time</th>
+                        <th scope="col">Rank</th>
+                        <th scope="col">Fastest Lap</th>
+                        <th scope="col">Laps</th>
+
+                    </thead>
+                    <tbody>
+                        <tr>
+                            {% for driver in latest_results %}
+                            <th scope="row">{{ driver['position'] }}</th>
+                            <td> {{ driver['driverName'] }} </td>
+                            <td> {{ driver['constructorName'] }} </td>
+                            <td> {{ driver['points'] }} </td>
+                            <td> {{ driver['time'] }} </td>
+                            <td> {{ driver['rank'] }} </td>
+                            <td> {{ driver['fastestLap'] }} </td>
+                            <td> {{ driver['laps'] }} </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}
