@@ -12,32 +12,36 @@
   - External Links
   - Embedded images
 -->
-<div class="container-lg mt-3 border">
-  <img src="{{ url_for('static', filename=img_path) }}"gs height="30%" width="30%">
-  <h1>{{ name }}</h1>
-  <h2>Nationality: {{ nation }}</h2>
-  <h2>Current Drivers: </h2>
+<div class="container-lg mt-3 border: 0px">
+    <h1 class="instance-header">{{ name }}</h1>
+    <img src="{{ url_for('static', filename=img_path) }}" gs height="30%" width="30%">
 
-  <div class="row">
-    <h2>Former Drivers: </h2>
-  </div>
-  <div class="row">
-    <ul>
-      <li>(WIP) need to download more team data for this section.</li>
-      <li>Pierre Gasly</li>
-      <li>Alexander Albon</li>
-    </ul>
-  </div>
-  <div class="row">
-    <h2>Victories: </h2>
-  </div>
-  <div class="row">
-    <ul>
-      <li>(WIP) need to download more driver and circuit data for this section.</li>
-      <li>Barcelona</li>
-      <li>Catalunya</li>
-      <li>Hungaroring</li>
-    </ul>
-  </div>
+    <div class="row">
+        <div class="column">
+            <span class="data-header">Nationality: &nbsp;</span>
+            <span class="data-text">{{nation}}</span>
+        </div>
+    </div>
+    <div class="row">
+        <p class="data-text"><a href="{{ url }}">Read More</a></p>
+    </div>
+    <div class="row">
+        <div class="column">
+            <p class="data-header">Drivers </p>
+            {% for driver in drivers %}
+            <ul class="list-group">
+                <li class="list-group-item data-subtext">{{driver['name']}}</li>
+            </ul>
+            {% endfor %}
+            <p class="data-header">Circuits Won</p>
+<!--
+            {% for win in wins %}
+            <ul class="list-group">
+                <li class="list-group-item data-subtext">{{win['circuitName']}}</li>
+            </ul>
+-->
+<!--            {% endfor %}-->
+        </div>
+    </div>
 </div>
-{% endblock %}  
+{% endblock %}
