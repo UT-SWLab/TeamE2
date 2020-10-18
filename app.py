@@ -1,10 +1,24 @@
 # 1st party packages
 import json
+import os
+from collections import defaultdict
 
 # 3rd party packages
 from flask import Flask, render_template, request
+from flask_pymongo import pymongo
 
 app = Flask(__name__)
+dbUsername = 'formulaOne'
+dbPassword = '0WpPVH6LdcHiwdct'
+CONNECTION_STRING = "mongodb+srv://" + dbUsername + ":" + dbPassword + "@formulaonedb.bue6f.gcp.mongodb.net/<dbname>?retryWrites=true&w=majority"
+
+client = pymongo.MongoClient(CONNECTION_STRING)
+db = client.get_database('FormulaOneDB')
+
+@app.route('/dbTest')
+def test():
+    db.db.collection.insert_one({"name": "John"})
+    return "Connected to the data base!"
 
 
 @app.route('/about')
@@ -16,11 +30,14 @@ def about():
 def driver_model():
     page = request.args.get('page', 1, type=int)
     page = page - 1
-    with open('./data/drivers.json') as f:
-        per_page = 8
-        drivers = json.load(f)
-        pages = int(len(drivers)/per_page)
-        drivers = drivers[page*per_page : page*per_page+per_page]
+    driver_list = db.drivers.find()
+    drivers = []
+    for driver in driver_list:
+        drivers.append(
+            {'driverId': str(driver['driverId']), 'surname': driver['surname'], 'forename': driver['forename']})
+    per_page = 20
+    pages = int(len(drivers)/per_page)
+    drivers = drivers[page*per_page: page*per_page+per_page]
     return render_template('drivers-model.html', drivers=drivers, pages=pages, page=page)
 
 @app.route('/models_constructors')
