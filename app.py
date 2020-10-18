@@ -49,6 +49,7 @@ def driver_instance():
     code = driver['code']
     nationality = driver['nationality']
     number = driver['number']
+    url = driver['url']
     img_path = f'images/{driver_id}.jpg'
 
     # Gathers the teams for the player
@@ -57,15 +58,42 @@ def driver_instance():
     for team in teamIds:
         team = db.constructors.find_one({'constructorId': team})
         teams.append({'constructorId': team['constructorId'], 'name': team['name']})
-    print(teams)
+    # print(teams)
 
-    victoryIds = db.results.find({"driverId": driver_id, "positionOrder": 1})
-    for victory in victoryIds:
-        # raceId => races collection.circuitId =>  circuits collection
-        print(victory)
+    victories = []
+    results = []
+    all_results = list(db.results.find({'driverId': driver_id}))
+    for result in all_results:
+        results.append({'raceId': result['raceId'], 'constructorId': result['constructorId'],
+                        'position': result['positionOrder'], 'points': result['points'],
+                        'laps': result['laps'], 'time': result['time'],
+                        'fastestLap': result['fastestLap'], 'rank': result['rank'],
+                        'fastestLapTime': result['fastestLapTime'], 'date': "", 'race_name': "",
+                        'constructor_name': ""})
+
+    for result in results:
+        race = db.races.find_one({'raceId': result['raceId']})
+        constructor = db.constructors.find_one({"constructorId": result['constructorId']})
+        result['date'] = race['date']
+        result['race_name'] = str(race['year']) + " " + race['name']
+        result['constructor_name'] = constructor['name']
+        if result['position'] == 1:
+            victories.append(result)
+
+    victories = sorted(victories, key=lambda i: i['date'], reverse=True)
+    latest = sorted(results, key=lambda i: i['date'], reverse=True)
+    latest = latest[:5]
+    # victories = list(db.results.find({"driverId": driver_id, "positionOrder": 1}))
+    # for victory in victories:
+    #     constructor = db.constructors.find_one({"constructorId": victory['constructorId']})
+    #     victory['constructorId'] = constructor['name']
+    #
+    #     race = db.races.find_one({"raceId": victory['raceId']})
+    #     victory['raceId'] = str(race['year']) + " " + race['name']
 
     return render_template('drivers-instance.html', name=name, code=code,
-                           dob=dob, nation=nationality, number=number, teams=teams, img_path=img_path)
+                           dob=dob, nation=nationality, number=number, teams=teams,
+                           url=url, img_path=img_path, victories=victories, latest=latest)
 
 
 @app.route('/models_constructors')
@@ -150,15 +178,14 @@ def circuit_instance():
 
     driver_result_data = []
     for result in results:
-        driver_result_data.append({'driverId': result['driverId'], 'driverName': '', 'position': result['position'],
-                                   'points': result['points'], 'laps': result['laps'], 'time': result['time'],
-                                   'constructorId': result['constructorId'], 'fastestLapTime': result['fastestLapTime'],
-                                   'fastestLapSpeed': result['fastestLapSpeed'], 'fastestLap': result['fastestLap'],
-                                   'rank': result['rank'], 'constructorName': ''})
+        driver_result_data.append(
+            {'driverId': result['driverId'], 'driverName': '', 'position': result['positionOrder'],
+             'points': result['points'], 'laps': result['laps'], 'time': result['time'],
+             'constructorId': result['constructorId'], 'fastestLapTime': result['fastestLapTime'],
+             'fastestLapSpeed': result['fastestLapSpeed'], 'fastestLap': result['fastestLap'],
+             'rank': result['rank'], 'constructorName': ''})
 
-    # driver_result_data = sorted(driver_result_data, key=lambda i: i['position'])  # It seems drivers are returned
-    # # in order of position anyway, but might need to verify
-
+    driver_result_data = sorted(driver_result_data, key=lambda i: i['position'])
     # Find the name of the drivers
     for driver_result in driver_result_data:
         driver = db.drivers.find_one({'driverId': driver_result['driverId']})  # Should come up with a faster way

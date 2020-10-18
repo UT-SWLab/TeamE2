@@ -32,11 +32,14 @@
         <div class="column">
             <span class="data-header">Latest Race: </span>
             <span class="data-text">{{ latest_race_name }}</span>
+            <br>
+            <br>
+            <span class="data-subtext">{{ latest_race_name }} Results</span>
             <div class="table-responsive">
                 <table class="table">
                     <thead>
                         <th scope="col">Position</th>
-                        <th scope="col">Name</th>
+                        <th scope="col">Driver</th>
                         <th scope="col">Constructor</th>
                         <th scope="col">Points</th>
                         <th scope="col">Time</th>
@@ -48,13 +51,13 @@
                     <tbody>
                         <tr>
                             {% for driver in latest_results %}
-                            <th scope="row">{{ driver['position'] }}</th>
+                            <td>{{ driver['position'] }}</td>
                             <td> {{ driver['driverName'] }} </td>
                             <td> {{ driver['constructorName'] }} </td>
                             <td> {{ driver['points'] }} </td>
                             <td> {{ driver['time'] }} </td>
                             <td> {{ driver['rank'] }} </td>
-                            <td> {{ driver['fastestLap'] }} </td>
+                            <td> #{{ driver['fastestLap'] }} </td>
                             <td> {{ driver['laps'] }} </td>
                         </tr>
                         {% endfor %}
