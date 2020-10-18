@@ -114,6 +114,7 @@ def constructor_instance():
     constructor = db.constructors.find_one({'constructorId': constructor_id})
     name = constructor['name']
     nation = constructor['nationality']
+    url = constructor['url']
     img_path = f'images/{constructor_id}.jpg'
 
     driverIds = db.results.distinct('driverId', {'constructorId': constructor_id})
@@ -126,10 +127,10 @@ def constructor_instance():
     wonCircuits = defaultdict(list)
     for victoryRace in victoryRaces:
         raceInfo = db.races.find_one({'raceId': victoryRace['raceId']})
-        wonCircuits[raceInfo['circuitId']] = {'circuitId': raceInfo['circuitId'], 'ciruitName': raceInfo['name']}
+        wonCircuits[raceInfo['circuitId']] = {'circuitId': raceInfo['circuitId'], 'circuitName': raceInfo['name']}
     wonCircuits = list(wonCircuits.values())
     return render_template('constructors-instance.html', name=name, nation=nation,
-                           drivers=teamDrivers, wins=wonCircuits, img_path=img_path)
+                           drivers=teamDrivers, wins=wonCircuits, img_path=img_path, url=url)
 
 
 @app.route('/models_circuits')
