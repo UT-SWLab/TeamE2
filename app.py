@@ -131,17 +131,6 @@ def driver_instance():
                            url=url, img_path=img_path, victories=victories, latest=latest)
 
 
-@app.route('/models_constructors')
-def constructor_model():
-    constructor_list = db.constructors.find()
-    constructors = []
-    for constructor in constructor_list:
-        constructors.append({'constructorId': str(constructor['constructorId']), 'name': constructor['name'],
-                             'nationality': constructor['nationality']})
-
-    return render_template('constructors-model.html', constructors=constructors)
-
-
 @app.route('/constructors')
 def constructor_instance():
     constructor_id = int(request.args['id'])
