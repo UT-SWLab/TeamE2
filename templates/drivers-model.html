@@ -20,7 +20,7 @@
 <div class="container my-5">
   {% if drivers %}
   {% set index = 0 %}
-  {% for i in range(5) %}
+  {% for i in range((drivers|length)|int) %}
   <div class="row justify-content-center">
     <div class="cards">
         {% if drivers|length > 4*i %}
@@ -29,11 +29,11 @@
           {% set imgurl = url_for('static', filename='images/'+imgpath) %}
           {% set name = drivers[4*i]['forename'] + " " + drivers[4*i]['surname'] %}
           <!--Card template from https://codepen.io/veronicadev/pen/WJyOwG-->
-          <article class="card card--1">
+          <article class="card">
           <div class="card__img" style="background-image: url({{imgurl}})"></div>
           <a href={{link}} class="card_link">
             <div class="card__img--hover" style="background-image: url({{imgurl}})"></div>
-            </a>
+          </a>
           <div class="card__info">
             <span class="card__category"> Driver</span>
             <h3 class="card__title">{{ name }}</h3>
@@ -46,7 +46,7 @@
           {% set imgurl = url_for('static', filename='images/'+imgpath) %}
           {% set name = drivers[4*i+1]['forename'] + " " + drivers[4*i+1]['surname'] %}
           <!--Card template from https://codepen.io/veronicadev/pen/WJyOwG-->
-          <article class="card card--1">
+          <article class="card">
             <div class="card__img" style="background-image: url({{imgurl}})"></div>
             <a href={{link}} class="card_link">
             <div class="card__img--hover" style="background-image: url({{imgurl}})"></div>
@@ -63,7 +63,7 @@
           {% set imgurl = url_for('static', filename='images/'+imgpath) %}
           {% set name = drivers[4*i+2]['forename'] + " " + drivers[4*i+2]['surname'] %}
           <!--Card template from https://codepen.io/veronicadev/pen/WJyOwG-->
-          <article class="card card--1">
+          <article class="card">
             <div class="card__img" style="background-image: url({{imgurl}})"></div>
             <a href={{link}} class="card_link">
             <div class="card__img--hover" style="background-image: url({{imgurl}})"></div>
@@ -80,7 +80,7 @@
           {% set imgurl = url_for('static', filename='images/'+imgpath) %}
           {% set name = drivers[4*i+3]['forename'] + " " + drivers[4*i+3]['surname'] %}
           <!--Card template from https://codepen.io/veronicadev/pen/WJyOwG-->
-          <article class="card card--1">
+          <article class="card">
             <div class="card__img" style="background-image: url({{imgurl}})"></div>
             <a href={{link}} class="card_link">
             <div class="card__img--hover" style="background-image: url({{imgurl}})"></div>
@@ -95,6 +95,48 @@
   </div>
   {% endfor %}
   {% endif %}
+  <div class="row justify-content-center mt-5">
+    <nav>
+      <ul class="pagination pg-blue">
+        {% if page > 0 %}
+        <li class="page-item">
+          <a class="page-link" aria-label="Previous" href="{{url_for('driver_model', page=page)}}">
+            <span aria-hidden="true">&laquo;</span>
+            <span class="sr-only">Previous</span>
+          </a>
+        </li>
+        {% endif %}
+        {% set skip = {'left': False, 'right': False} %}
+        {% set rightskip = False %}
+        {% for i in range(pages+1) %}
+          {% if i == page %}
+            <li class="page-item active"><a class="page-link" href="{{url_for('driver_model', page=i+1)}}">{{i+1}}</a></li>
+          {% elif i < page and i >= page - 1 %}
+            <li class="page-item"><a class="page-link" href="{{url_for('driver_model', page=i+1)}}">{{i+1}}</a></li>
+          {% elif i > page and i <= page + 1 %}  
+            <li class="page-item"><a class="page-link" href="{{url_for('driver_model', page=i+1)}}">{{i+1}}</a></li>
+          {% elif i == 0 or i==pages %}
+            <li class="page-item"><a class="page-link" href="{{url_for('driver_model', page=i+1)}}">{{i+1}}</a></li>
+          {% else %}
+            {% if i < page and skip.left == False %}
+              {% if skip.update({'left': True}) %}{% endif %}
+              ......
+            {% elif i > page and skip.right == False %}
+              {% if skip.update({'right': True}) %}{% endif %}
+              ......
+            {% endif %}  
+          {% endif %}
+        {% endfor %}
+        {% if page < pages %}
+        <li class="page-item">
+          <a class="page-link" aria-label="Next" href="{{url_for('driver_model', page=page+2)}}">
+            <span aria-hidden="true">&raquo;</span>
+            <span class="sr-only">Next</span>
+          </a>
+        </li>
+        {% endif %}
+      </ul>
+    </nav>
+  </div>
 </div>
 {% endblock %}  
-
