@@ -73,6 +73,7 @@ def circuit_model():
     circuits = circuits[page*per_page: page*per_page+per_page]
     return render_template('circuits-model.html', circuits=circuits, pages=pages, page=page)
 
+
 @app.route('/drivers')
 def driver_instance():
     driver_id = int(request.args['id'])
@@ -155,17 +156,6 @@ def constructor_instance():
     wonCircuits = list(wonCircuits.values())
     return render_template('constructors-instance.html', name=name, nation=nation,
                            drivers=teamDrivers, wins=wonCircuits, img_path=img_path, url=url)
-
-
-@app.route('/models_circuits')
-def circuit_model():
-    circuit_list = db.circuits.find()
-    circuits = []
-    for circuit in circuit_list:
-        print(circuit)
-        circuits.append({'circuitId': str(circuit['circuitId']), 'circuitName': circuit['name']})
-
-    return render_template('circuits-model.html', circuits=circuits)
 
 
 # Add circuitID to results.csv to make it easier to find race participants and constructor winenrs
