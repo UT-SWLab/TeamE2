@@ -34,22 +34,44 @@ def driver_model():
     drivers = []
     for driver in driver_list:
         drivers.append(
-            {'driverId': str(driver['driverId']), 'surname': driver['surname'], 'forename': driver['forename']})
+            {'driverId': driver['driverRef'], 'surname': driver['surname'], 'forename': driver['forename']})
     per_page = 20
     pages = int(len(drivers)/per_page)
     drivers = drivers[page*per_page: page*per_page+per_page]
     return render_template('drivers-model.html', drivers=drivers, pages=pages, page=page)
 
+
 @app.route('/models_constructors')
 def constructor_model():
-    with open('./data/constructors.json') as f:
-        constructors = json.load(f)
-    return render_template('constructors-model.html', constructors=constructors)
+    page = request.args.get('page', 1, type=int)
+    page = page - 1
+    constructor_list = db.constructors.find()
+    constructors = []
+    for constructor in constructor_list:
+        constructors.append(
+            {'constructorId': constructor['constructorRef'], 'name': constructor['name']})
+    print(len(constructors))
+    per_page = 20
+    pages = int(len(constructors)/per_page)
+    constructors = constructors[page*per_page: page*per_page+per_page]
+    print(constructors)
+    return render_template('constructors-model.html', constructors=constructors, pages=pages, page=page)
+
+
 @app.route('/models_circuits')
 def circuit_model():
-    with open('./data/circuits.json') as f:
-        circuits = json.load(f)
-    return render_template('circuits-model.html', circuits=circuits)
+    page = request.args.get('page', 1, type=int)
+    page = page - 1
+    circuit_list = db.circuits.find()
+    circuits = []
+    for circuit in circuit_list:
+        circuits.append(
+            {'circuitId': circuit['circuitRef'], 'name': circuit['name']})
+    per_page = 20
+    pages = int(len(circuits)/per_page)
+    circuits = circuits[page*per_page: page*per_page+per_page]
+    return render_template('circuits-model.html', circuits=circuits, pages=pages, page=page)
+
 
 @app.route('/drivers')
 def driver_instance():
