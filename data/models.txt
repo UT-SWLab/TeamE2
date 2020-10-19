@@ -1,0 +1,24 @@
+* drivers:
+    - driver name
+    - driver image
+    - driver code
+    - date of birth
+    - nationality
+    - Current Constructor/retired
+    - former constructors (scrolling viewbox)
+    - former victories (paginate and search)
+
+* constructors
+    - image of car with most recent livery
+    - Current Nationality (maybe past nationalities)
+    - Current Drivers
+    - Former Drivers (paginate and search)
+    - former Victories (paginate and search)
+
+* circuits
+    - circuit image
+    - circuit name
+    - circuit location, gps coords to side
+    - past constructor wins (paginate and search)
+    - past driver wins (paginate and search)
+

@@ -28,6 +28,7 @@ def about():
 
 @app.route('/models_drivers')
 def driver_model():
+
     page = request.args.get('page', 1, type=int)
     page = page - 1
     driver_list = db.drivers.find()
@@ -72,68 +73,173 @@ def circuit_model():
     circuits = circuits[page*per_page: page*per_page+per_page]
     return render_template('circuits-model.html', circuits=circuits, pages=pages, page=page)
 
-
 @app.route('/drivers')
 def driver_instance():
-    driver_id = request.args['id']
+    driver_id = int(request.args['id'])
+    driver = db.drivers.find_one({"driverId": driver_id})
 
-    # we need to change this to request from firebase db in the future
-    with open('data/drivers.json') as json_file:
-        drivers = json.load(json_file)
-        for driver in drivers:
-            if driver['driverId'] == driver_id:
-                data = driver
-                break
-    name = data['givenName'] + ' ' + data['familyName']
+    # Gathers relevant information from database
+    name = driver['forename'] + ' ' + driver['surname']
+    dob = driver['dob']
+    code = driver['code']
+    nationality = driver['nationality']
+    number = driver['number']
+    url = driver['url']
     img_path = f'images/{driver_id}.jpg'
-    return render_template('drivers-instance.html', name=name, code=data['code'],\
-        dob=data['dateOfBirth'], nation=data['nationality'], img_path=img_path)
+
+    # Gathers the teams for the player
+    teamIds = db.results.distinct('constructorId', {'driverId': driver_id})
+    teams = []
+    for team in teamIds:
+        team = db.constructors.find_one({'constructorId': team})
+        teams.append({'constructorId': team['constructorId'], 'name': team['name']})
+    # print(teams)
+
+    victories = []
+    results = []
+    all_results = list(db.results.find({'driverId': driver_id}))
+    for result in all_results:
+        results.append({'raceId': result['raceId'], 'constructorId': result['constructorId'],
+                        'position': result['positionOrder'], 'points': result['points'],
+                        'laps': result['laps'], 'time': result['time'],
+                        'fastestLap': result['fastestLap'], 'rank': result['rank'],
+                        'fastestLapTime': result['fastestLapTime'], 'date': "", 'race_name': "",
+                        'constructor_name': ""})
+
+    for result in results:
+        race = db.races.find_one({'raceId': result['raceId']})
+        constructor = db.constructors.find_one({"constructorId": result['constructorId']})
+        result['date'] = race['date']
+        result['race_name'] = str(race['year']) + " " + race['name']
+        result['constructor_name'] = constructor['name']
+        if result['position'] == 1:
+            victories.append(result)
+
+    victories = sorted(victories, key=lambda i: i['date'], reverse=True)
+    latest = sorted(results, key=lambda i: i['date'], reverse=True)
+    latest = latest[:5]
+    # victories = list(db.results.find({"driverId": driver_id, "positionOrder": 1}))
+    # for victory in victories:
+    #     constructor = db.constructors.find_one({"constructorId": victory['constructorId']})
+    #     victory['constructorId'] = constructor['name']
+    #
+    #     race = db.races.find_one({"raceId": victory['raceId']})
+    #     victory['raceId'] = str(race['year']) + " " + race['name']
+
+    return render_template('drivers-instance.html', name=name, code=code,
+                           dob=dob, nation=nationality, number=number, teams=teams,
+                           url=url, img_path=img_path, victories=victories, latest=latest)
+
+
+@app.route('/models_constructors')
+def constructor_model():
+    constructor_list = db.constructors.find()
+    constructors = []
+    for constructor in constructor_list:
+        constructors.append({'constructorId': str(constructor['constructorId']), 'name': constructor['name'],
+                             'nationality': constructor['nationality']})
+
+    return render_template('constructors-model.html', constructors=constructors)
 
 
 @app.route('/constructors')
 def constructor_instance():
-    constructor_id = request.args['id']
+    constructor_id = int(request.args['id'])
 
-    # we need to change this to request from firebase db in the future
-    with open('data/constructors.json') as json_file:
-        constructors = json.load(json_file)
-        for constructor in constructors:
-            if constructor['constructorId'] == constructor_id:
-                data = constructor
-                break
-    name = data['name']
-    nation = data['nationality']
+    constructor = db.constructors.find_one({'constructorId': constructor_id})
+    name = constructor['name']
+    nation = constructor['nationality']
+    url = constructor['url']
     img_path = f'images/{constructor_id}.jpg'
-    return render_template('constructors-instance.html', name=name, nation=nation,\
-        img_path=img_path)
+
+    driverIds = db.results.distinct('driverId', {'constructorId': constructor_id})
+    teamDrivers = []
+    for driver in driverIds:
+        driver = db.drivers.find_one({'driverId': driver})
+        teamDrivers.append({'driverId': driver['driverId'], 'name': driver['forename'] + " " + driver['surname']})
+
+    victoryRaces = db.results.find({'constructorId': constructor_id, 'positionOrder': 1})
+    wonCircuits = defaultdict(list)
+    for victoryRace in victoryRaces:
+        raceInfo = db.races.find_one({'raceId': victoryRace['raceId']})
+        wonCircuits[raceInfo['circuitId']] = {'circuitId': raceInfo['circuitId'], 'circuitName': raceInfo['name']}
+    wonCircuits = list(wonCircuits.values())
+    return render_template('constructors-instance.html', name=name, nation=nation,
+                           drivers=teamDrivers, wins=wonCircuits, img_path=img_path, url=url)
 
 
+@app.route('/models_circuits')
+def circuit_model():
+    circuit_list = db.circuits.find()
+    circuits = []
+    for circuit in circuit_list:
+        print(circuit)
+        circuits.append({'circuitId': str(circuit['circuitId']), 'circuitName': circuit['name']})
+
+    return render_template('circuits-model.html', circuits=circuits)
+
+
+# Add circuitID to results.csv to make it easier to find race participants and constructor winenrs
 @app.route('/circuits')
 def circuit_instance():
     circuit_id = request.args['id']
+    circuit = db.circuits.find_one({'circuitId': int(circuit_id)})
 
-    # we need to change this to request from firebase db in the future
-    with open('data/circuits.json') as json_file:
-        circuits = json.load(json_file)
-        for circuit in circuits:
-            if circuit['circuitId'] == circuit_id:
-                data = circuit
-                break
-    name = data['circuitName']
-    location = data['Location']
-    lat = location['lat']
-    long = location['long']
-    locality = location['locality']
-    country = location['country']
-
+    name = circuit['name']
+    location = circuit['location']
+    lat = circuit['lat']
+    longitude = circuit['lng']
+    country = circuit['country']
+    circuit_id = circuit['circuitId']
+    url = circuit['url']
     img_path = f'images/{circuit_id}.jpg'
-    return render_template('circuits-instance.html', name=name, lat=lat,\
-        long=long, locality=locality, country=country, img_path=img_path)
+
+    races_list = db.races.find({'circuitId': int(circuit_id)})  # Get all races held at this circuit
+    races = []
+    for race in races_list:
+        races.append({'raceId': race['raceId'], 'name': race['name'], 'year': race['year'], 'url': race['url'],
+                      'date': race['date']})
+
+    latest_race_name = ""
+    results = None
+
+    races = sorted(races, key=lambda i: i['date'], reverse=True)
+    for race in races:
+        results = db.results.find({'raceId': race['raceId']})  # Results of the latest race
+        results = list(results)
+        if len(results) != 0:  # Ergast returns races that are scheduled for the future as well, so we have to make sure
+            # the latest race has actually happened
+            latest_race_name = str(race['year']) + " " + race['name']
+            break
+
+    driver_result_data = []
+    for result in results:
+        driver_result_data.append(
+            {'driverId': result['driverId'], 'driverName': '', 'position': result['positionOrder'],
+             'points': result['points'], 'laps': result['laps'], 'time': result['time'],
+             'constructorId': result['constructorId'], 'fastestLapTime': result['fastestLapTime'],
+             'fastestLapSpeed': result['fastestLapSpeed'], 'fastestLap': result['fastestLap'],
+             'rank': result['rank'], 'constructorName': ''})
+
+    driver_result_data = sorted(driver_result_data, key=lambda i: i['position'])
+    # Find the name of the drivers
+    for driver_result in driver_result_data:
+        driver = db.drivers.find_one({'driverId': driver_result['driverId']})  # Should come up with a faster way
+        # to find a driver's name given their Id besides querying the db
+        constructor = db.constructors.find_one({'constructorId': driver_result['constructorId']})  # Should come up
+        # with a faster way to find a constructor's name given their ID besides querying the db
+        driver_result['driverName'] = driver['forename'] + " " + driver['surname']
+        driver_result['constructorName'] = constructor['name']
+
+    return render_template('circuits-instance.html', name=name, lat=lat,
+                           long=longitude, locality=location, country=country, url=url,
+                           img_path=img_path, circuit_id=circuit_id, latest_results=driver_result_data,
+                           latest_race_name=latest_race_name)
 
 
 @app.route('/')
 def home():
-    return render_template('home.html')    
+    return render_template('home.html')
 
 
 if __name__ == '__main__':

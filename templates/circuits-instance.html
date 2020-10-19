@@ -12,32 +12,59 @@
   - External Links
   - Embedded images
 -->
-<div class="container-lg mt-3 border">
-  <img src="{{ url_for('static', filename=img_path) }}"gs height="30%" width="30%">
-  <h1>{{ name }}</h1>
-  <h2>Location: {{ locality }}, {{ nation }}</h2>
-  <h2>Coordinates: ({{ lat }}, {{ long }})</h2>
 
-  <div class="row">
-    <h2>Constructors who won here: </h2>
-  </div>
-  <div class="row">
-    <ul>
-      <li>(WIP) need to download more team data for this section.</li>
-      <li>Pierre Gasly</li>
-      <li>Alexander Albon</li>
-    </ul>
-  </div>
-  <div class="row">
-    <h2>Drivers who won here: </h2>
-  </div>
-  <div class="row">
-    <ul>
-      <li>(WIP) need to download more driver and circuit data for this section.</li>
-      <li>Barcelona</li>
-      <li>Catalunya</li>
-      <li>Hungaroring</li>
-    </ul>
-  </div>
+
+<div class="container-lg mt-3 border: 0px">
+    <h1 class="instance-header">{{ name }}</h1>
+    <img src="{{ url_for('static', filename=img_path) }}" gs height="30%" width="30%">
+
+    <div class="row">
+        <div class="column">
+            <span class="data-header">Location: &nbsp;</span>
+            <span class="data-text">{{ locality }}, {{ country }}</span>
+            <p class="data-subtext">Coordinates: ({{ lat }}, {{ long }})</p>
+        </div>
+    </div>
+    <div class="row">
+        <p class="data-text"><a href="{{ url }}">Read More</a></p>
+    </div>
+    <div class="row">
+        <div class="column">
+            <span class="data-header">Latest Race: </span>
+            <span class="data-text">{{ latest_race_name }}</span>
+            <br>
+            <br>
+            <span class="data-subtext">{{ latest_race_name }} Results</span>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <th scope="col">Position</th>
+                        <th scope="col">Driver</th>
+                        <th scope="col">Constructor</th>
+                        <th scope="col">Points</th>
+                        <th scope="col">Time</th>
+                        <th scope="col">Rank</th>
+                        <th scope="col">Fastest Lap</th>
+                        <th scope="col">Laps</th>
+
+                    </thead>
+                    <tbody>
+                        <tr>
+                            {% for driver in latest_results %}
+                            <td>{{ driver['position'] }}</td>
+                            <td> {{ driver['driverName'] }} </td>
+                            <td> {{ driver['constructorName'] }} </td>
+                            <td> {{ driver['points'] }} </td>
+                            <td> {{ driver['time'] }} </td>
+                            <td> {{ driver['rank'] }} </td>
+                            <td> #{{ driver['fastestLap'] }} </td>
+                            <td> {{ driver['laps'] }} </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 </div>
-{% endblock %}  
+{% endblock %}
