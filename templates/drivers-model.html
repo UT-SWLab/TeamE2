@@ -24,9 +24,9 @@
   <div class="row justify-content-center">
     <div class="cards">
         {% if drivers|length > 4*i %}
-          {% set link = 'drivers?id='+drivers[4*i]['driverId'] %}
-          {% set imgpath = drivers[4*i]['driverId'] + '.jpg' %}
-          {% set imgurl = url_for('static', filename='images/'+imgpath) %}
+          {% set link = 'drivers?id='+drivers[4*i]['driverId'] | string %}
+          {% set imgpath = drivers[4*i]['driverRef'] + '.jpg' %}
+          {% set imgurl = url_for('static', filename='images/drivers/'+imgpath) %}
           {% set name = drivers[4*i]['forename'] + " " + drivers[4*i]['surname'] %}
           <!--Card template from https://codepen.io/veronicadev/pen/WJyOwG-->
           <article class="card">
@@ -41,9 +41,9 @@
           </article>
         {% endif %}
         {% if drivers|length > 4*i+1%}
-          {% set link = 'drivers?id='+drivers[4*i+1]['driverId'] %}
-          {% set imgpath = drivers[4*i+1]['driverId'] + '.jpg' %}
-          {% set imgurl = url_for('static', filename='images/'+imgpath) %}
+          {% set link = 'drivers?id='+drivers[4*i+1]['driverId'] | string %}
+          {% set imgpath = drivers[4*i+1]['driverRef'] + '.jpg' %}
+          {% set imgurl = url_for('static', filename='images/drivers/'+imgpath) %}
           {% set name = drivers[4*i+1]['forename'] + " " + drivers[4*i+1]['surname'] %}
           <!--Card template from https://codepen.io/veronicadev/pen/WJyOwG-->
           <article class="card">
@@ -58,9 +58,9 @@
           </article>
         {% endif %}
         {% if drivers|length > 4*i+2 %}
-          {% set link = 'drivers?id='+drivers[4*i+2]['driverId'] %}
-          {% set imgpath = drivers[4*i+2]['driverId'] + '.jpg' %}
-          {% set imgurl = url_for('static', filename='images/'+imgpath) %}
+          {% set link = 'drivers?id='+drivers[4*i+2]['driverId'] | string %}
+          {% set imgpath = drivers[4*i+2]['driverRef'] + '.jpg' %}
+          {% set imgurl = url_for('static', filename='images/drivers/'+imgpath) %}
           {% set name = drivers[4*i+2]['forename'] + " " + drivers[4*i+2]['surname'] %}
           <!--Card template from https://codepen.io/veronicadev/pen/WJyOwG-->
           <article class="card">
@@ -75,9 +75,9 @@
           </article>
         {% endif %}
         {% if drivers|length > 4*i+3 %}
-          {% set link = 'drivers?id='+drivers[4*i+3]['driverId'] %}
-          {% set imgpath = drivers[4*i+3]['driverId'] + '.jpg' %}
-          {% set imgurl = url_for('static', filename='images/'+imgpath) %}
+          {% set link = 'drivers?id='+drivers[4*i+3]['driverId'] | string %}
+          {% set imgpath = drivers[4*i+3]['driverRef'] + '.jpg' %}
+          {% set imgurl = url_for('static', filename='images/drivers/'+imgpath) %}
           {% set name = drivers[4*i+3]['forename'] + " " + drivers[4*i+3]['surname'] %}
           <!--Card template from https://codepen.io/veronicadev/pen/WJyOwG-->
           <article class="card">

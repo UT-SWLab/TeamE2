@@ -24,9 +24,9 @@
   <div class="row justify-content-center">
     <div class="cards">
         {% if circuits|length > 4*i %}
-          {% set link = 'circuits?id='+circuits[4*i]['circuitId'] %}
-          {% set imgpath = circuits[4*i]['circuitId'] + '.jpg' %}
-          {% set imgurl = url_for('static', filename='images/'+imgpath) %}
+          {% set link = 'circuits?id='+circuits[4*i]['circuitId'] | string %}
+          {% set imgpath = circuits[4*i]['circuitRef'] + '.png' %}
+          {% set imgurl = url_for('static', filename='images/circuits/'+imgpath) %}
           {% set name = circuits[4*i]['name'] %}
           <!--Card template from https://codepen.io/veronicadev/pen/WJyOwG-->
           <article class="card card--1">
@@ -41,9 +41,9 @@
           </article>
         {% endif %}
         {% if circuits|length > 4*i+1%}
-          {% set link = 'circuits?id='+circuits[4*i+1]['circuitId'] %}
-          {% set imgpath = circuits[4*i+1]['circuitId'] + '.jpg' %}
-          {% set imgurl = url_for('static', filename='images/'+imgpath) %}
+          {% set link = 'circuits?id='+circuits[4*i+1]['circuitId'] | string %}
+          {% set imgpath = circuits[4*i+1]['circuitRef'] + '.png' %}
+          {% set imgurl = url_for('static', filename='images/circuits/'+imgpath) %}
           {% set name = circuits[4*i+1]['name'] %}
           <!--Card template from https://codepen.io/veronicadev/pen/WJyOwG-->
           <article class="card card--1">
@@ -58,9 +58,9 @@
           </article>
         {% endif %}
         {% if circuits|length > 4*i+2 %}
-          {% set link = 'circuits?id='+circuits[4*i+2]['circuitId'] %}
-          {% set imgpath = circuits[4*i+2]['circuitId'] + '.jpg' %}
-          {% set imgurl = url_for('static', filename='images/'+imgpath) %}
+          {% set link = 'circuits?id='+circuits[4*i+2]['circuitId'] | string %}
+          {% set imgpath = circuits[4*i+2]['circuitRef'] + '.png' %}
+          {% set imgurl = url_for('static', filename='images/circuits/'+imgpath) %}
           {% set name = circuits[4*i+2]['name'] %}
           <!--Card template from https://codepen.io/veronicadev/pen/WJyOwG-->
           <article class="card card--1">
@@ -75,9 +75,9 @@
           </article>
         {% endif %}
         {% if circuits|length > 4*i+3 %}
-          {% set link = 'circuits?id='+circuits[4*i+3]['circuitId'] %}
-          {% set imgpath = circuits[4*i+3]['circuitId'] + '.jpg' %}
-          {% set imgurl = url_for('static', filename='images/'+imgpath) %}
+          {% set link = 'circuits?id='+circuits[4*i+3]['circuitId'] | string %}
+          {% set imgpath = circuits[4*i+3]['circuitRef'] + '.png' %}
+          {% set imgurl = url_for('static', filename='images/circuits/'+imgpath) %}
           {% set name = circuits[4*i+3]['name'] %}
           <!--Card template from https://codepen.io/veronicadev/pen/WJyOwG-->
           <article class="card card--1">

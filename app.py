@@ -35,7 +35,7 @@ def driver_model():
     drivers = []
     for driver in driver_list:
         drivers.append(
-            {'driverId': str(driver['driverId']), 'driverRef': driver['driverRef'], 'surname': driver['surname'], 'forename': driver['forename']})
+            {'driverId': driver['driverId'], 'driverRef': driver['driverRef'], 'surname': driver['surname'], 'forename': driver['forename']})
     per_page = 20
     pages = int(len(drivers)/per_page)
     drivers = drivers[page*per_page: page*per_page+per_page]
@@ -50,7 +50,7 @@ def constructor_model():
     constructors = []
     for constructor in constructor_list:
         constructors.append(
-            {'constructorId': str(constructor['constructorId']), 'constructorRef':constructor['constructorRef'],
+            {'constructorId': constructor['constructorId'], 'constructorRef':constructor['constructorRef'],
              'name': constructor['name']})
     print(len(constructors))
     per_page = 20
@@ -68,7 +68,7 @@ def circuit_model():
     circuits = []
     for circuit in circuit_list:
         circuits.append(
-            {'circuitId': str(circuit['circuitId']), 'circuitRef': circuit['circuitRef'], 'name': circuit['name']})
+            {'circuitId': circuit['circuitId'], 'circuitRef': circuit['circuitRef'], 'name': circuit['name']})
     per_page = 20
     pages = int(len(circuits)/per_page)
     circuits = circuits[page*per_page: page*per_page+per_page]
@@ -87,7 +87,8 @@ def driver_instance():
     nationality = driver['nationality']
     number = driver['number']
     url = driver['url']
-    img_path = f'images/{driver_id}.jpg'
+    ref = driver['driverRef']
+    img_path = f'images/drivers/{ref}.png'
 
     # Gathers the teams for the player
     teamIds = db.results.distinct('constructorId', {'driverId': driver_id})
@@ -141,7 +142,8 @@ def constructor_instance():
     name = constructor['name']
     nation = constructor['nationality']
     url = constructor['url']
-    img_path = f'images/{constructor_id}.jpg'
+    ref = constructor['constructorRef']
+    img_path = f'images/constructors/{ref}.png'
 
     driverIds = db.results.distinct('driverId', {'constructorId': constructor_id})
     teamDrivers = []
@@ -172,7 +174,8 @@ def circuit_instance():
     country = circuit['country']
     circuit_id = circuit['circuitId']
     url = circuit['url']
-    img_path = f'images/{circuit_id}.jpg'
+    ref = circuit['circuitRef']
+    img_path = f'images/circuits/{ref}.png'
 
     races_list = db.races.find({'circuitId': int(circuit_id)})  # Get all races held at this circuit
     races = []
