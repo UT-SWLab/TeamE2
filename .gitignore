@@ -145,3 +145,9 @@ scripts/data
 *.mpeg
 *.jpg
 *.jpeg
+
+# failed download reports
+failed.txt
+
+# zip archives
+*.zip
