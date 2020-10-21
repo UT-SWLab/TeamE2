@@ -56,15 +56,14 @@ def change_dir(path):
 
 def get_images(type, root):
     # based on https://www.dataskunkworks.com/latest-posts/wikipedia-scraping-2020
-    path = f'{root}/data'
+    path = os.path.join(root, 'data')
     change_dir(path)
-    file_path = f'{path}/{type}s.csv'
+    file_path = os.path.join(path, f'{type}s.csv')
     df = pd.read_csv(file_path)
     df.fillna('', inplace=True)
 
     # print(df.head)'
-
-    path = f'{root}/images/{type}'
+    path = os.path.join(root, 'images', type)
     change_dir(path)
 
     fail_text = f'Could not find images for these {type}s with wikipedia pages:'
