@@ -35,7 +35,7 @@ def driver_model():
     drivers = []
     for driver in driver_list:
         drivers.append(
-            {'driverId': driver['driverRef'], 'surname': driver['surname'], 'forename': driver['forename']})
+            {'driverId': str(driver['driverId']), 'driverRef': driver['driverRef'], 'surname': driver['surname'], 'forename': driver['forename']})
     per_page = 20
     pages = int(len(drivers)/per_page)
     drivers = drivers[page*per_page: page*per_page+per_page]
@@ -50,7 +50,8 @@ def constructor_model():
     constructors = []
     for constructor in constructor_list:
         constructors.append(
-            {'constructorId': constructor['constructorRef'], 'name': constructor['name']})
+            {'constructorId': str(constructor['constructorId']), 'constructorRef':constructor['constructorRef'],
+             'name': constructor['name']})
     print(len(constructors))
     per_page = 20
     pages = int(len(constructors)/per_page)
@@ -67,7 +68,7 @@ def circuit_model():
     circuits = []
     for circuit in circuit_list:
         circuits.append(
-            {'circuitId': circuit['circuitRef'], 'name': circuit['name']})
+            {'circuitId': str(circuit['circuitId']), 'circuitRef': circuit['circuitRef'], 'name': circuit['name']})
     per_page = 20
     pages = int(len(circuits)/per_page)
     circuits = circuits[page*per_page: page*per_page+per_page]
