@@ -35,7 +35,7 @@ def driver_model():
     drivers = []
     for driver in driver_list:
         drivers.append(
-            {'driverId': driver['driverRef'], 'surname': driver['surname'], 'forename': driver['forename']})
+            {'driverRef': driver['driverRef'], 'surname': driver['surname'], 'forename': driver['forename'], 'nationality': driver['nationality']})
     per_page = 20
     pages = int(len(drivers)/per_page)
     drivers = drivers[page*per_page: page*per_page+per_page]
@@ -50,7 +50,7 @@ def constructor_model():
     constructors = []
     for constructor in constructor_list:
         constructors.append(
-            {'constructorId': constructor['constructorRef'], 'name': constructor['name']})
+            {'constructorRef': constructor['constructorRef'], 'name': constructor['name'], 'nationality': constructor['nationality']})
     print(len(constructors))
     per_page = 20
     pages = int(len(constructors)/per_page)
@@ -67,7 +67,7 @@ def circuit_model():
     circuits = []
     for circuit in circuit_list:
         circuits.append(
-            {'circuitId': circuit['circuitRef'], 'name': circuit['name']})
+            {'circuitRef': circuit['circuitRef'], 'name': circuit['name'], 'location': circuit['location'], 'country': circuit['country']})
     per_page = 20
     pages = int(len(circuits)/per_page)
     circuits = circuits[page*per_page: page*per_page+per_page]
@@ -131,17 +131,6 @@ def driver_instance():
                            url=url, img_path=img_path, victories=victories, latest=latest)
 
 
-@app.route('/models_constructors')
-def constructor_model():
-    constructor_list = db.constructors.find()
-    constructors = []
-    for constructor in constructor_list:
-        constructors.append({'constructorId': str(constructor['constructorId']), 'name': constructor['name'],
-                             'nationality': constructor['nationality']})
-
-    return render_template('constructors-model.html', constructors=constructors)
-
-
 @app.route('/constructors')
 def constructor_instance():
     constructor_id = int(request.args['id'])
@@ -166,17 +155,6 @@ def constructor_instance():
     wonCircuits = list(wonCircuits.values())
     return render_template('constructors-instance.html', name=name, nation=nation,
                            drivers=teamDrivers, wins=wonCircuits, img_path=img_path, url=url)
-
-
-@app.route('/models_circuits')
-def circuit_model():
-    circuit_list = db.circuits.find()
-    circuits = []
-    for circuit in circuit_list:
-        print(circuit)
-        circuits.append({'circuitId': str(circuit['circuitId']), 'circuitName': circuit['name']})
-
-    return render_template('circuits-model.html', circuits=circuits)
 
 
 # Add circuitID to results.csv to make it easier to find race participants and constructor winenrs
