@@ -25,7 +25,7 @@
     <div class="cards">
         {% if constructors|length > 4*i %}
           {% set link = 'constructors?id='+constructors[4*i]['constructorId'] | string %}
-          {% set imgpath = constructors[4*i]['constructorRef'] + '.jpg' %}
+          {% set imgpath = constructors[4*i]['constructorRef'] + '.png' %}
           {% set imgurl = url_for('static', filename='images/constructors/'+imgpath) %}
           {% set name = constructors[4*i]['name'] %}
           <!--Card template from https://codepen.io/veronicadev/pen/WJyOwG-->
@@ -42,7 +42,7 @@
         {% endif %}
         {% if constructors|length > 4*i+1%}
           {% set link = 'constructors?id='+constructors[4*i+1]['constructorId'] | string %}
-          {% set imgpath = constructors[4*i+1]['constructorRef'] + '.jpg' %}
+          {% set imgpath = constructors[4*i+1]['constructorRef'] + '.png' %}
           {% set imgurl = url_for('static', filename='images/constructors/'+imgpath) %}
           {% set name = constructors[4*i+1]['name'] %}
           <!--Card template from https://codepen.io/veronicadev/pen/WJyOwG-->
@@ -59,7 +59,7 @@
         {% endif %}
         {% if constructors|length > 4*i+2 %}
           {% set link = 'constructors?id='+constructors[4*i+2]['constructorId'] | string %}
-          {% set imgpath = constructors[4*i+2]['constructorRef'] + '.jpg' %}
+          {% set imgpath = constructors[4*i+2]['constructorRef'] + '.png' %}
           {% set imgurl = url_for('static', filename='images/constructors/'+imgpath) %}
           {% set name = constructors[4*i+2]['name'] %}
           <!--Card template from https://codepen.io/veronicadev/pen/WJyOwG-->
@@ -76,7 +76,7 @@
         {% endif %}
         {% if constructors|length > 4*i+3 %}
           {% set link = 'constructors?id='+constructors[4*i+3]['constructorId'] | string %}
-          {% set imgpath = constructors[4*i+3]['constructorRef'] + '.jpg' %}
+          {% set imgpath = constructors[4*i+3]['constructorRef'] + '.png' %}
           {% set imgurl = url_for('static', filename='images/constructors/'+imgpath) %}
           {% set name = constructors[4*i+3]['name'] %}
           <!--Card template from https://codepen.io/veronicadev/pen/WJyOwG-->
