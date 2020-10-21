@@ -16,9 +16,9 @@ client = pymongo.MongoClient(CONNECTION_STRING)
 db = client.get_database('FormulaOneDB')
 
 
-@app.route('/dbTest')
+@app.route('/dbUpdate')
 def test():
-    db.db.collection.insert_one({"name": "John"})
+    
     return "Connected to the data base!"
 
 
@@ -82,6 +82,8 @@ def driver_instance():
 
     victories = sorted(victories, key=lambda i: i['date'], reverse=True)
     latest = sorted(results, key=lambda i: i['date'], reverse=True)
+    
+    #Picks last 5 races
     latest = latest[:5]
     # victories = list(db.results.find({"driverId": driver_id, "positionOrder": 1}))
     # for victory in victories:
