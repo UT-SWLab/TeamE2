@@ -89,6 +89,7 @@ def driver_instance():
     url = driver['url']
     ref = driver['driverRef']
     img_path = f'images/drivers/{ref}.png'
+    bio = driver['bio']
 
     # Gathers the teams for the player
     teamIds = db.results.distinct('constructorId', {'driverId': driver_id})
@@ -131,7 +132,7 @@ def driver_instance():
 
     return render_template('drivers-instance.html', name=name, code=code,
                            dob=dob, nation=nationality, number=number, teams=teams,
-                           url=url, img_path=img_path, victories=victories, latest=latest)
+                           url=url, img_path=img_path, victories=victories, latest=latest, bio=bio)
 
 
 @app.route('/constructors')
@@ -144,6 +145,7 @@ def constructor_instance():
     url = constructor['url']
     ref = constructor['constructorRef']
     img_path = f'images/constructors/{ref}.png'
+    bio=constructor['bio']
 
     driverIds = db.results.distinct('driverId', {'constructorId': constructor_id})
     teamDrivers = []
@@ -158,7 +160,7 @@ def constructor_instance():
         wonCircuits[raceInfo['circuitId']] = {'circuitId': raceInfo['circuitId'], 'circuitName': raceInfo['name']}
     wonCircuits = list(wonCircuits.values())
     return render_template('constructors-instance.html', name=name, nation=nation,
-                           drivers=teamDrivers, wins=wonCircuits, img_path=img_path, url=url)
+                           drivers=teamDrivers, wins=wonCircuits, img_path=img_path, url=url, bio=bio)
 
 
 # Add circuitID to results.csv to make it easier to find race participants and constructor winenrs
@@ -175,6 +177,7 @@ def circuit_instance():
     circuit_id = circuit['circuitId']
     url = circuit['url']
     ref = circuit['circuitRef']
+    bio = circuit['bio']
     img_path = f'images/circuits/{ref}.png'
 
     races_list = db.races.find({'circuitId': int(circuit_id)})  # Get all races held at this circuit
@@ -217,7 +220,7 @@ def circuit_instance():
     return render_template('circuits-instance.html', name=name, lat=lat,
                            long=longitude, locality=location, country=country, url=url,
                            img_path=img_path, circuit_id=circuit_id, latest_results=driver_result_data,
-                           latest_race_name=latest_race_name)
+                           latest_race_name=latest_race_name, bio=bio)
 
 
 @app.route('/')
