@@ -36,7 +36,13 @@ With the environment active, install the dependencies from the `requirements.txt
 
 `pip3 install -r requirements.txt`
 
-## Deploying the Website:
+## Deploying the Website Locally:
+Before deploying the website, you will need to retrieve and unpack the `images.zip` archive in the 
+`static/images` directory. `images.zip` contains all of our static images, and it is available from the
+Google Drive of our shared `utairlab@gmail.com` account.
+Use `source env/bin/activate` to activate the environment and run the app with `python3 app.py`
+
+## Deploying the Website on Google Cloud:
 You will need credentials for `utairlab@gmail.com`. Check the pinned post in the `#backend`  Slack channel for credentials.
 
 You will need the `gcloud` binary, [click me to learn how to gcloud](https://cloud.google.com/sdk/docs/install).
