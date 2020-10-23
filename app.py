@@ -15,10 +15,9 @@ CONNECTION_STRING = "mongodb+srv://" + dbUsername + ":" + dbPassword + "@formula
 client = pymongo.MongoClient(CONNECTION_STRING)
 db = client.get_database('FormulaOneDB')
 
-
-@app.route('/dbUpdate')
+@app.route('/dbTest')
 def test():
-    
+    db.db.collection.insert_one({"name": "John"})
     return "Connected to the data base!"
 
 
@@ -29,13 +28,51 @@ def about():
 
 @app.route('/models_drivers')
 def driver_model():
-    # driverId, last name first name, picture
+
+    page = request.args.get('page', 1, type=int)
+    page = page - 1
     driver_list = db.drivers.find()
     drivers = []
     for driver in driver_list:
         drivers.append(
-            {'driverId': str(driver['driverId']), 'surname': driver['surname'], 'forename': driver['forename']})
-    return render_template('drivers-model.html', drivers=drivers)
+            {'driverId': driver['driverId'], 'driverRef': driver['driverRef'], 'surname': driver['surname'], 'forename': driver['forename']})
+    per_page = 20
+    pages = int(len(drivers)/per_page)
+    drivers = drivers[page*per_page: page*per_page+per_page]
+    return render_template('drivers-model.html', drivers=drivers, pages=pages, page=page)
+
+
+@app.route('/models_constructors')
+def constructor_model():
+    page = request.args.get('page', 1, type=int)
+    page = page - 1
+    constructor_list = db.constructors.find()
+    constructors = []
+    for constructor in constructor_list:
+        constructors.append(
+            {'constructorId': constructor['constructorId'], 'constructorRef':constructor['constructorRef'],
+             'name': constructor['name']})
+    print(len(constructors))
+    per_page = 20
+    pages = int(len(constructors)/per_page)
+    constructors = constructors[page*per_page: page*per_page+per_page]
+    print(constructors)
+    return render_template('constructors-model.html', constructors=constructors, pages=pages, page=page)
+
+
+@app.route('/models_circuits')
+def circuit_model():
+    page = request.args.get('page', 1, type=int)
+    page = page - 1
+    circuit_list = db.circuits.find()
+    circuits = []
+    for circuit in circuit_list:
+        circuits.append(
+            {'circuitId': circuit['circuitId'], 'circuitRef': circuit['circuitRef'], 'name': circuit['name']})
+    per_page = 20
+    pages = int(len(circuits)/per_page)
+    circuits = circuits[page*per_page: page*per_page+per_page]
+    return render_template('circuits-model.html', circuits=circuits, pages=pages, page=page)
 
 
 @app.route('/drivers')
@@ -50,7 +87,9 @@ def driver_instance():
     nationality = driver['nationality']
     number = driver['number']
     url = driver['url']
-    img_path = f'images/{driver_id}.jpg'
+    ref = driver['driverRef']
+    img_path = f'images/drivers/{ref}.png'
+    bio = driver['bio']
 
     # Gathers the teams for the player
     teamIds = db.results.distinct('constructorId', {'driverId': driver_id})
@@ -82,8 +121,6 @@ def driver_instance():
 
     victories = sorted(victories, key=lambda i: i['date'], reverse=True)
     latest = sorted(results, key=lambda i: i['date'], reverse=True)
-    
-    #Picks last 5 races
     latest = latest[:5]
     # victories = list(db.results.find({"driverId": driver_id, "positionOrder": 1}))
     # for victory in victories:
@@ -95,18 +132,7 @@ def driver_instance():
 
     return render_template('drivers-instance.html', name=name, code=code,
                            dob=dob, nation=nationality, number=number, teams=teams,
-                           url=url, img_path=img_path, victories=victories, latest=latest)
-
-
-@app.route('/models_constructors')
-def constructor_model():
-    constructor_list = db.constructors.find()
-    constructors = []
-    for constructor in constructor_list:
-        constructors.append({'constructorId': str(constructor['constructorId']), 'name': constructor['name'],
-                             'nationality': constructor['nationality']})
-
-    return render_template('constructors-model.html', constructors=constructors)
+                           url=url, img_path=img_path, victories=victories, latest=latest, bio=bio)
 
 
 @app.route('/constructors')
@@ -117,7 +143,9 @@ def constructor_instance():
     name = constructor['name']
     nation = constructor['nationality']
     url = constructor['url']
-    img_path = f'images/{constructor_id}.jpg'
+    ref = constructor['constructorRef']
+    img_path = f'images/constructors/{ref}.png'
+    bio=constructor['bio']
 
     driverIds = db.results.distinct('driverId', {'constructorId': constructor_id})
     teamDrivers = []
@@ -132,18 +160,7 @@ def constructor_instance():
         wonCircuits[raceInfo['circuitId']] = {'circuitId': raceInfo['circuitId'], 'circuitName': raceInfo['name']}
     wonCircuits = list(wonCircuits.values())
     return render_template('constructors-instance.html', name=name, nation=nation,
-                           drivers=teamDrivers, wins=wonCircuits, img_path=img_path, url=url)
-
-
-@app.route('/models_circuits')
-def circuit_model():
-    circuit_list = db.circuits.find()
-    circuits = []
-    for circuit in circuit_list:
-        print(circuit)
-        circuits.append({'circuitId': str(circuit['circuitId']), 'circuitName': circuit['name']})
-
-    return render_template('circuits-model.html', circuits=circuits)
+                           drivers=teamDrivers, wins=wonCircuits, img_path=img_path, url=url, bio=bio)
 
 
 # Add circuitID to results.csv to make it easier to find race participants and constructor winenrs
@@ -159,7 +176,9 @@ def circuit_instance():
     country = circuit['country']
     circuit_id = circuit['circuitId']
     url = circuit['url']
-    img_path = f'images/{circuit_id}.jpg'
+    ref = circuit['circuitRef']
+    bio = circuit['bio']
+    img_path = f'images/circuits/{ref}.png'
 
     races_list = db.races.find({'circuitId': int(circuit_id)})  # Get all races held at this circuit
     races = []
@@ -201,7 +220,7 @@ def circuit_instance():
     return render_template('circuits-instance.html', name=name, lat=lat,
                            long=longitude, locality=location, country=country, url=url,
                            img_path=img_path, circuit_id=circuit_id, latest_results=driver_result_data,
-                           latest_race_name=latest_race_name)
+                           latest_race_name=latest_race_name, bio=bio)
 
 
 @app.route('/')
