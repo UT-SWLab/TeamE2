@@ -40,6 +40,10 @@ ul{
     padding-left: 0;
 }
 
+li{
+    padding-left: 0;
+}
+
 thead{
     background-color: #dc3546;
     /* same as "navbar" */

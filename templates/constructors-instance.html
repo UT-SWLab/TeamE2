@@ -18,30 +18,27 @@
 
     <div class="row">
         <div class="column">
-            <span class="data-header">Nationality: &nbsp;</span>
+            <span class="data-subtext">{{bio}}</span>
+            <p class="data-subtext"><a href="{{ url }}">Read More</a></p>
+            <span class="data-header">Nationality:&nbsp;</span>
             <span class="data-text">{{nation}}</span>
         </div>
-    </div>
-    <div class="row">
-        <span class="data-subtext">{{bio}}}</span>
-        <p class="data-subtext"><a href="{{ url }}">Read More</a></p>
+
     </div>
     <div class="row">
         <div class="column">
-            <p class="data-header">Drivers </p>
+            <span class="data-header">Current Drivers:&nbsp;</span>
+            {% if drivers is defined and drivers %}
+            <br>
             {% for driver in drivers %}
-            <ul class="list-group">
-                <li class="list-group-item data-subtext">{{driver['name']}}</li>
+            <ul>
+                <li class="data-text"><a href="{{ 'drivers?id='+driver['driverId'] | string }}">{{ driver['name'] }}</a></li>
             </ul>
             {% endfor %}
+            {% else %}
+            <span class="data-text">None</span>
+            {% endif %}
             <p class="data-header">Circuits Won</p>
-<!--
-            {% for win in wins %}
-            <ul class="list-group">
-                <li class="list-group-item data-subtext">{{win['circuitName']}}</li>
-            </ul>
--->
-<!--            {% endfor %}-->
         </div>
     </div>
 </div>
