@@ -90,14 +90,8 @@ def driver_instance():
     ref = driver['driverRef']
     img_path = f'images/drivers/{ref}.png'
     bio = driver['bio']
-
-    # Gathers the teams for the player
-    teamIds = db.results.distinct('constructorId', {'driverId': driver_id})
-    teams = []
-    for team in teamIds:
-        team = db.constructors.find_one({'constructorId': team})
-        teams.append({'constructorId': team['constructorId'], 'name': team['name']})
-    # print(teams)
+    teams = driver['all_constructors']
+    cur_constructor = driver['constructor']
 
     victories = []
     results = []
@@ -107,32 +101,22 @@ def driver_instance():
                         'position': result['positionOrder'], 'points': result['points'],
                         'laps': result['laps'], 'time': result['time'],
                         'fastestLap': result['fastestLap'], 'rank': result['rank'],
-                        'fastestLapTime': result['fastestLapTime'], 'date': "", 'race_name': "",
-                        'constructor_name': ""})
+                        'fastestLapTime': result['fastestLapTime'], 'date': result['raceDate'],
+                        'raceName': result['raceName'],
+                        'constructorName': result['constructorName'], 'driverName': result['driverName']})
 
     for result in results:
-        race = db.races.find_one({'raceId': result['raceId']})
-        constructor = db.constructors.find_one({"constructorId": result['constructorId']})
-        result['date'] = race['date']
-        result['race_name'] = str(race['year']) + " " + race['name']
-        result['constructor_name'] = constructor['name']
         if result['position'] == 1:
             victories.append(result)
 
     victories = sorted(victories, key=lambda i: i['date'], reverse=True)
     latest = sorted(results, key=lambda i: i['date'], reverse=True)
-    latest = latest[:5]
-    # victories = list(db.results.find({"driverId": driver_id, "positionOrder": 1}))
-    # for victory in victories:
-    #     constructor = db.constructors.find_one({"constructorId": victory['constructorId']})
-    #     victory['constructorId'] = constructor['name']
-    #
-    #     race = db.races.find_one({"raceId": victory['raceId']})
-    #     victory['raceId'] = str(race['year']) + " " + race['name']
+    latest = latest[:5]  # List the driver's 5 latest races
 
     return render_template('drivers-instance.html', name=name, code=code,
                            dob=dob, nation=nationality, number=number, teams=teams,
-                           url=url, img_path=img_path, victories=victories, latest=latest, bio=bio)
+                           url=url, img_path=img_path, victories=victories, latest=latest, bio=bio,
+                           constructor=cur_constructor)
 
 
 @app.route('/constructors')
@@ -145,13 +129,12 @@ def constructor_instance():
     url = constructor['url']
     ref = constructor['constructorRef']
     img_path = f'images/constructors/{ref}.png'
-    bio=constructor['bio']
+    bio = constructor['bio']
 
-    driverIds = db.results.distinct('driverId', {'constructorId': constructor_id})
-    teamDrivers = []
-    for driver in driverIds:
-        driver = db.drivers.find_one({'driverId': driver})
-        teamDrivers.append({'driverId': driver['driverId'], 'name': driver['forename'] + " " + driver['surname']})
+    drivers = db.drivers.find({"constructor.id": constructor_id})
+    team_drivers = []
+    for driver in drivers:
+        team_drivers.append({'driverId': driver['driverId'], 'name': driver['forename'] + " " + driver['surname']})
 
     victoryRaces = db.results.find({'constructorId': constructor_id, 'positionOrder': 1})
     wonCircuits = defaultdict(list)
@@ -160,7 +143,7 @@ def constructor_instance():
         wonCircuits[raceInfo['circuitId']] = {'circuitId': raceInfo['circuitId'], 'circuitName': raceInfo['name']}
     wonCircuits = list(wonCircuits.values())
     return render_template('constructors-instance.html', name=name, nation=nation,
-                           drivers=teamDrivers, wins=wonCircuits, img_path=img_path, url=url, bio=bio)
+                           drivers=team_drivers, wins=wonCircuits, img_path=img_path, url=url, bio=bio)
 
 
 # Add circuitID to results.csv to make it easier to find race participants and constructor winenrs
@@ -201,21 +184,13 @@ def circuit_instance():
     driver_result_data = []
     for result in results:
         driver_result_data.append(
-            {'driverId': result['driverId'], 'driverName': '', 'position': result['positionOrder'],
+            {'driverId': result['driverId'], 'driverName': result['driverName'], 'position': result['positionOrder'],
              'points': result['points'], 'laps': result['laps'], 'time': result['time'],
              'constructorId': result['constructorId'], 'fastestLapTime': result['fastestLapTime'],
              'fastestLapSpeed': result['fastestLapSpeed'], 'fastestLap': result['fastestLap'],
-             'rank': result['rank'], 'constructorName': ''})
+             'rank': result['rank'], 'constructorName': result['constructorName']})
 
     driver_result_data = sorted(driver_result_data, key=lambda i: i['position'])
-    # Find the name of the drivers
-    for driver_result in driver_result_data:
-        driver = db.drivers.find_one({'driverId': driver_result['driverId']})  # Should come up with a faster way
-        # to find a driver's name given their Id besides querying the db
-        constructor = db.constructors.find_one({'constructorId': driver_result['constructorId']})  # Should come up
-        # with a faster way to find a constructor's name given their ID besides querying the db
-        driver_result['driverName'] = driver['forename'] + " " + driver['surname']
-        driver_result['constructorName'] = constructor['name']
 
     return render_template('circuits-instance.html', name=name, lat=lat,
                            long=longitude, locality=location, country=country, url=url,

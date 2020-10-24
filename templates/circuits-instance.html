@@ -20,15 +20,14 @@
 
     <div class="row">
         <div class="column">
+            <span class="data-subtext">{{ bio }}</span>
+            <p class="data-subtext"><a href="{{ url }}">Read More</a></p>
             <span class="data-header">Location: &nbsp;</span>
             <span class="data-text">{{ locality }}, {{ country }}</span>
             <p class="data-subtext">Coordinates: ({{ lat }}, {{ long }})</p>
         </div>
     </div>
-    <div class="row">
-        <span class="data-subtext">{{ bio }}</span>
-        <p class="data-subtext"><a href="{{ url }}">Read More</a></p>
-    </div>
+
     <div class="row">
         <div class="column">
             <span class="data-header">Latest Race: </span>
@@ -53,7 +52,7 @@
                         <tr>
                             {% for driver in latest_results %}
                             <td>{{ driver['position'] }}</td>
-                            <td> {{ driver['driverName'] }} </td>
+                            <td><a href="{{ 'drivers?id='+driver['driverId'] | string }}">{{ driver['driverName'] }}</a></td>
                             <td> {{ driver['constructorName'] }} </td>
                             <td> {{ driver['points'] }} </td>
                             <td> {{ driver['time'] }} </td>
