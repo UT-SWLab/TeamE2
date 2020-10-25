@@ -95,6 +95,15 @@ body, html {
   font-family: 'Roboto Slab', serif;
 }
 
+.card__text {
+  font-family: 'Raleway', sans-serif;
+  text-transform: uppercase;
+  font-size: 12px;
+  font-weight: 500;
+  padding-bottom: 10px;
+  color: #868686;
+}
+
 .card:hover .card__img--hover {
   height: 100%;
   opacity: 1;

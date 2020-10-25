@@ -28,6 +28,8 @@
           {% set imgpath = constructors[4*i]['constructorRef'] + '.png' %}
           {% set imgurl = url_for('static', filename='images/constructors/'+imgpath) %}
           {% set name = constructors[4*i]['name'] %}
+          {% set topDriver = constructors[4*i]['topDriver'] %}
+          {% set nationality = constructors[4*i]['nationality'] %}
           <!--Card template from https://codepen.io/veronicadev/pen/WJyOwG-->
           <article class="card card--1">
           <div class="card__img" style="background-image: url({{imgurl}})"></div>
@@ -37,6 +39,8 @@
           <div class="card__info">
             <span class="card__category"> Constructor</span>
             <h3 class="card__title">{{ name }}</h3>
+            <p class="card__text">{{ nationality }}</p>
+            <p class="card__text">{{ topDriver }}</p>
           </div>
           </article>
         {% endif %}
@@ -45,6 +49,8 @@
           {% set imgpath = constructors[4*i+1]['constructorRef'] + '.png' %}
           {% set imgurl = url_for('static', filename='images/constructors/'+imgpath) %}
           {% set name = constructors[4*i+1]['name'] %}
+          {% set topDriver = constructors[4*i+1]['topDriver'] %}
+          {% set nationality = constructors[4*i+1]['nationality'] %}
           <!--Card template from https://codepen.io/veronicadev/pen/WJyOwG-->
           <article class="card card--1">
             <div class="card__img" style="background-image: url({{imgurl}})"></div>
@@ -54,6 +60,8 @@
             <div class="card__info">
             <span class="card__category"> Constructor</span>
             <h3 class="card__title">{{ name }}</h3>
+            <p class="card__text">{{ nationality }}</p>
+            <p class="card__text">{{ topDriver }}</p>
             </div>
           </article>
         {% endif %}
@@ -62,6 +70,8 @@
           {% set imgpath = constructors[4*i+2]['constructorRef'] + '.png' %}
           {% set imgurl = url_for('static', filename='images/constructors/'+imgpath) %}
           {% set name = constructors[4*i+2]['name'] %}
+          {% set topDriver = constructors[4*i+2]['topDriver'] %}
+          {% set nationality = constructors[4*i+2]['nationality'] %}
           <!--Card template from https://codepen.io/veronicadev/pen/WJyOwG-->
           <article class="card card--1">
             <div class="card__img" style="background-image: url({{imgurl}})"></div>
@@ -71,6 +81,8 @@
             <div class="card__info">
             <span class="card__category"> Constructor</span>
             <h3 class="card__title">{{ name }}</h3>
+            <p class="card__text">{{ nationality }}</p>
+            <p class="card__text">{{ topDriver }}</p>
             </div>
           </article>
         {% endif %}
@@ -79,6 +91,8 @@
           {% set imgpath = constructors[4*i+3]['constructorRef'] + '.png' %}
           {% set imgurl = url_for('static', filename='images/constructors/'+imgpath) %}
           {% set name = constructors[4*i+3]['name'] %}
+          {% set topDriver = constructors[4*i+3]['topDriver'] %}
+          {% set nationality = constructors[4*i+3]['nationality'] %}
           <!--Card template from https://codepen.io/veronicadev/pen/WJyOwG-->
           <article class="card card--1">
             <div class="card__img" style="background-image: url({{imgurl}})"></div>
@@ -88,6 +102,8 @@
             <div class="card__info">
             <span class="card__category"> Constructor</span>
             <h3 class="card__title">{{ name }}</h3>
+            <p class="card__text">{{ nationality }}</p>
+            <p class="card__text">{{ topDriver }}</p>
             </div>
           </article>
         {% endif %}

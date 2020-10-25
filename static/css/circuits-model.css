@@ -30,19 +30,18 @@
     background-position: center;
     background-repeat: no-repeat;
     width: 100%;
-    height: 180px;
     min-width: 350px;
     border-top-left-radius: 12px;
     border-top-right-radius: 12px;
   }
   
+
   .card__img--hover {
     transition: 0.2s all ease-out;
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
     width: 100%;
-    height: 180px;
     min-width: 350px;
     position: absolute;
     border-top-left-radius: 12px;
@@ -86,6 +85,15 @@
     color: #868686;
   }
   
+  .card__text {
+    font-family: 'Raleway', sans-serif;
+    text-transform: uppercase;
+    font-size: 12px;
+    font-weight: 500;
+    padding-bottom: 10px;
+    color: #868686;
+  }
+
   .card__title {
     margin-top: 5px;
     margin-bottom: 10px;
