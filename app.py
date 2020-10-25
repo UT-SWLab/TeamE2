@@ -15,6 +15,7 @@ CONNECTION_STRING = "mongodb+srv://" + dbUsername + ":" + dbPassword + "@formula
 client = pymongo.MongoClient(CONNECTION_STRING)
 db = client.get_database('FormulaOneDB')
 
+
 @app.route('/dbTest')
 def test():
     db.db.collection.insert_one({"name": "John"})
@@ -28,17 +29,17 @@ def about():
 
 @app.route('/models_drivers')
 def driver_model():
-
     page = request.args.get('page', 1, type=int)
     page = page - 1
     driver_list = db.drivers.find()
     drivers = []
     for driver in driver_list:
         drivers.append(
-            {'driverId': driver['driverId'], 'driverRef': driver['driverRef'], 'surname': driver['surname'], 'forename': driver['forename']})
+            {'driverId': driver['driverId'], 'driverRef': driver['driverRef'], 'surname': driver['surname'],
+             'forename': driver['forename']})
     per_page = 20
-    pages = int(len(drivers)/per_page)
-    drivers = drivers[page*per_page: page*per_page+per_page]
+    pages = int(len(drivers) / per_page)
+    drivers = drivers[page * per_page: page * per_page + per_page]
     return render_template('drivers-model.html', drivers=drivers, pages=pages, page=page)
 
 
@@ -50,12 +51,12 @@ def constructor_model():
     constructors = []
     for constructor in constructor_list:
         constructors.append(
-            {'constructorId': constructor['constructorId'], 'constructorRef':constructor['constructorRef'],
+            {'constructorId': constructor['constructorId'], 'constructorRef': constructor['constructorRef'],
              'name': constructor['name']})
     print(len(constructors))
     per_page = 20
-    pages = int(len(constructors)/per_page)
-    constructors = constructors[page*per_page: page*per_page+per_page]
+    pages = int(len(constructors) / per_page)
+    constructors = constructors[page * per_page: page * per_page + per_page]
     print(constructors)
     return render_template('constructors-model.html', constructors=constructors, pages=pages, page=page)
 
@@ -70,8 +71,8 @@ def circuit_model():
         circuits.append(
             {'circuitId': circuit['circuitId'], 'circuitRef': circuit['circuitRef'], 'name': circuit['name']})
     per_page = 20
-    pages = int(len(circuits)/per_page)
-    circuits = circuits[page*per_page: page*per_page+per_page]
+    pages = int(len(circuits) / per_page)
+    circuits = circuits[page * per_page: page * per_page + per_page]
     return render_template('circuits-model.html', circuits=circuits, pages=pages, page=page)
 
 
@@ -111,7 +112,8 @@ def driver_instance():
 
     victories = sorted(victories, key=lambda i: i['date'], reverse=True)
     latest = sorted(results, key=lambda i: i['date'], reverse=True)
-    latest = latest[:5]  # List the driver's 5 latest races
+    if len(latest) >= 5:
+        latest = latest[:5]  # List the driver's 5 latest races
 
     return render_template('drivers-instance.html', name=name, code=code,
                            dob=dob, nation=nationality, number=number, teams=teams,
@@ -130,20 +132,29 @@ def constructor_instance():
     ref = constructor['constructorRef']
     img_path = f'images/constructors/{ref}.png'
     bio = constructor['bio']
+    top_driver = {'id': constructor['topDriverId'], 'name': constructor['topDriverName'],
+                  'points': constructor['topDriverPoints']}
 
     drivers = db.drivers.find({"constructor.id": constructor_id})
     team_drivers = []
     for driver in drivers:
         team_drivers.append({'driverId': driver['driverId'], 'name': driver['forename'] + " " + driver['surname']})
 
-    victoryRaces = db.results.find({'constructorId': constructor_id, 'positionOrder': 1})
-    wonCircuits = defaultdict(list)
-    for victoryRace in victoryRaces:
-        raceInfo = db.races.find_one({'raceId': victoryRace['raceId']})
-        wonCircuits[raceInfo['circuitId']] = {'circuitId': raceInfo['circuitId'], 'circuitName': raceInfo['name']}
-    wonCircuits = list(wonCircuits.values())
+    wins = []
+    db_victories = db.constructor_standings.find({'constructorId': constructor_id, 'position': 1})
+
+    for v in db_victories:
+        wins.append({'raceName': v['raceName'], 'date': v['raceDate'], 'circuitId': v['circuitId'],
+                     'circuitName': v['circuitName'], 'points': v['points']})
+
+    wins = sorted(wins, key=lambda i: i['date'], reverse=True)
+    total_wins = len(wins)
+    if len(wins) >= 5:
+        wins = wins[:5]  # Take the 5 latest victories
+
     return render_template('constructors-instance.html', name=name, nation=nation,
-                           drivers=team_drivers, wins=wonCircuits, img_path=img_path, url=url, bio=bio)
+                           drivers=team_drivers, wins=wins, img_path=img_path, url=url, bio=bio,
+                           total_wins=total_wins, top_driver=top_driver)
 
 
 # Add circuitID to results.csv to make it easier to find race participants and constructor winenrs
