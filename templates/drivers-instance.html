@@ -30,6 +30,8 @@
     <img src="{{ url_for('static', filename=img_path) }}" gs height="30%" width="30%">
     <div class="row">
         <div class="column">
+            <span class="data-subtext">{{ bio }}</span>
+            <p class="data-subtext"><a href="{{ url }}">Read More</a></p>
             <span class="data-header">Date of Birth:&nbsp;</span>
             <span class="data-text">{{ dob }}</span>
             <br>
@@ -40,10 +42,25 @@
             <!-- Need to check because only new drivers have a number -->
             <span class="data-header">Number:&nbsp;</span>
             <span class="data-text">{{ number }}</span>
-            {% endif %}
             <br>
-            <span class="data-subtext">{{ bio }}</span>
-            <p class="data-subtext"><a href="{{ url }}">Read More</a></p>
+            {% endif %}
+            <span class="data-header">Current Constructor:&nbsp;</span>
+            <span class="data-text"><a href="{{ 'constructors?id='+constructor['id'] | string }}">{{ constructor['name'] }}</a></span>
+            <br>
+            <span class="data-header">Past Constructors:&nbsp;</span>
+            {% if teams|length > 1 %}
+            <ul>
+                {% for team in teams[1:] %}
+                <!-- Skip first (current) construcotr -->
+
+                <li class="data-text"><a href="{{ 'constructors?id='+team['id'] | string }}">{{ team['name'] }}</a></li>
+
+                {% endfor %}
+                {% else %}
+                <span class="data-text">None</span>
+                <br>
+                {% endif %}
+            </ul>
         </div>
     </div>
     <div class="row">
@@ -66,9 +83,9 @@
                     <tbody>
                         <tr>
                             {% for race in latest %}
-                            <td> {{ race['race_name'] }} </td>
+                            <td> {{ race['raceName'] }} </td>
                             <td> {{ race['position'] }} </td>
-                            <td> {{ race['constructor_name'] }} </td>
+                            <td><a href="{{ 'constructors?id='+race['constructorId'] | string }}">{{ race['constructorName'] }}</a></td>
                             <td> {{ race['points'] }} </td>
                             <td> {{ race['time'] }} </td>
                             <td> {{ race['rank'] }} </td>
@@ -98,8 +115,8 @@
                     <tbody>
                         <tr>
                             {% for victory in victories %}
-                            <td> {{ victory['race_name'] }} </td>
-                            <td> {{ victory['constructor_name'] }} </td>
+                            <td> {{ victory['raceName'] }} </td>
+                            <td><a href="{{ 'constructors?id='+victory['constructorId'] | string }}">{{ victory['constructorName'] }}</a></td>
                             <td> {{ victory['points'] }} </td>
                             <td> {{ victory['time'] }} </td>
                             <td> {{ victory['rank'] }} </td>
