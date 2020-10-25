@@ -28,16 +28,20 @@
           {% set imgpath = circuits[4*i]['circuitRef'] + '.png' %}
           {% set imgurl = url_for('static', filename='images/circuits/'+imgpath) %}
           {% set name = circuits[4*i]['name'] %}
+          {% set country = circuits[4*i]['country']%}
+          {% set location = circuits[4*i]['location']%}
           <!--Card template from https://codepen.io/veronicadev/pen/WJyOwG-->
           <article class="card card--1">
           <div class="card__img" style="background-image: url({{imgurl}})"></div>
           <a href={{link}} class="card_link">
             <div class="card__img--hover" style="background-image: url({{imgurl}})"></div>
             </a>
-          <div class="card__info">
-            <span class="card__category"> Circuit</span>
-            <h3 class="card__title">{{ name }}</h3>
-          </div>
+            <div class="card__info">
+              <span class="card__category"> Circuit</span>
+              <h3 class="card__title">{{ name }}</h3>
+              <p class="card__text">{{ country }} , {{ location}}</p>
+              <p class="card__text">Most Recent Race</p>
+              </div>
           </article>
         {% endif %}
         {% if circuits|length > 4*i+1%}
@@ -45,6 +49,8 @@
           {% set imgpath = circuits[4*i+1]['circuitRef'] + '.png' %}
           {% set imgurl = url_for('static', filename='images/circuits/'+imgpath) %}
           {% set name = circuits[4*i+1]['name'] %}
+          {% set country = circuits[4*i+1]['country']%}
+          {% set location = circuits[4*i+1]['location']%}
           <!--Card template from https://codepen.io/veronicadev/pen/WJyOwG-->
           <article class="card card--1">
             <div class="card__img" style="background-image: url({{imgurl}})"></div>
@@ -52,8 +58,10 @@
             <div class="card__img--hover" style="background-image: url({{imgurl}})"></div>
             </a>
             <div class="card__info">
-            <span class="card__category"> Circuit</span>
-            <h3 class="card__title">{{ name }}</h3>
+              <span class="card__category"> Circuit</span>
+              <h3 class="card__title">{{ name }}</h3>
+              <p class="card__text">{{ country }} , {{ location}}</p>
+              <p class="card__text">Most Recent Race</p>
             </div>
           </article>
         {% endif %}
@@ -62,6 +70,8 @@
           {% set imgpath = circuits[4*i+2]['circuitRef'] + '.png' %}
           {% set imgurl = url_for('static', filename='images/circuits/'+imgpath) %}
           {% set name = circuits[4*i+2]['name'] %}
+          {% set country = circuits[4*i+2]['country']%}
+          {% set location = circuits[4*i+2]['location']%}
           <!--Card template from https://codepen.io/veronicadev/pen/WJyOwG-->
           <article class="card card--1">
             <div class="card__img" style="background-image: url({{imgurl}})"></div>
@@ -69,8 +79,10 @@
             <div class="card__img--hover" style="background-image: url({{imgurl}})"></div>
             </a>
             <div class="card__info">
-            <span class="card__category"> Circuit</span>
-            <h3 class="card__title">{{ name }}</h3>
+              <span class="card__category"> Circuit</span>
+              <h3 class="card__title">{{ name }}</h3>
+              <p class="card__text">{{ country }} , {{ location}}</p>
+              <p class="card__text">Most Recent Race</p>
             </div>
           </article>
         {% endif %}
@@ -79,6 +91,8 @@
           {% set imgpath = circuits[4*i+3]['circuitRef'] + '.png' %}
           {% set imgurl = url_for('static', filename='images/circuits/'+imgpath) %}
           {% set name = circuits[4*i+3]['name'] %}
+          {% set country = circuits[4*i+3]['country']%}
+          {% set location = circuits[4*i+3]['location']%}
           <!--Card template from https://codepen.io/veronicadev/pen/WJyOwG-->
           <article class="card card--1">
             <div class="card__img" style="background-image: url({{imgurl}})"></div>
@@ -86,8 +100,10 @@
             <div class="card__img--hover" style="background-image: url({{imgurl}})"></div>
             </a>
             <div class="card__info">
-            <span class="card__category"> Circuit</span>
-            <h3 class="card__title">{{ name }}</h3>
+              <span class="card__category"> Circuit</span>
+              <h3 class="card__title">{{ name }}</h3>
+              <p class="card__text">{{ country }} , {{ location}}</p>
+              <p class="card__text">Most Recent Race</p>
             </div>
           </article>
         {% endif %}

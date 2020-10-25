@@ -28,6 +28,8 @@
           {% set imgpath = drivers[4*i]['driverRef'] + '.png' %}
           {% set imgurl = url_for('static', filename='images/drivers/'+imgpath) %}
           {% set name = drivers[4*i]['forename'] + " " + drivers[4*i]['surname'] %}
+          {% set nationality = drivers[4*i]['nationality'] %}
+          {% set team = drivers[4*i]['constructor']%}
           <!--Card template from https://codepen.io/veronicadev/pen/WJyOwG-->
           <article class="card">
           <div class="card__img" style="background-image: url({{imgurl}})"></div>
@@ -37,6 +39,8 @@
           <div class="card__info">
             <span class="card__category"> Driver</span>
             <h3 class="card__title">{{ name }}</h3>
+            <p class="card__text">{{ nationality }}</p>
+            <p class="card__text">{{ team }}</p>
           </div>
           </article>
         {% endif %}
@@ -45,6 +49,8 @@
           {% set imgpath = drivers[4*i+1]['driverRef'] + '.png' %}
           {% set imgurl = url_for('static', filename='images/drivers/'+imgpath) %}
           {% set name = drivers[4*i+1]['forename'] + " " + drivers[4*i+1]['surname'] %}
+          {% set nationality = drivers[4*i]['nationality'] %}
+          {% set team = drivers[4*i]['constructor']%}
           <!--Card template from https://codepen.io/veronicadev/pen/WJyOwG-->
           <article class="card">
             <div class="card__img" style="background-image: url({{imgurl}})"></div>
@@ -54,6 +60,8 @@
             <div class="card__info">
             <span class="card__category"> Driver</span>
             <h3 class="card__title">{{ name }}</h3>
+            <p class="card__text">{{ nationality }}</p>
+            <p class="card__text">{{ team }}</p>
             </div>
           </article>
         {% endif %}
@@ -62,6 +70,8 @@
           {% set imgpath = drivers[4*i+2]['driverRef'] + '.png' %}
           {% set imgurl = url_for('static', filename='images/drivers/'+imgpath) %}
           {% set name = drivers[4*i+2]['forename'] + " " + drivers[4*i+2]['surname'] %}
+          {% set nationality = drivers[4*i]['nationality']%}
+          {% set team = drivers[4*i]['constructor']%}
           <!--Card template from https://codepen.io/veronicadev/pen/WJyOwG-->
           <article class="card">
             <div class="card__img" style="background-image: url({{imgurl}})"></div>
@@ -71,6 +81,8 @@
             <div class="card__info">
             <span class="card__category"> Driver</span>
             <h3 class="card__title">{{ name }}</h3>
+            <p class="card__text">{{ nationality }}</p>
+            <p class="card__text">{{ team }}</p>
             </div>
           </article>
         {% endif %}
@@ -79,6 +91,8 @@
           {% set imgpath = drivers[4*i+3]['driverRef'] + '.png' %}
           {% set imgurl = url_for('static', filename='images/drivers/'+imgpath) %}
           {% set name = drivers[4*i+3]['forename'] + " " + drivers[4*i+3]['surname'] %}
+          {% set nationality = drivers[4*i]['nationality']%}
+          {% set team = drivers[4*i]['constructor']%}
           <!--Card template from https://codepen.io/veronicadev/pen/WJyOwG-->
           <article class="card">
             <div class="card__img" style="background-image: url({{imgurl}})"></div>
@@ -88,6 +102,8 @@
             <div class="card__info">
             <span class="card__category"> Driver</span>
             <h3 class="card__title">{{ name }}</h3>
+            <p class="card__text">{{ nationality }}</p>
+            <p class="card__text">{{ team }}</p>
             </div>
           </article>
         {% endif %}
