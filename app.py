@@ -146,19 +146,31 @@ def constructor_instance():
     ref = constructor['constructorRef']
     img_path = f'images/constructors/{ref}.png'
     bio=constructor['bio']
+    drivers = db.drivers.find({},'all_constructors' : )
 
     driverIds = db.results.distinct('driverId', {'constructorId': constructor_id})
+
     teamDrivers = []
     for driver in driverIds:
         driver = db.drivers.find_one({'driverId': driver})
         teamDrivers.append({'driverId': driver['driverId'], 'name': driver['forename'] + " " + driver['surname']})
 
     victoryRaces = db.results.find({'constructorId': constructor_id, 'positionOrder': 1})
+
+    #Most Recent Race
+        #List 5
+    #Upcoming Races
+        #List 5
+
+    #Total Wins
     wonCircuits = defaultdict(list)
     for victoryRace in victoryRaces:
         raceInfo = db.races.find_one({'raceId': victoryRace['raceId']})
         wonCircuits[raceInfo['circuitId']] = {'circuitId': raceInfo['circuitId'], 'circuitName': raceInfo['name']}
     wonCircuits = list(wonCircuits.values())
+    print(wonCircuits)
+
+    #Find Driver with most wins
     return render_template('constructors-instance.html', name=name, nation=nation,
                            drivers=teamDrivers, wins=wonCircuits, img_path=img_path, url=url, bio=bio)
 
