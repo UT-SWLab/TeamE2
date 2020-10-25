@@ -22,11 +22,11 @@
             <p class="data-subtext"><a href="{{ url }}">Read More</a></p>
             <span class="data-header">Nationality:&nbsp;</span>
             <span class="data-text">{{nation}}</span>
-        </div>
-
-    </div>
-    <div class="row">
-        <div class="column">
+            <br>
+            <span class="data-header">Top Driver:&nbsp;</span>
+            <span class="data-text"><a href="{{ 'drivers?id='+top_driver['id'] | string }}">{{ top_driver['name'] }}</a></span>
+            <span class="data-subtext">({{top_driver['points'] |string }} points)</span>
+            <br>
             <span class="data-header">Current Drivers:&nbsp;</span>
             {% if drivers is defined and drivers %}
             <br>
@@ -37,8 +37,42 @@
             {% endfor %}
             {% else %}
             <span class="data-text">None</span>
+            <br>
             {% endif %}
-            <p class="data-header">Circuits Won</p>
+            {% if wins|length > 0 %}
+            <span class="data-header">Total Race Victories:&nbsp;</span>
+            <span class="data-text">{{ total_wins }}</span>
+            {% else %}
+            <span class="data-header">This constructor has no race victories.</span>
+            {% endif %}
+        </div>
+
+    </div>
+    <div class="row">
+        <div class="column">
+            {% if wins|length > 0 %}
+            <p class="data-header">Latest Race Victories:</p>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <th scope="col">Race</th>
+                        <th scope="col">Points</th>
+                        <th scope="col">Circuit</th>
+                        <th scope="col">Date</th>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            {% for win in wins %}
+                            <td>{{ win['raceName'] }}</td>
+                            <td>{{ win['points'] }}</td>
+                            <td><a href="{{ 'circuits?id='+win['circuitId'] | string }}">{{ win['circuitName'] }}</a></td>
+                            <td> {{ win['date'] }} </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% endif %}
         </div>
     </div>
 </div>
