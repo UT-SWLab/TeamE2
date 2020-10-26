@@ -76,7 +76,7 @@ def constructor_model():
             if 'topDriverName' in constructor.keys():
                 constructors[-1].update({'top_driver': constructor['topDriverName']})
             else:
-                constructors[-1].update({'top_driver': 'None'})
+                constructors[-1].update({'top_driver': 'N/A'})
             constructors[-1].update({'link': 'constructors?id='+str(constructor['constructorId'])})
             constructors[-1].update({'imgpath': constructor['constructorRef'] + '.png'})
     per_page = 20
@@ -98,8 +98,16 @@ def circuit_model():
                 'name': circuit['name'], 'location': circuit['location'], 'country': circuit['country']})
             if 'most_recent_race' not in circuit.keys():
                 mrr = db.races.find({'circuitId': circuit['circuitId']}).sort([('date', -1)])
-                mrr = mrr[0]
-                print(mrr['name'] + mrr['date'])
+                mrr = list(mrr)
+                if len(mrr) > 0:
+                    mrr = mrr[0]
+                    print(mrr['name'] + ' ' + mrr['date'])
+                    db.circuits.update_one({'_id': circuit['_id']}, {'$set': {'most_recent_race': mrr['name'] + ' ' + mrr['date']}})
+                else:
+                    db.circuits.update_one({'_id': circuit['_id']}, {'$set': {'most_recent_race': 'N/A'}})
+            else:
+                print('found most recent race for circuit: ' + str(circuit['circuitId']))
+                circuits[-1].update({'most_recent_race': circuit['most_recent_race']})
             circuits[-1].update({'link': 'circuits?id='+str(circuit['circuitId'])})
             circuits[-1].update({'imgpath': circuit['circuitRef'] + '.png'})
     per_page = 20
