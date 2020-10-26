@@ -15,6 +15,9 @@ CONNECTION_STRING = "mongodb+srv://" + dbUsername + ":" + dbPassword + "@formula
 client = pymongo.MongoClient(CONNECTION_STRING)
 db = client.get_database('FormulaOneDB')
 
+# Default filler image
+NO_IMG = 'images/no_img.png'
+
 
 @app.route('/dbTest')
 def test():
@@ -95,7 +98,6 @@ def driver_instance():
     number = driver['number']
     url = driver['url']
     ref = driver['driverRef']
-    img_path = f'images/drivers/{ref}.png'
     bio = driver['bio']
     teams = driver['all_constructors']
     cur_constructor = driver['constructor']
@@ -121,6 +123,11 @@ def driver_instance():
     if len(latest) >= 5:
         latest = latest[:5]  # List the driver's 5 latest races
 
+    # Get image
+    img_path = f'images/drivers/{ref}.png'
+    if not os.path.exists(img_path):
+        img_path = NO_IMG
+
     return render_template('drivers-instance.html', name=name, code=code,
                            dob=dob, nation=nationality, number=number, teams=teams,
                            url=url, img_path=img_path, victories=victories, latest=latest, bio=bio,
@@ -136,7 +143,6 @@ def constructor_instance():
     nation = constructor['nationality']
     url = constructor['url']
     ref = constructor['constructorRef']
-    img_path = f'images/constructors/{ref}.png'
     bio = constructor['bio']
     top_driver = {'id': constructor['topDriverId'], 'name': constructor['topDriverName'],
                   'points': constructor['topDriverPoints']}
@@ -158,6 +164,11 @@ def constructor_instance():
     if len(wins) >= 5:
         wins = wins[:5]  # Take the 5 latest victories
 
+    # Get image
+    img_path = f'images/constructors/{ref}.png'
+    if not os.path.exists(img_path):
+        img_path = NO_IMG
+
     return render_template('constructors-instance.html', name=name, nation=nation,
                            drivers=team_drivers, wins=wins, img_path=img_path, url=url, bio=bio,
                            total_wins=total_wins, top_driver=top_driver)
@@ -178,7 +189,6 @@ def circuit_instance():
     url = circuit['url']
     ref = circuit['circuitRef']
     bio = circuit['bio']
-    img_path = f'images/circuits/{ref}.png'
 
     races_list = db.races.find({'circuitId': int(circuit_id)})  # Get all races held at this circuit
     races = []
@@ -220,6 +230,11 @@ def circuit_instance():
     fastest_lap_times = sorted(fastest_lap_times, key=lambda i: (i['fastestLapTime']))
     if len(fastest_lap_times) >= 5:
         fastest_lap_times = fastest_lap_times[:5]
+
+    # Get image
+    img_path = f'images/circuits/{ref}.png'
+    if not os.path.exists(img_path):
+        img_path = NO_IMG
 
     return render_template('circuits-instance.html', name=name, lat=lat,
                            long=longitude, locality=location, country=country, url=url,
