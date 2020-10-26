@@ -214,7 +214,8 @@ def circuit_instance():
     for result in all_results:
         fastest_lap_times.append({'fastestLapTime': result['fastestLapTime'], 'driverId': result['driverId'],
                                   'driverName': result['driverName'], 'raceName': result['raceName'],
-                                  'speed': result['fastestLapSpeed']})
+                                  'speed': result['fastestLapSpeed'], 'constructorId': result['constructorId'],
+                                  'constructorName': result['constructorName']})
 
     fastest_lap_times = sorted(fastest_lap_times, key=lambda i: (i['fastestLapTime']))
     if len(fastest_lap_times) >= 5:
