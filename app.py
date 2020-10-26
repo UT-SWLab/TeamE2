@@ -28,14 +28,33 @@ def about():
 
 @app.route('/models_drivers')
 def driver_model():
-
     page = request.args.get('page', 1, type=int)
     page = page - 1
     driver_list = db.drivers.find()
     drivers = []
     for driver in driver_list:
-        drivers.append(
-            {'driverRef': driver['driverRef'], 'surname': driver['surname'], 'forename': driver['forename'], 'nationality': driver['nationality']})
+        if 'driverId' in driver.keys():      
+            drivers.append(
+                {'driverId': driver['driverId'], 'driverRef': driver['driverRef'], 'surname': driver['surname'], 'forename': driver['forename'], 'nationality': driver['nationality']})
+            if 'constructor' not in driver:
+                con = list(db.results.find({'driverId': driver['driverId']}))
+                all_constructors = []
+                for c in con:
+                    constructorId = c['constructorId']
+                    constructorName = db.constructors.find_one({'constructorId': c['constructorId']})['name']
+                    constructor = {'id': constructorId, 'name': constructorName}
+                    if constructor not in all_constructors:
+                        all_constructors.append(constructor)
+                all_constructors.reverse() #newest to oldest
+                print(all_constructors)
+                db.drivers.update_one({'_id': driver['_id']}, {'$set': {'constructor': all_constructors[0]}})
+                db.drivers.update_one({'_id': driver['_id']}, {'$set': {'all_constructors': all_constructors}})
+            else:
+                print('found constructor for driver: ' + str(driver['driverId']))
+                drivers[-1].update({'constructor': driver['constructor']})
+            drivers[-1].update({'link': 'drivers?id='+str(driver['driverId'])})
+            drivers[-1].update({'imgpath': driver['driverRef'] + '.png'})
+
     per_page = 20
     pages = int(len(drivers)/per_page)
     drivers = drivers[page*per_page: page*per_page+per_page]
@@ -49,13 +68,15 @@ def constructor_model():
     constructor_list = db.constructors.find()
     constructors = []
     for constructor in constructor_list:
-        constructors.append(
-            {'constructorRef': constructor['constructorRef'], 'name': constructor['name'], 'nationality': constructor['nationality']})
-    print(len(constructors))
+        if 'constructorId' in constructor.keys():
+            constructors.append(
+                {'constructorId': constructor['constructorId'], 'constructorRef': constructor['constructorRef'], 'name': constructor['name'], 'nationality': constructor['nationality']})
+            
+            constructors[-1].update({'link': 'constructors?id='+str(constructor['constructorId'])})
+            constructors[-1].update({'imgpath': constructor['constructorRef'] + '.png'})
     per_page = 20
     pages = int(len(constructors)/per_page)
     constructors = constructors[page*per_page: page*per_page+per_page]
-    print(constructors)
     return render_template('constructors-model.html', constructors=constructors, pages=pages, page=page)
 
 
@@ -66,12 +87,20 @@ def circuit_model():
     circuit_list = db.circuits.find()
     circuits = []
     for circuit in circuit_list:
-        circuits.append(
-            {'circuitRef': circuit['circuitRef'], 'name': circuit['name'], 'location': circuit['location'], 'country': circuit['country']})
+        if 'circuitId' in circuit.keys():
+            circuits.append(
+                {'circuitId': circuit['circuitId'], 'circuitRef': circuit['circuitRef'], 'name': circuit['name'], 'location': circuit['location'], 'country': circuit['country']})
+            if 'most_recent_race' not in circuit.keys():
+                mrr = db.races.find({'circuitId': circuit['circuitId']}).sort([('date', -1)])
+                mrr = mrr[0]
+                print(mrr['name'] + mrr['date'])
+            circuits[-1].update({'link': 'circuits?id='+str(circuit['circuitId'])})
+            circuits[-1].update({'imgpath': circuit['circuitRef'] + '.png'})
     per_page = 20
     pages = int(len(circuits)/per_page)
     circuits = circuits[page*per_page: page*per_page+per_page]
     return render_template('circuits-model.html', circuits=circuits, pages=pages, page=page)
+
 
 @app.route('/drivers')
 def driver_instance():

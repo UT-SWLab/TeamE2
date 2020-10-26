@@ -23,95 +23,27 @@
   {% for i in range((circuits|length)|int) %}
   <div class="row justify-content-center">
     <div class="cards">
-        {% if circuits|length > 4*i %}
-          {% set link = 'circuits?id='+circuits[4*i]['circuitRef'] %}
-          {% set imgpath = circuits[4*i]['circuitRef'] + '.jpg' %}
-          {% set imgurl = url_for('static', filename='images/'+imgpath) %}
-          {% set name = circuits[4*i]['name'] %}
-          {% set location = circuits[4*i]['location'] + ', ' + circuits[4*i]['country'] %}
+      {% for j in range(4) %}
+        {% if circuits|length > 4*i+j %}
+          {% set imgurl = url_for('static', filename='images/'+circuits[4*i+j]['imgpath']) %}
           <!--Card template from https://codepen.io/veronicadev/pen/WJyOwG-->
           <article class="card card--1">
           <div class="card__img" style="background-image: url({{imgurl}})"></div>
-          <a href={{link}} class="card_link">
+          <a href={{circuits[4*i+j]['link']}} class="card_link">
             <div class="card__img--hover" style="background-image: url({{imgurl}})"></div>
             </a>
           <div class="card__info">
             <span class="card__category">Circuit</span>
-            <h3 class="card__title">{{ name }}</h3>
+            <h3 class="card__title">{{circuits[4*i+j]['name']}}</h3>
             <span class="card__category">Location</span>
-            <h6 class="card__title">{{location}}</h6>
+            <h6 class="card__title">{{circuits[4*i+j]['location']}}, {{circuits[4*i+j]['country']}}</h6>
             <span class="card__category">Most Recent Race</span>
             <h6 class="card__title">race</h6>
           </div>
           </article>
         {% endif %}
-        {% if circuits|length > 4*i+1%}
-          {% set link = 'circuits?id='+circuits[4*i+1]['circuitRef'] %}
-          {% set imgpath = circuits[4*i+1]['circuitRef'] + '.jpg' %}
-          {% set imgurl = url_for('static', filename='images/'+imgpath) %}
-          {% set name = circuits[4*i+1]['name'] %}
-          {% set location = circuits[4*i+1]['location'] + ', ' + circuits[4*i+1]['country'] %}
-          <!--Card template from https://codepen.io/veronicadev/pen/WJyOwG-->
-          <article class="card card--1">
-            <div class="card__img" style="background-image: url({{imgurl}})"></div>
-            <a href={{link}} class="card_link">
-            <div class="card__img--hover" style="background-image: url({{imgurl}})"></div>
-            </a>
-            <div class="card__info">
-            <span class="card__category">Circuit</span>
-            <h3 class="card__title">{{ name }}</h3>
-            <span class="card__category">Location</span>
-            <h6 class="card__title">{{location}}</h6>
-            <span class="card__category">Most Recent Race</span>
-            <h6 class="card__title">race</h6>
-            </div>
-          </article>
-        {% endif %}
-        {% if circuits|length > 4*i+2 %}
-          {% set link = 'circuits?id='+circuits[4*i+2]['circuitRef'] %}
-          {% set imgpath = circuits[4*i+2]['circuitRef'] + '.jpg' %}
-          {% set imgurl = url_for('static', filename='images/'+imgpath) %}
-          {% set name = circuits[4*i+2]['name'] %}
-          {% set location = circuits[4*i+2]['location'] + ', ' + circuits[4*i+2]['country'] %}
-          <!--Card template from https://codepen.io/veronicadev/pen/WJyOwG-->
-          <article class="card card--1">
-            <div class="card__img" style="background-image: url({{imgurl}})"></div>
-            <a href={{link}} class="card_link">
-            <div class="card__img--hover" style="background-image: url({{imgurl}})"></div>
-            </a>
-            <div class="card__info">
-            <span class="card__category">Circuit</span>
-            <h3 class="card__title">{{ name }}</h3>
-            <span class="card__category">Location</span>
-            <h6 class="card__title">{{location}}</h6>
-            <span class="card__category">Most Recent Race</span>
-            <h6 class="card__title">race</h6>
-            </div>
-          </article>
-        {% endif %}
-        {% if circuits|length > 4*i+3 %}
-          {% set link = 'circuits?id='+circuits[4*i+3]['circuitRef'] %}
-          {% set imgpath = circuits[4*i+3]['circuitRef'] + '.jpg' %}
-          {% set imgurl = url_for('static', filename='images/'+imgpath) %}
-          {% set name = circuits[4*i+3]['name'] %}
-          {% set location = circuits[4*i+3]['location'] + ', ' + circuits[4*i+3]['country'] %}
-          <!--Card template from https://codepen.io/veronicadev/pen/WJyOwG-->
-          <article class="card card--1">
-            <div class="card__img" style="background-image: url({{imgurl}})"></div>
-            <a href={{link}} class="card_link">
-            <div class="card__img--hover" style="background-image: url({{imgurl}})"></div>
-            </a>
-            <div class="card__info">
-            <span class="card__category">Circuit</span>
-            <h3 class="card__title">{{ name }}</h3>
-            <span class="card__category">Location</span>
-            <h6 class="card__title">{{location}}</h6>
-            <span class="card__category">Most Recent Race</span>
-            <h6 class="card__title">race</h6>
-            </div>
-          </article>
-        {% endif %}
-        </div>
+      {% endfor %}  
+    </div>
   </div>
   {% endfor %}
   {% endif %}

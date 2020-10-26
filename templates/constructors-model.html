@@ -23,95 +23,27 @@
   {% for i in range((constructors|length)|int) %}
   <div class="row justify-content-center">
     <div class="cards">
-        {% if constructors|length > 4*i %}
-          {% set link = 'constructors?id='+constructors[4*i]['constructorRef'] %}
-          {% set imgpath = constructors[4*i]['constructorRef'] + '.jpg' %}
-          {% set imgurl = url_for('static', filename='images/'+imgpath) %}
-          {% set name = constructors[4*i]['name'] %}
-          {% set nationality = constructors[4*i]['nationality'] %}
+      {% for j in range(4) %}
+        {% if constructors|length > 4*i+j %}
+          {% set imgurl = url_for('static', filename='images/'+constructors[4*i+j]['imgpath']) %}
           <!--Card template from https://codepen.io/veronicadev/pen/WJyOwG-->
           <article class="card card--1">
           <div class="card__img" style="background-image: url({{imgurl}})"></div>
-          <a href={{link}} class="card_link">
+          <a href={{constructors[4*i+j]['link']}} class="card_link">
             <div class="card__img--hover" style="background-image: url({{imgurl}})"></div>
             </a>
           <div class="card__info">
             <span class="card__category"> Constructor</span>
-            <h3 class="card__title">{{ name }}</h3>
+            <h3 class="card__title">{{constructors[4*i+j]['name']}}</h3>
             <span class="card__category">Nationality</span>
-            <h6 class="card__title">{{nationality}}</h6>
+            <h6 class="card__title">{{constructors[4*i+j]['nationality']}}</h6>
             <span class="card__category">Year Founded</span> 
             <h6 class="card__title">year</h6>
           </div>
           </article>
         {% endif %}
-        {% if constructors|length > 4*i+1%}
-          {% set link = 'constructors?id='+constructors[4*i+1]['constructorRef'] %}
-          {% set imgpath = constructors[4*i+1]['constructorRef'] + '.jpg' %}
-          {% set imgurl = url_for('static', filename='images/'+imgpath) %}
-          {% set name = constructors[4*i+1]['name'] %}
-          {% set nationality = constructors[4*i+1]['nationality'] %}
-          <!--Card template from https://codepen.io/veronicadev/pen/WJyOwG-->
-          <article class="card card--1">
-            <div class="card__img" style="background-image: url({{imgurl}})"></div>
-            <a href={{link}} class="card_link">
-            <div class="card__img--hover" style="background-image: url({{imgurl}})"></div>
-            </a>
-            <div class="card__info">
-            <span class="card__category"> Constructor</span>
-            <h3 class="card__title">{{ name }}</h3>
-            <span class="card__category">Nationality</span>
-            <h6 class="card__title">{{nationality}}</h6>
-            <span class="card__category">Year Founded</span> 
-            <h6 class="card__title">year</h6>
-            </div>
-          </article>
-        {% endif %}
-        {% if constructors|length > 4*i+2 %}
-          {% set link = 'constructors?id='+constructors[4*i+2]['constructorRef'] %}
-          {% set imgpath = constructors[4*i+2]['constructorRef'] + '.jpg' %}
-          {% set imgurl = url_for('static', filename='images/'+imgpath) %}
-          {% set name = constructors[4*i+2]['name'] %}
-          {% set nationality = constructors[4*i+2]['nationality'] %}
-          <!--Card template from https://codepen.io/veronicadev/pen/WJyOwG-->
-          <article class="card card--1">
-            <div class="card__img" style="background-image: url({{imgurl}})"></div>
-            <a href={{link}} class="card_link">
-            <div class="card__img--hover" style="background-image: url({{imgurl}})"></div>
-            </a>
-            <div class="card__info">
-            <span class="card__category"> Constructor</span>
-            <h3 class="card__title">{{ name }}</h3>
-            <span class="card__category">Nationality</span>
-            <h6 class="card__title">{{nationality}}</h6>
-            <span class="card__category">Year Founded</span> 
-            <h6 class="card__title">year</h6>
-            </div>
-          </article>
-        {% endif %}
-        {% if constructors|length > 4*i+3 %}
-          {% set link = 'constructors?id='+constructors[4*i+3]['constructorRef'] %}
-          {% set imgpath = constructors[4*i+3]['constructorRef'] + '.jpg' %}
-          {% set imgurl = url_for('static', filename='images/'+imgpath) %}
-          {% set name = constructors[4*i+3]['name'] %}
-          {% set nationality = constructors[4*i+3]['nationality'] %}
-          <!--Card template from https://codepen.io/veronicadev/pen/WJyOwG-->
-          <article class="card card--1">
-            <div class="card__img" style="background-image: url({{imgurl}})"></div>
-            <a href={{link}} class="card_link">
-            <div class="card__img--hover" style="background-image: url({{imgurl}})"></div>
-            </a>
-            <div class="card__info">
-            <span class="card__category"> Constructor</span>
-            <h3 class="card__title">{{ name }}</h3>
-            <span class="card__category">Nationality</span>
-            <h6 class="card__title">{{nationality}}</h6>
-            <span class="card__category">Year Founded</span> 
-            <h6 class="card__title">year</h6>
-            </div>
-          </article>
-        {% endif %}
-        </div>
+      {% endfor %}  
+    </div>
   </div>
   {% endfor %}
   {% endif %}
