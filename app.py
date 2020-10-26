@@ -15,6 +15,10 @@ CONNECTION_STRING = "mongodb+srv://" + dbUsername + ":" + dbPassword + "@formula
 client = pymongo.MongoClient(CONNECTION_STRING)
 db = client.get_database('FormulaOneDB')
 
+# Default filelr image
+NO_IMG = 'images/no_img.png'
+
+
 @app.route('/dbTest')
 def test():
     db.db.collection.insert_one({"name": "John"})
@@ -46,14 +50,23 @@ def driver_model():
                     if constructor not in all_constructors:
                         all_constructors.append(constructor)
                 all_constructors.reverse() #newest to oldest
-                print(all_constructors)
+                # print(all_constructors)
                 db.drivers.update_one({'_id': driver['_id']}, {'$set': {'constructor': all_constructors[0]}})
                 db.drivers.update_one({'_id': driver['_id']}, {'$set': {'all_constructors': all_constructors}})
             else:
-                print('found constructor for driver: ' + str(driver['driverId']))
+                # TODO: Consider adding logging, print statements clutter up the terminal
+                # print('found constructor for driver: ' + str(driver['driverId']))
                 drivers[-1].update({'constructor': driver['constructor']})
             drivers[-1].update({'link': 'drivers?id='+str(driver['driverId'])})
-            drivers[-1].update({'imgpath': driver['driverRef'] + '.png'})
+
+            # Get image
+            driver_ref = driver['driverRef']
+            img_path = f'images/drivers/{driver_ref}.png'
+            print(img_path)
+            print(os.getcwd())
+            if not os.path.exists(f'./static/{img_path}'):
+                img_path = NO_IMG
+            drivers[-1].update({'imgpath': img_path})
 
     per_page = 20
     pages = int(len(drivers)/per_page)
@@ -73,7 +86,13 @@ def constructor_model():
                 {'constructorId': constructor['constructorId'], 'constructorRef': constructor['constructorRef'], 'name': constructor['name'], 'nationality': constructor['nationality']})
             
             constructors[-1].update({'link': 'constructors?id='+str(constructor['constructorId'])})
-            constructors[-1].update({'imgpath': constructor['constructorRef'] + '.png'})
+
+            # Get image
+            constructor_ref = constructor['constructorRef']
+            img_path = f'images/constructors/{constructor_ref}.png'
+            if not os.path.exists(f'./static/{img_path}'):
+                img_path = NO_IMG
+            constructors[-1].update({'imgpath': img_path})
     per_page = 20
     pages = int(len(constructors)/per_page)
     constructors = constructors[page*per_page: page*per_page+per_page]
@@ -95,7 +114,13 @@ def circuit_model():
                 mrr = mrr[0]
                 print(mrr['name'] + mrr['date'])
             circuits[-1].update({'link': 'circuits?id='+str(circuit['circuitId'])})
-            circuits[-1].update({'imgpath': circuit['circuitRef'] + '.png'})
+
+            # Get image
+            circuit_ref = circuit['circuitRef']
+            img_path = f'images/circuits/{circuit_ref}.png'
+            if not os.path.exists(f'./static/{img_path}'):
+                img_path = NO_IMG
+            circuits[-1].update({'imgpath': img_path})
     per_page = 20
     pages = int(len(circuits)/per_page)
     circuits = circuits[page*per_page: page*per_page+per_page]
@@ -114,7 +139,6 @@ def driver_instance():
     nationality = driver['nationality']
     number = driver['number']
     url = driver['url']
-    img_path = f'images/{driver_id}.jpg'
 
     # Gathers the teams for the player
     teamIds = db.results.distinct('constructorId', {'driverId': driver_id})
@@ -155,6 +179,12 @@ def driver_instance():
     #     race = db.races.find_one({"raceId": victory['raceId']})
     #     victory['raceId'] = str(race['year']) + " " + race['name']
 
+    # Get image
+    driver_ref = driver['driverRef']
+    img_path = f'images/drivers/{driver_ref}.png'
+    if not os.path.exists(f'./static/{img_path}'):
+        img_path = NO_IMG
+
     return render_template('drivers-instance.html', name=name, code=code,
                            dob=dob, nation=nationality, number=number, teams=teams,
                            url=url, img_path=img_path, victories=victories, latest=latest)
@@ -168,7 +198,6 @@ def constructor_instance():
     name = constructor['name']
     nation = constructor['nationality']
     url = constructor['url']
-    img_path = f'images/{constructor_id}.jpg'
 
     driverIds = db.results.distinct('driverId', {'constructorId': constructor_id})
     teamDrivers = []
@@ -182,6 +211,13 @@ def constructor_instance():
         raceInfo = db.races.find_one({'raceId': victoryRace['raceId']})
         wonCircuits[raceInfo['circuitId']] = {'circuitId': raceInfo['circuitId'], 'circuitName': raceInfo['name']}
     wonCircuits = list(wonCircuits.values())
+
+    # Get image
+    constructor_ref = constructor['constructorRef']
+    img_path = f'images/constructors/{constructor_ref}.png'
+    if not os.path.exists(f'./static/{img_path}'):
+        img_path = NO_IMG
+
     return render_template('constructors-instance.html', name=name, nation=nation,
                            drivers=teamDrivers, wins=wonCircuits, img_path=img_path, url=url)
 
@@ -199,7 +235,6 @@ def circuit_instance():
     country = circuit['country']
     circuit_id = circuit['circuitId']
     url = circuit['url']
-    img_path = f'images/{circuit_id}.jpg'
 
     races_list = db.races.find({'circuitId': int(circuit_id)})  # Get all races held at this circuit
     races = []
@@ -237,6 +272,12 @@ def circuit_instance():
         # with a faster way to find a constructor's name given their ID besides querying the db
         driver_result['driverName'] = driver['forename'] + " " + driver['surname']
         driver_result['constructorName'] = constructor['name']
+
+    # Get image
+    circuit_ref = circuit['circuitRef']
+    img_path = f'images/circuits/{circuit_ref}.png'
+    if not os.path.exists(f'./static/{img_path}'):
+        img_path = NO_IMG
 
     return render_template('circuits-instance.html', name=name, lat=lat,
                            long=longitude, locality=location, country=country, url=url,
