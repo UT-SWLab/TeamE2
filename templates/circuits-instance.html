@@ -30,6 +30,30 @@
 
     <div class="row">
         <div class="column">
+               <span class="data-header">Fastest Laps of All Time</span>
+            <br>
+            <br>
+             <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <th scope="col">Driver</th>
+                        <th scope="col">Race</th>
+                        <th scope="col">Lap Time</th>
+                        <th scope="col">Lap Speed</th>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            {% for lap in lap_times %}
+                            <td><a href="{{ 'drivers?id='+lap['driverId'] | string }}">{{ lap['driverName'] }}</a></td>
+                            <td> {{ lap['raceName'] }} </td>
+                            <td> {{ lap['fastestLapTime'] }} </td>
+                            <td> {{ lap['speed'] }} km/h </td> 
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                 <br>
+            </div>
             <span class="data-header">Latest Race: </span>
             <span class="data-text">{{ latest_race_name }}</span>
             <br>

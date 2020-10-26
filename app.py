@@ -36,7 +36,8 @@ def driver_model():
     for driver in driver_list:
         drivers.append(
             {'driverId': driver['driverId'], 'driverRef': driver['driverRef'], 'surname': driver['surname'],
-             'forename': driver['forename'], 'constructor' : driver['constructor']['name'] , 'nationality' : driver['nationality']})
+             'forename': driver['forename'], 'constructor': driver['constructor']['name'],
+             'nationality': driver['nationality']})
     per_page = 20
     pages = int(len(drivers) / per_page)
     drivers = drivers[page * per_page: page * per_page + per_page]
@@ -55,7 +56,7 @@ def constructor_model():
             topDriver = constructor['topDriverName']
         constructors.append(
             {'constructorId': constructor['constructorId'], 'constructorRef': constructor['constructorRef'],
-             'name': constructor['name'], "topDriver" : topDriver , "nationality" : constructor['nationality']})
+             'name': constructor['name'], "topDriver": topDriver, "nationality": constructor['nationality']})
     print(len(constructors))
     per_page = 20
     pages = int(len(constructors) / per_page)
@@ -73,7 +74,8 @@ def circuit_model():
     for circuit in circuit_list:
         print(circuit['location'])
         circuits.append(
-            {'circuitId': circuit['circuitId'], 'circuitRef': circuit['circuitRef'], 'name': circuit['name'] , 'location' : str(circuit['location']), 'country': circuit['country']})
+            {'circuitId': circuit['circuitId'], 'circuitRef': circuit['circuitRef'], 'name': circuit['name'],
+             'location': str(circuit['location']), 'country': circuit['country']})
     per_page = 20
     pages = int(len(circuits) / per_page)
     circuits = circuits[page * per_page: page * per_page + per_page]
@@ -207,10 +209,21 @@ def circuit_instance():
 
     driver_result_data = sorted(driver_result_data, key=lambda i: i['position'])
 
+    all_results = db.results.find({'circuitId': circuit_id})
+    fastest_lap_times = []
+    for result in all_results:
+        fastest_lap_times.append({'fastestLapTime': result['fastestLapTime'], 'driverId': result['driverId'],
+                                  'driverName': result['driverName'], 'raceName': result['raceName'],
+                                  'speed': result['fastestLapSpeed']})
+
+    fastest_lap_times = sorted(fastest_lap_times, key=lambda i: (i['fastestLapTime']))
+    if len(fastest_lap_times) >= 5:
+        fastest_lap_times = fastest_lap_times[:5]
+
     return render_template('circuits-instance.html', name=name, lat=lat,
                            long=longitude, locality=location, country=country, url=url,
                            img_path=img_path, circuit_id=circuit_id, latest_results=driver_result_data,
-                           latest_race_name=latest_race_name, bio=bio)
+                           latest_race_name=latest_race_name, bio=bio, lap_times=fastest_lap_times)
 
 
 @app.route('/')
