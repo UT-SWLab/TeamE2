@@ -37,6 +37,7 @@ def driver_model():
     driver_list = db.drivers.find()
     drivers = []
     for driver in driver_list:
+        print(driver)
         drivers.append(
             {'driverId': driver['driverId'], 'driverRef': driver['driverRef'], 'surname': driver['surname'],
              'forename': driver['forename'], 'constructor': driver['constructor']['name'],
@@ -57,6 +58,7 @@ def constructor_model():
     for constructor in constructor_list:
         if 'topDriverName' in constructor:
             topDriver = constructor['topDriverName']
+        print(constructor)
         constructors.append(
             {'constructorId': constructor['constructorId'], 'constructorRef': constructor['constructorRef'],
              'name': constructor['name'], "topDriver": topDriver, "nationality": constructor['nationality']})
