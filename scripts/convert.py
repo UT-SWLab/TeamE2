@@ -18,6 +18,7 @@ def main():
         elif filename[-3] == '-':
             os.rename(filename, filename[:-3])
 
+    for filename in os.listdir("."):
         is_jpg = filename[-4:] == '.jpg'
         png_exists = os.path.exists(filename[:-4]+'.png')
         if is_jpg and not png_exists:
