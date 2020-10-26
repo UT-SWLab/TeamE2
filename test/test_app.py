@@ -264,8 +264,6 @@ class TestApp(unittest.TestCase):
         standings = self.db.constructors_standings.find_one({'raceName' : desiredRaceName})
         self.assertEqual(desiredRaceName , standings['raceName'])
         
-
-
     def test_deleteConstructorStandings(self): 
         self.db.constructors_standings.delete_many({'constructorName' : "John Hopkins"})
         actualDocumentCount = self.db.constructors_standings.count_documents({'constructorName' : 'John Hopkins' })
