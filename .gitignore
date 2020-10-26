@@ -145,3 +145,9 @@ scripts/data
 *.mpeg
 *.jpg
 *.jpeg
+
+# zip archives
+images.zip
+
+# images
+static/images/
