@@ -53,12 +53,13 @@ body, html {
 }
 
 .card {
-  margin: 12px;
+  margin: 14px;
   transition: all .4s cubic-bezier(0.175, 0.885, 0, 1);
   background-color: #fff;
   width: 50%;
   min-width: 300px;
   min-height: 350px;
+  max-height: 550px;
   position: relative;
   border-radius: 12px;
   overflow: hidden;
@@ -90,8 +91,8 @@ body, html {
 }
 
 .card__title {
-  margin-top: 5px;
-  margin-bottom: 10px;
+  margin-top: 2px;
+  margin-bottom: 5px;
   font-family: 'Roboto Slab', serif;
 }
 

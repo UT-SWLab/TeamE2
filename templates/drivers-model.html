@@ -23,91 +23,27 @@
   {% for i in range((drivers|length)|int) %}
   <div class="row justify-content-center">
     <div class="cards">
-        {% if drivers|length > 4*i %}
-          {% set link = 'drivers?id='+drivers[4*i]['driverId'] | string %}
-          {% set imgpath = drivers[4*i]['driverRef'] + '.png' %}
-          {% set imgurl = url_for('static', filename='images/drivers/'+imgpath) %}
-          {% set name = drivers[4*i]['forename'] + " " + drivers[4*i]['surname'] %}
-          {% set nationality = drivers[4*i]['nationality'] %}
-          {% set team = drivers[4*i]['constructor']%}
+      {% for j in range(4) %}
+        {% if drivers|length > 4*i+j %}
+          {% set imgurl = url_for('static', filename=drivers[4*i+j]['imgpath']) %}
           <!--Card template from https://codepen.io/veronicadev/pen/WJyOwG-->
           <article class="card">
           <div class="card__img" style="background-image: url({{imgurl}})"></div>
-          <a href={{link}} class="card_link">
+          <a href={{drivers[4*i+j]['link']}} class="card_link">
             <div class="card__img--hover" style="background-image: url({{imgurl}})"></div>
           </a>
           <div class="card__info">
             <span class="card__category"> Driver</span>
-            <h3 class="card__title">{{ name }}</h3>
-            <p class="card__text">{{ nationality }}</p>
-            <p class="card__text">{{ team }}</p>
+            <h4 class="card__title">{{drivers[4*i+j]['forename']}} {{drivers[4*i+j]['surname']}}</h3>
+            <span class="card__category">Nationality</span>
+            <h6 class="card__title">{{drivers[4*i+j]['nationality']}}</h6>
+            <span class="card__category">Constructor</span> 
+            <h6 class="card__title">{{drivers[4*i+j]['constructor']['name']}}</h6>
           </div>
           </article>
         {% endif %}
-        {% if drivers|length > 4*i+1%}
-          {% set link = 'drivers?id='+drivers[4*i+1]['driverId'] | string %}
-          {% set imgpath = drivers[4*i+1]['driverRef'] + '.png' %}
-          {% set imgurl = url_for('static', filename='images/drivers/'+imgpath) %}
-          {% set name = drivers[4*i+1]['forename'] + " " + drivers[4*i+1]['surname'] %}
-          {% set nationality = drivers[4*i]['nationality'] %}
-          {% set team = drivers[4*i]['constructor']%}
-          <!--Card template from https://codepen.io/veronicadev/pen/WJyOwG-->
-          <article class="card">
-            <div class="card__img" style="background-image: url({{imgurl}})"></div>
-            <a href={{link}} class="card_link">
-            <div class="card__img--hover" style="background-image: url({{imgurl}})"></div>
-            </a>
-            <div class="card__info">
-            <span class="card__category"> Driver</span>
-            <h3 class="card__title">{{ name }}</h3>
-            <p class="card__text">{{ nationality }}</p>
-            <p class="card__text">{{ team }}</p>
-            </div>
-          </article>
-        {% endif %}
-        {% if drivers|length > 4*i+2 %}
-          {% set link = 'drivers?id='+drivers[4*i+2]['driverId'] | string %}
-          {% set imgpath = drivers[4*i+2]['driverRef'] + '.png' %}
-          {% set imgurl = url_for('static', filename='images/drivers/'+imgpath) %}
-          {% set name = drivers[4*i+2]['forename'] + " " + drivers[4*i+2]['surname'] %}
-          {% set nationality = drivers[4*i]['nationality']%}
-          {% set team = drivers[4*i]['constructor']%}
-          <!--Card template from https://codepen.io/veronicadev/pen/WJyOwG-->
-          <article class="card">
-            <div class="card__img" style="background-image: url({{imgurl}})"></div>
-            <a href={{link}} class="card_link">
-            <div class="card__img--hover" style="background-image: url({{imgurl}})"></div>
-            </a>
-            <div class="card__info">
-            <span class="card__category"> Driver</span>
-            <h3 class="card__title">{{ name }}</h3>
-            <p class="card__text">{{ nationality }}</p>
-            <p class="card__text">{{ team }}</p>
-            </div>
-          </article>
-        {% endif %}
-        {% if drivers|length > 4*i+3 %}
-          {% set link = 'drivers?id='+drivers[4*i+3]['driverId'] | string %}
-          {% set imgpath = drivers[4*i+3]['driverRef'] + '.png' %}
-          {% set imgurl = url_for('static', filename='images/drivers/'+imgpath) %}
-          {% set name = drivers[4*i+3]['forename'] + " " + drivers[4*i+3]['surname'] %}
-          {% set nationality = drivers[4*i]['nationality']%}
-          {% set team = drivers[4*i]['constructor']%}
-          <!--Card template from https://codepen.io/veronicadev/pen/WJyOwG-->
-          <article class="card">
-            <div class="card__img" style="background-image: url({{imgurl}})"></div>
-            <a href={{link}} class="card_link">
-            <div class="card__img--hover" style="background-image: url({{imgurl}})"></div>
-            </a>
-            <div class="card__info">
-            <span class="card__category"> Driver</span>
-            <h3 class="card__title">{{ name }}</h3>
-            <p class="card__text">{{ nationality }}</p>
-            <p class="card__text">{{ team }}</p>
-            </div>
-          </article>
-        {% endif %}
-        </div>
+      {% endfor %}  
+    </div>
   </div>
   {% endfor %}
   {% endif %}
@@ -127,9 +63,9 @@
         {% for i in range(pages+1) %}
           {% if i == page %}
             <li class="page-item active"><a class="page-link" href="{{url_for('driver_model', page=i+1)}}">{{i+1}}</a></li>
-          {% elif i < page and i >= page - 1 %}
+          {% elif i < page and i >= page - 2 %}
             <li class="page-item"><a class="page-link" href="{{url_for('driver_model', page=i+1)}}">{{i+1}}</a></li>
-          {% elif i > page and i <= page + 1 %}  
+          {% elif i > page and i <= page + 2 %}  
             <li class="page-item"><a class="page-link" href="{{url_for('driver_model', page=i+1)}}">{{i+1}}</a></li>
           {% elif i == 0 or i==pages %}
             <li class="page-item"><a class="page-link" href="{{url_for('driver_model', page=i+1)}}">{{i+1}}</a></li>

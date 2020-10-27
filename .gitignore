@@ -151,3 +151,6 @@ failed.txt
 
 # zip archives
 *.zip
+
+# images
+static/images/

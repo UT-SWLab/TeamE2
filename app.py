@@ -15,6 +15,9 @@ CONNECTION_STRING = "mongodb+srv://" + dbUsername + ":" + dbPassword + "@formula
 client = pymongo.MongoClient(CONNECTION_STRING)
 db = client.get_database('FormulaOneDB')
 
+# Default filelr image
+NO_IMG = 'images/no_img.png'
+
 
 @app.route('/dbTest')
 def test():
@@ -34,11 +37,38 @@ def driver_model():
     driver_list = db.drivers.find()
     drivers = []
     for driver in driver_list:
-        if 'driverId' in driver:
+        if 'driverId' in driver.keys():      
             drivers.append(
-                {'driverId': driver['driverId'], 'driverRef': driver['driverRef'], 'surname': driver['surname'],
-                'forename': driver['forename'], 'constructor': driver['constructor']['name'],
-                'nationality': driver['nationality']})
+                {'driverId': driver['driverId'], 'driverRef': driver['driverRef'], 
+                'surname': driver['surname'], 'forename': driver['forename'], 'nationality': driver['nationality']})
+            if 'constructor' not in driver:
+                con = list(db.results.find({'driverId': driver['driverId']}))
+                all_constructors = []
+                for c in con:
+                    constructorId = c['constructorId']
+                    constructorName = db.constructors.find_one({'constructorId': c['constructorId']})['name']
+                    constructor = {'id': constructorId, 'name': constructorName}
+                    if constructor not in all_constructors:
+                        all_constructors.append(constructor)
+                all_constructors.reverse() #newest to oldest
+                # print(all_constructors)
+                db.drivers.update_one({'_id': driver['_id']}, {'$set': {'constructor': all_constructors[0]}})
+                db.drivers.update_one({'_id': driver['_id']}, {'$set': {'all_constructors': all_constructors}})
+            else:
+                # TODO: Consider adding logging, print statements clutter up the terminal
+                # print('found constructor for driver: ' + str(driver['driverId']))
+                drivers[-1].update({'constructor': driver['constructor']})
+            drivers[-1].update({'link': 'drivers?id='+str(driver['driverId'])})
+
+            # Get image
+            driver_ref = driver['driverRef']
+            img_path = f'images/drivers/{driver_ref}.png'
+            print(img_path)
+            print(os.getcwd())
+            if not os.path.exists(f'./static/{img_path}'):
+                img_path = NO_IMG
+            drivers[-1].update({'imgpath': img_path})
+
     per_page = 20
     pages = int(len(drivers) / per_page)
     drivers = drivers[page * per_page: page * per_page + per_page]
@@ -53,17 +83,25 @@ def constructor_model():
     constructors = []
     topDriver = "N/A"
     for constructor in constructor_list:
-        if 'constructorId' in constructor:
-            if 'topDriverName' in constructor:
-                topDriver = constructor['topDriverName']
+        if 'constructorId' in constructor.keys():
             constructors.append(
-                {'constructorId': constructor['constructorId'], 'constructorRef': constructor['constructorRef'],
-                'name': constructor['name'], "topDriver" : topDriver , "nationality" : constructor['nationality']})
-    print(len(constructors))
+                {'constructorId': constructor['constructorId'], 'constructorRef': constructor['constructorRef'], 
+                'name': constructor['name'], 'nationality': constructor['nationality']}) 
+            if 'topDriverName' in constructor.keys():
+                constructors[-1].update({'top_driver': constructor['topDriverName']})
+            else:
+                constructors[-1].update({'top_driver': 'N/A'})
+            constructors[-1].update({'link': 'constructors?id='+str(constructor['constructorId'])})
+
+            # Get image
+            constructor_ref = constructor['constructorRef']
+            img_path = f'images/constructors/{constructor_ref}.png'
+            if not os.path.exists(f'./static/{img_path}'):
+                img_path = NO_IMG
+            constructors[-1].update({'imgpath': img_path})
     per_page = 20
-    pages = int(len(constructors) / per_page)
-    constructors = constructors[page * per_page: page * per_page + per_page]
-    print(constructors)
+    pages = int(len(constructors)/per_page)
+    constructors = constructors[page*per_page: page*per_page+per_page]
     return render_template('constructors-model.html', constructors=constructors, pages=pages, page=page)
 
 
@@ -74,9 +112,30 @@ def circuit_model():
     circuit_list = db.circuits.find()
     circuits = []
     for circuit in circuit_list:
-        if 'circuitId' in circuit:
+        if 'circuitId' in circuit.keys():
             circuits.append(
-                {'circuitId': circuit['circuitId'], 'circuitRef': circuit['circuitRef'], 'name': circuit['name'] , 'location' : str(circuit['location']), 'country': circuit['country']})
+                {'circuitId': circuit['circuitId'], 'circuitRef': circuit['circuitRef'], 
+                'name': circuit['name'], 'location': circuit['location'], 'country': circuit['country']})
+            if 'most_recent_race' not in circuit.keys():
+                mrr = db.races.find({'circuitId': circuit['circuitId']}).sort([('date', -1)])
+                mrr = list(mrr)
+                if len(mrr) > 0:
+                    mrr = mrr[0]
+                    print(mrr['name'] + ' ' + mrr['date'])
+                    db.circuits.update_one({'_id': circuit['_id']}, {'$set': {'most_recent_race': mrr['name'] + ' ' + mrr['date']}})
+                else:
+                    db.circuits.update_one({'_id': circuit['_id']}, {'$set': {'most_recent_race': 'N/A'}})
+            else:
+                print('found most recent race for circuit: ' + str(circuit['circuitId']))
+                circuits[-1].update({'most_recent_race': circuit['most_recent_race']})
+            circuits[-1].update({'link': 'circuits?id='+str(circuit['circuitId'])})
+
+            # Get image
+            circuit_ref = circuit['circuitRef']
+            img_path = f'images/circuits/{circuit_ref}.png'
+            if not os.path.exists(f'./static/{img_path}'):
+                img_path = NO_IMG
+            circuits[-1].update({'imgpath': img_path})
     per_page = 20
     pages = int(len(circuits) / per_page)
     circuits = circuits[page * per_page: page * per_page + per_page]
@@ -95,8 +154,6 @@ def driver_instance():
     nationality = driver['nationality']
     number = driver['number']
     url = driver['url']
-    ref = driver['driverRef']
-    img_path = f'images/drivers/{ref}.png'
     bio = driver['bio']
     teams = driver['all_constructors']
     cur_constructor = driver['constructor']
@@ -122,6 +179,12 @@ def driver_instance():
     if len(latest) >= 5:
         latest = latest[:5]  # List the driver's 5 latest races
 
+    # Get image
+    driver_ref = driver['driverRef']
+    img_path = f'images/drivers/{driver_ref}.png'
+    if not os.path.exists(f'./static/{img_path}'):
+        img_path = NO_IMG
+
     return render_template('drivers-instance.html', name=name, code=code,
                            dob=dob, nation=nationality, number=number, teams=teams,
                            url=url, img_path=img_path, victories=victories, latest=latest, bio=bio,
@@ -136,8 +199,6 @@ def constructor_instance():
     name = constructor['name']
     nation = constructor['nationality']
     url = constructor['url']
-    ref = constructor['constructorRef']
-    img_path = f'images/constructors/{ref}.png'
     bio = constructor['bio']
     top_driver = {'id': constructor['topDriverId'], 'name': constructor['topDriverName'],
                   'points': constructor['topDriverPoints']}
@@ -159,6 +220,12 @@ def constructor_instance():
     if len(wins) >= 5:
         wins = wins[:5]  # Take the 5 latest victories
 
+    # Get image
+    constructor_ref = constructor['constructorRef']
+    img_path = f'images/constructors/{constructor_ref}.png'
+    if not os.path.exists(f'./static/{img_path}'):
+        img_path = NO_IMG
+
     return render_template('constructors-instance.html', name=name, nation=nation,
                            drivers=team_drivers, wins=wins, img_path=img_path, url=url, bio=bio,
                            total_wins=total_wins, top_driver=top_driver)
@@ -177,9 +244,7 @@ def circuit_instance():
     country = circuit['country']
     circuit_id = circuit['circuitId']
     url = circuit['url']
-    ref = circuit['circuitRef']
     bio = circuit['bio']
-    img_path = f'images/circuits/{ref}.png'
 
     races_list = db.races.find({'circuitId': int(circuit_id)})  # Get all races held at this circuit
     races = []
@@ -221,6 +286,12 @@ def circuit_instance():
     fastest_lap_times = sorted(fastest_lap_times, key=lambda i: (i['fastestLapTime']))
     if len(fastest_lap_times) >= 5:
         fastest_lap_times = fastest_lap_times[:5]
+
+    # Get image
+    circuit_ref = circuit['circuitRef']
+    img_path = f'images/circuits/{circuit_ref}.png'
+    if not os.path.exists(f'./static/{img_path}'):
+        img_path = NO_IMG
 
     return render_template('circuits-instance.html', name=name, lat=lat,
                            long=longitude, locality=location, country=country, url=url,
