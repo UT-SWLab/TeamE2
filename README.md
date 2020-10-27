@@ -45,6 +45,6 @@ Use `source env/bin/activate` to activate the environment and run the app with `
 ## Deploying the Website on Google Cloud:
 You will need credentials for `utairlab@gmail.com`. Check the pinned post in the `#backend`  Slack channel for credentials.
 
-You will need the `gcloud` binary, [click me to learn how to gcloud](https://cloud.google.com/sdk/docs/install).
+You will need the `gcloud` binary, [click me for gcloud installation instructions](https://cloud.google.com/sdk/docs/install).
 
-[Click me to learn how to deploy the webapp.](https://codelabs.developers.google.com/codelabs/cloud-app-engine-python3/#5)
+[Click me for instructions on deploying the webapp to google cloud](https://codelabs.developers.google.com/codelabs/cloud-app-engine-python3/#5).
