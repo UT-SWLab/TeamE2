@@ -165,10 +165,11 @@ def driver_instance():
         results.append({'raceId': result['raceId'], 'constructorId': result['constructorId'],
                         'position': result['positionOrder'], 'points': result['points'],
                         'laps': result['laps'], 'time': result['time'],
-                        'fastestLap': result['fastestLap'], 'rank': result['rank'],
-                        'fastestLapTime': result['fastestLapTime'], 'date': result['raceDate'],
-                        'raceName': result['raceName'],
-                        'constructorName': result['constructorName'], 'driverName': result['driverName']})
+                        'fastestLap': result['fastestLap'], 'fastestLapTime': result['fastestLapTime'],
+                        'date': result['raceDate'], 'raceName': result['raceName'],
+                        'constructorName': result['constructorName'], 'driverName': result['driverName'],
+                        'circuitId': result['circuitId'], 'circuitName': result['circuitName']
+                        })
 
     for result in results:
         if result['position'] == 1:

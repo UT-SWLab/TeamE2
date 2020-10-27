@@ -72,9 +72,9 @@
                         <th scope="col">Race</th>
                         <th scope="col">Position</th>
                         <th scope="col">Constructor</th>
+                        <th scope="col">Circuit</th>
                         <th scope="col">Points</th>
                         <th scope="col">Time</th>
-                        <th scope="col">Rank</th>
                         <th scope="col">Laps</th>
                         <th scope="col">Fastest Lap</th>
                         <th scope="col">Fastest Lap Time</th>
@@ -86,9 +86,9 @@
                             <td> {{ race['raceName'] }} </td>
                             <td> {{ race['position'] }} </td>
                             <td><a href="{{ 'constructors?id='+race['constructorId'] | string }}">{{ race['constructorName'] }}</a></td>
+                            <td><a href="{{ 'circuits?id='+race['circuitId'] | string }}">{{ race['circuitName'] }}</a></td>
                             <td> {{ race['points'] }} </td>
                             <td> {{ race['time'] }} </td>
-                            <td> {{ race['rank'] }} </td>
                             <td> {{ race['laps'] }} </td>
                             <td> #{{ race['fastestLap'] }} </td>
                             <td> {{ race['fastestLapTime'] }} </td>
@@ -104,9 +104,9 @@
                     <thead>
                         <th scope="col">Race</th>
                         <th scope="col">Constructor</th>
+                        <th scope="col">Circuit</th>
                         <th scope="col">Points</th>
                         <th scope="col">Time</th>
-                        <th scope="col">Rank</th>
                         <th scope="col">Laps</th>
                         <th scope="col">Fastest Lap</th>
                         <th scope="col">Fastest Lap Time</th>
@@ -117,9 +117,9 @@
                             {% for victory in victories %}
                             <td> {{ victory['raceName'] }} </td>
                             <td><a href="{{ 'constructors?id='+victory['constructorId'] | string }}">{{ victory['constructorName'] }}</a></td>
+                            <td><a href="{{ 'circuits?id='+victory['circuitId'] | string }}">{{ victory['circuitName'] }}</a></td>
                             <td> {{ victory['points'] }} </td>
                             <td> {{ victory['time'] }} </td>
-                            <td> {{ victory['rank'] }} </td>
                             <td> {{ victory['laps'] }} </td>
                             <td> #{{ victory['fastestLap'] }} </td>
                             <td> {{ victory['fastestLapTime'] }} </td>
