@@ -39,7 +39,8 @@ def driver_model():
     for driver in driver_list:
         if 'driverId' in driver.keys():      
             drivers.append(
-                {'driverId': driver['driverId'], 'driverRef': driver['driverRef'], 'surname': driver['surname'], 'forename': driver['forename'], 'nationality': driver['nationality']})
+                {'driverId': driver['driverId'], 'driverRef': driver['driverRef'], 
+                'surname': driver['surname'], 'forename': driver['forename'], 'nationality': driver['nationality']})
             if 'constructor' not in driver:
                 con = list(db.results.find({'driverId': driver['driverId']}))
                 all_constructors = []
@@ -83,8 +84,12 @@ def constructor_model():
     for constructor in constructor_list:
         if 'constructorId' in constructor.keys():
             constructors.append(
-                {'constructorId': constructor['constructorId'], 'constructorRef': constructor['constructorRef'], 'name': constructor['name'], 'nationality': constructor['nationality']})
-            
+                {'constructorId': constructor['constructorId'], 'constructorRef': constructor['constructorRef'], 
+                'name': constructor['name'], 'nationality': constructor['nationality']}) 
+            if 'topDriverName' in constructor.keys():
+                constructors[-1].update({'top_driver': constructor['topDriverName']})
+            else:
+                constructors[-1].update({'top_driver': 'N/A'})
             constructors[-1].update({'link': 'constructors?id='+str(constructor['constructorId'])})
 
             # Get image
@@ -108,11 +113,20 @@ def circuit_model():
     for circuit in circuit_list:
         if 'circuitId' in circuit.keys():
             circuits.append(
-                {'circuitId': circuit['circuitId'], 'circuitRef': circuit['circuitRef'], 'name': circuit['name'], 'location': circuit['location'], 'country': circuit['country']})
+                {'circuitId': circuit['circuitId'], 'circuitRef': circuit['circuitRef'], 
+                'name': circuit['name'], 'location': circuit['location'], 'country': circuit['country']})
             if 'most_recent_race' not in circuit.keys():
                 mrr = db.races.find({'circuitId': circuit['circuitId']}).sort([('date', -1)])
-                mrr = mrr[0]
-                print(mrr['name'] + mrr['date'])
+                mrr = list(mrr)
+                if len(mrr) > 0:
+                    mrr = mrr[0]
+                    print(mrr['name'] + ' ' + mrr['date'])
+                    db.circuits.update_one({'_id': circuit['_id']}, {'$set': {'most_recent_race': mrr['name'] + ' ' + mrr['date']}})
+                else:
+                    db.circuits.update_one({'_id': circuit['_id']}, {'$set': {'most_recent_race': 'N/A'}})
+            else:
+                print('found most recent race for circuit: ' + str(circuit['circuitId']))
+                circuits[-1].update({'most_recent_race': circuit['most_recent_race']})
             circuits[-1].update({'link': 'circuits?id='+str(circuit['circuitId'])})
 
             # Get image
