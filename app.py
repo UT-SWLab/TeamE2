@@ -51,11 +51,12 @@ def constructor_model():
     constructors = []
     topDriver = "N/A"
     for constructor in constructor_list:
-        if 'topDriverName' in constructor:
-            topDriver = constructor['topDriverName']
-        constructors.append(
-            {'constructorId': constructor['constructorId'], 'constructorRef': constructor['constructorRef'],
-             'name': constructor['name'], "topDriver" : topDriver , "nationality" : constructor['nationality']})
+        if 'constructorId' in constructor:
+            if 'topDriverName' in constructor:
+                topDriver = constructor['topDriverName']
+            constructors.append(
+                {'constructorId': constructor['constructorId'], 'constructorRef': constructor['constructorRef'],
+                'name': constructor['name'], "topDriver" : topDriver , "nationality" : constructor['nationality']})
     print(len(constructors))
     per_page = 20
     pages = int(len(constructors) / per_page)
@@ -71,9 +72,9 @@ def circuit_model():
     circuit_list = db.circuits.find()
     circuits = []
     for circuit in circuit_list:
-        print(circuit['location'])
-        circuits.append(
-            {'circuitId': circuit['circuitId'], 'circuitRef': circuit['circuitRef'], 'name': circuit['name'] , 'location' : str(circuit['location']), 'country': circuit['country']})
+        if 'circuitId' in circuit:
+            circuits.append(
+                {'circuitId': circuit['circuitId'], 'circuitRef': circuit['circuitRef'], 'name': circuit['name'] , 'location' : str(circuit['location']), 'country': circuit['country']})
     per_page = 20
     pages = int(len(circuits) / per_page)
     circuits = circuits[page * per_page: page * per_page + per_page]

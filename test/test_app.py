@@ -17,34 +17,20 @@ class TestApp(unittest.TestCase):
         db = client.get_database('FormulaOneDB')
         self.db = db
 
-    def test_creatingADriverInTheDatabase(self):
-        desiredDriver = {
-            'forename' : 'Samuel',
-            'surename' : 'Yeboah',
-            'dob' : "1998-11-15",
-            'nationality' : 'American',
-            'url' : "na",
-            'bio' : "na",
-            'constructor' : "Mercedes",
-            'all_constructors' : [],
-        }
-
-        self.db.drivers.insert_one(desiredDriver)
-        createdDrivers = self.db.drivers.find({'forename' : desiredDriver['forename']})
-        createdDriver = ""
-        for driver in createdDrivers:
-            createdDriver = driver
-        self.assertEqual(desiredDriver,createdDriver)
-
-        self.db.drivers.delete_many({'forename' : desiredDriver['forename']})
+    def test_createDriver(self):
+        desiredDocumentCount = self.db.drivers.count_documents({'forename' : 'Samuel'})
+        desiredDocumentCount+=1
+        self.db.drivers.insert_one({'forename' : 'Samuel'})
+        actualDocumentCount = self.db.drivers.count_documents({'forename' : 'Samuel'})
+        self.assertEqual(desiredDocumentCount,actualDocumentCount)
     
-    def test_retrieveMultipleDriversInTheDatabase(self):
+    def test_readDriver(self):
         desiredCurrentTeam = "Mercedes"
         mercedesDrivers = self.db.drivers.find({'constructor.name' : 'Mercedes'})
         for drivers in mercedesDrivers:
             self.assertEqual(desiredCurrentTeam , drivers['constructor']['name'])
     
-    def test_updatingADriverInTheDatabase(self):
+    def test_updateDriver(self):
         desiredDriver = {
             'forename' : 'Samuel',
             'surename' : 'Yeboah',
@@ -67,7 +53,7 @@ class TestApp(unittest.TestCase):
         self.assertEqual(desiredBio,driver['bio'])
         self.db.drivers.delete_many({'forename' : desiredDriver['forename']})
     
-    def test_deletingADriverinTheDatabase(self):
+    def test_deleteDriver(self):
         desiredDriver = {
             'forename' : 'John',
             'surename' : 'Yeboah',
@@ -87,7 +73,7 @@ class TestApp(unittest.TestCase):
         self.assertEqual(desiredDriverCount , driverCount)
         self.db.drivers.delete_many({'forename' : desiredDriver['forename']})
     
-    def test_creatingACircuit(self):
+    def test_createCircuit(self):
         desiredCircuit = {
             'name' : 'LSU Grand Prix',
             'location' : 'Louisiana'
@@ -101,13 +87,13 @@ class TestApp(unittest.TestCase):
 
         self.db.circuits.delete_many({'name' : 'LSU Grand Prix'})
     
-    def test_retrieveMultipleCircuitsInTheDatabase(self):
+    def test_retrieveMultipleCircuits(self):
         circuits = self.db.circuits.find({'country' : 'Austrlia'})
         desiredCountry = 'Australia'
         for circuit in circuits:
             self.assertEqual(desiredCountry , circuit['country'])
 
-    def test_updatingACircuitInTheDatabase(self):
+    def test_updatingCircuits(self):
         desiredCircuit = {
             'name' : 'Clemson Grand Prix',
             'location' : 'South Carolina'
@@ -125,7 +111,7 @@ class TestApp(unittest.TestCase):
 
         self.db.circuits.delete_many({'name' : 'Clemson Grand Prix'})
 
-    def test_deletingACircuitinTheDatabase(self):
+    def test_deletingCircuits(self):
         desiredCircuit = {
             'name' : 'Aggie Grand Prix',
             'location' : 'College Station'
@@ -140,7 +126,7 @@ class TestApp(unittest.TestCase):
 
         self.assertEqual(desiredCircuitCount , actualCircuitCount)
     
-    def test_creatingAConstructor(self):
+    def test_creatingConstructors(self):
         constructor = {
             'name' : 'Kevin''s Team',
             'topDriverName' : 'Sam'
@@ -153,13 +139,13 @@ class TestApp(unittest.TestCase):
 
         self.db.constructors.delete_many({'name' : 'kevin''s Team'})
     
-    def test_retrieveAConstructorInTheDatabase(self):
+    def test_retrieveConstructors(self):
         desiredNationality = 'British'
         constructors = self.db.constructors.find({'nationality' : desiredNationality})
         for constructor in constructors:
             self.assertEqual(desiredNationality , constructor['nationality'])
 
-    def test_updatingAConstructorInTheDatabase(self):
+    def test_updatingConstructors(self):
         constructor = {
             'name' : 'Edies Team',
             'topDriverName' : 'Sam',
@@ -174,7 +160,7 @@ class TestApp(unittest.TestCase):
         actualCircuit = self.db.constructors.find_one({'name' : 'Edies Team'})
         self.assertEqual(desiredBio , actualCircuit['bio'])
 
-    def test_deletingConstructorInDatabase(self):
+    def test_deletingConstructors(self):
         constructor = {
             'name' : 'A Team',
             'topDriverName' : 'Sam',
@@ -190,7 +176,7 @@ class TestApp(unittest.TestCase):
         actualDocumentCount = self.db.constructors.count_documents({'name' : 'A Team'})
         self.assertEqual(desiredDocumentCount, actualDocumentCount)
 
-    def test_createResult(self):
+    def test_createResults(self):
         result = {
             'points' : 10,
             'rank' : "2",
@@ -204,14 +190,14 @@ class TestApp(unittest.TestCase):
         desiredResultName = 'Samuel Yeboah'
         self.assertEqual(desiredResultName , actualResult['driverName'])
     
-    def test_readResult(self):
+    def test_readResults(self):
         driverName = "Lewis Hamilton"
 
         drivers = self.db.results.find({'name' : driverName})
         for driver in drivers:
             self.assertEqual(driverName , driver['name'])
     
-    def test_updateResult(self):
+    def test_updateResults(self):
         result = {
             'points' : 10,
             'rank' : "2",
@@ -234,7 +220,7 @@ class TestApp(unittest.TestCase):
 
         self.db.results.delete_many({'driverName' : result['driverName']})
         
-    def test_deleteResult(self):
+    def test_deleteResults(self):
         self.db.results.delete_many({'driverName' : 'Samuel Yeboah'})
 
         desiredCount = 0
@@ -255,7 +241,6 @@ class TestApp(unittest.TestCase):
         for constructor in constructors:
             self.assertEqual(desiredConstructorName , constructor['constructorName'])
 
-
     def test_updateConstructorStandings(self):
         desiredRaceName = 'LSU Grand Prix'
         self.db.constructors_standings.insert_one({'constructorName' : 'Samuel Yeboah' , "raceName" : ""})
@@ -264,11 +249,6 @@ class TestApp(unittest.TestCase):
         standings = self.db.constructors_standings.find_one({'raceName' : desiredRaceName})
         self.assertEqual(desiredRaceName , standings['raceName'])
         
-<<<<<<< Updated upstream
-
-
-=======
->>>>>>> Stashed changes
     def test_deleteConstructorStandings(self): 
         self.db.constructors_standings.delete_many({'constructorName' : "John Hopkins"})
         actualDocumentCount = self.db.constructors_standings.count_documents({'constructorName' : 'John Hopkins' })
