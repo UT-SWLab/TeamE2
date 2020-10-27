@@ -34,10 +34,11 @@ def driver_model():
     driver_list = db.drivers.find()
     drivers = []
     for driver in driver_list:
-        drivers.append(
-            {'driverId': driver['driverId'], 'driverRef': driver['driverRef'], 'surname': driver['surname'],
-             'forename': driver['forename'], 'constructor': driver['constructor']['name'],
-             'nationality': driver['nationality']})
+        if 'driverId' in driver:
+            drivers.append(
+                {'driverId': driver['driverId'], 'driverRef': driver['driverRef'], 'surname': driver['surname'],
+                'forename': driver['forename'], 'constructor': driver['constructor']['name'],
+                'nationality': driver['nationality']})
     per_page = 20
     pages = int(len(drivers) / per_page)
     drivers = drivers[page * per_page: page * per_page + per_page]
