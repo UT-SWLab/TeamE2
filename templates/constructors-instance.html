@@ -27,7 +27,7 @@
             <span class="data-text"><a href="{{ 'drivers?id='+top_driver['id'] | string }}">{{ top_driver['name'] }}</a></span>
             <span class="data-subtext">({{top_driver['points'] |string }} points)</span>
             <br>
-            <span class="data-header">Current Drivers:&nbsp;</span>
+            <span class="data-header">Latest Drivers:&nbsp;</span>
             {% if drivers is defined and drivers %}
             <br>
             {% for driver in drivers %}
