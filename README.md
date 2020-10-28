@@ -17,11 +17,25 @@ https://f1stat-292509.uc.r.appspot.com/
 | Estimated | 4 hrs. | 5 hrs. | 2 hrs. | 3 hrs. |
 | Actual | 4 hrs. | 5 hrs. | 5 hrs. | 3 hrs. |
 
+| Story | Assignee | Estimated Time | Completion Time |
+| ----- | -------- | -------------- | --------------- |
+| As a user, I want to view a racer's win history, team, age, and all personal information. | Edie | 3 hrs. | 2 hrs. |
+| As a user, I want to see some general information on each driver before clicking on their card so that I don't need to go all the way to their instance page. | Alan | 2 hrs. | 3 hrs. |
+| As a user, I want a home page so that I can navigate between all of the various pages that are available. | Sam | 3 hrs. | 2 hrs. |
+| As someone with poor eyesight, I want the user interface to be simple and easy to navigate. | Sam | 2 hrs. | 2 hrs. |
+| As a user, I want to view a constructor's current and former team members, race statistics, and nationality. | Kevin | 4 hrs. | 5 hrs. |
+
 ## Phase 2 Completion Times:
-|   | Kevin Medina | Alan Zhang | Edie Zhou | Samuel Yeboah |
-| - | ------------ | ---------- | --------- | ------------- |
-| Estimated | # hrs. | # hrs. | # hrs. | # hrs. |
-| Actual | # hrs. | # hrs. | # hrs. | # hrs. |
+| Story | Assignee | Estimated Time | Completion Time |
+| ----- | -------- | -------------- | --------------- |
+| As a user, I want to see the past teams that a driver has driven on so that I can see their career progression. | Alan | 2 hrs. | 4 hrs. |
+| As a user, I want to see the number of wins for a constructor or a driver so that I can determine who is a better racer and what teams are the best. | Kevin | 4 hrs. | 5 hrs. |
+| As a developer, I want pictures that accurately represent each instance. | Edie | 2 hrs. | 8 hrs. |
+| As a developer, I want the ability to test my code so I know the software is free from bugs before I push to production. | Sam | 4 hrs. | 4 hrs. |
+| As a developer, I want to be able to test my UI so that I know it is bug free before I push to production. | Alan | 2 hrs. | 2 hrs. | 
+| As a user, I want to view the web application's data sources and method of retrieval. This is for my own verification and assurance. | Sam | 3 hrs. | 3 hrs. |
+| As a user, I want to navigate through the model instances using an intuitive feature. | Alan | 3 hrs. | 4 hrs. |
+
 
 ## Environment Setup:
 You will need a working version of Python 3 installed on your computer. Create the virtual environment using this command:
