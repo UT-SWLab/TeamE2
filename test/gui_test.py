@@ -73,7 +73,7 @@ class GUI_Test(unittest.TestCase):
     def test_pagination_nextpage_driver(self):
         driver = webdriver.Chrome(executable_path=DRIVER_PATH)
         driver.get(f'{HOME_URL}models_drivers')
-        driver.find_element_by_css_selector("[aria-label='Next']")
+        nextPage = driver.find_element_by_css_selector("[aria-label='Next']")
         nextPage.click()
         self.assertEqual(driver.current_url, f'{HOME_URL}models_drivers?page=2')
     
