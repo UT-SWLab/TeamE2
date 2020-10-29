@@ -11,6 +11,19 @@ https://f1stat-292509.uc.r.appspot.com/
 | Edie Zhou | ez3437 | edie-zhou |
 | Samuel Yeboah | say438 | samuel-akwesi-yeboah | 
 
+## Deploying the Website Locally:
+Before deploying the website, you will need to retrieve and unpack the `images.zip` archive in the 
+`static/images` directory. `images.zip` contains all of our static images, and it is available from the
+Google Drive of our shared `utairlab@gmail.com` account.
+Use `source env/bin/activate` to activate the environment and run the app with `python3 app.py`
+
+## Deploying the Website on Google Cloud:
+You will need credentials for `utairlab@gmail.com`. Check the pinned post in the `#backend`  Slack channel for credentials.
+
+You will need the `gcloud` binary, [click me for gcloud installation instructions](https://cloud.google.com/sdk/docs/install).
+
+[Click me for instructions on deploying the webapp to google cloud](https://codelabs.developers.google.com/codelabs/cloud-app-engine-python3/#5).
+
 ## Phase 1 Completion Times:
 | Story | Assignee | Estimated Time | Completion Time |
 | ----- | -------- | -------------- | --------------- |
@@ -46,16 +59,3 @@ Once you have created the environment, activate the environment with this linux 
 With the environment active, install the dependencies from the `requirements.txt` file with this command:
 
 `pip3 install -r requirements.txt`
-
-## Deploying the Website Locally:
-Before deploying the website, you will need to retrieve and unpack the `images.zip` archive in the 
-`static/images` directory. `images.zip` contains all of our static images, and it is available from the
-Google Drive of our shared `utairlab@gmail.com` account.
-Use `source env/bin/activate` to activate the environment and run the app with `python3 app.py`
-
-## Deploying the Website on Google Cloud:
-You will need credentials for `utairlab@gmail.com`. Check the pinned post in the `#backend`  Slack channel for credentials.
-
-You will need the `gcloud` binary, [click me for gcloud installation instructions](https://cloud.google.com/sdk/docs/install).
-
-[Click me for instructions on deploying the webapp to google cloud](https://codelabs.developers.google.com/codelabs/cloud-app-engine-python3/#5).
