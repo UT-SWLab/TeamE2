@@ -33,23 +33,25 @@
                     <div class="container-fluid">
                         <h1 class="text-center">Upcoming Races</h1>
                     </div>
+                    {% if recentRaces is defined and recentRaces %}
                     <div class="container text-center">
-                        <p> British Grand Prix</p>
-                        <p> Monacoa Grand Prix</p>
-                        <p> Austin Grand Prix</p>
+                      {% for race in recentRaces %}
+                        <p> {{ race['name'] }}</p>
+                      {% endfor %}
                     </div>
+                    {% endif %}
                 </div>
                 <div>
                     <h1 class="text-center">Season Statistics</h1>
-                    <p class="text-center"> Mclaren hasn't won a race since 2007</p>
+                    <p class="text-center"> Data Generation WIP </p>
                 </div>
                 <div>
                     <h1 class="text-center">Trophy Club</h1>
-                    <p class="text-center"> Alexander Hamilton won the last race</p>
+                    <p class="text-center"> Data Generation WIP </p>
                 </div>
                 <div>
                     <h1 class="text-center">Funny Statistics</h1>
-                    <p class="text-center"> Mclaren hasn't won a race since 2007</p>
+                    <p class="text-center"> Data Generation WIP</p>
                 </div>
             </div>
             <div class="col-4">
