@@ -29,9 +29,9 @@ https://f1stat-292509.uc.r.appspot.com/
 | As a developer, I want the ability to test my code so I know the software is free from bugs before I push to production. | Sam | 4 hrs. | 4 hrs. |
 | As a developer, I want to be able to test my UI so that I know it is bug free before I push to production. | Alan | 2 hrs. | 2 hrs. | 
 | As a user, I want to view the web application's data sources and method of retrieval. This is for my own verification and assurance. | Sam | 3 hrs. | 3 hrs. |
-| As a user, I want the webpages to load quickly and responsively, while still providing a breadth of information. | Kevin | 1 hr. | 3 hrs. |
+| As a user, I want to see a short bio/summary of each instance to get some general knowledge on them. | Kevin | 1 hr. | 3 hrs. |
 | As a user, I want to navigate through the model instances using an intuitive feature. | Alan | 3 hrs. | 4 hrs. |
-| As a user, I want see the fastest laps of all time on a circuit to see what kind of speed the drivers are able to accomplish. | Kevin | 2 hrs. | 2 hrs. |
+| As a user, I want to see the fastest laps of all time on a circuit to see what kind of speed the drivers are able to accomplish. | Kevin | 2 hrs. | 2 hrs. |
 
 
 ## Environment Setup:
