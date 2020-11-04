@@ -2,6 +2,7 @@
 import json
 import os
 from collections import defaultdict
+from datetime import datetime
 
 # 3rd party packages
 from flask import Flask, render_template, request
@@ -302,7 +303,18 @@ def circuit_instance():
 
 @app.route('/')
 def home():
-    return render_template('home.html')
+    recentRaces = db.races.find({'year' : 2020}).limit(5)
+    recentRaces = list(recentRaces)
+    print(recentRaces)
+    todaysDate = datetime.now()
+    todayMonth = datetime.month
+    todaysDay = datetime.day
+    date = "...-"+str(todayMonth) + "-"+str(todaysDay)
+    todaysDrivers = db.drivers.find({'dob' : {'$regex' : date}}).limit(20)
+    for driver in todaysDrivers:
+        print()
+        print(driver)
+    return render_template('home.html' , recentRaces = recentRaces , todayDrivers = todaysDrivers)
 
 
 if __name__ == '__main__':
