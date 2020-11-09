@@ -2,7 +2,7 @@
 import json
 import os
 from collections import defaultdict
-from datetime import datetime
+from datetime import date
 
 # 3rd party packages
 from flask import Flask, render_template, request
@@ -303,18 +303,89 @@ def circuit_instance():
 
 @app.route('/')
 def home():
-    recentRaces = db.races.find({'year' : 2020}).limit(5)
+    today = date.today()
+    currentMonth = str(today).split("-")[1]
+    currentMonthName = today.strftime('%B')
+    currentDay =  str(today).split("-")[2]
+    currentYear =  str(today).split("-")[0]
+
+    recentRaces = db.races.find({'year' : int(currentYear)}).limit(5)
     recentRaces = list(recentRaces)
-    print(recentRaces)
-    todaysDate = datetime.now()
-    todayMonth = datetime.month
-    todaysDay = datetime.day
-    date = "...-"+str(todayMonth) + "-"+str(todaysDay)
-    todaysDrivers = db.drivers.find({'dob' : {'$regex' : date}}).limit(20)
-    for driver in todaysDrivers:
-        print()
-        print(driver)
-    return render_template('home.html' , recentRaces = recentRaces , todayDrivers = todaysDrivers)
+
+    regDate = "....-" + currentMonth + "-.." 
+    drivers = db.drivers.find({'dob' : {'$regex' : regDate}}).limit(20)
+    drivers = list(drivers)
+    currentMonthDrivers = []
+    index = 0
+    for driver in drivers:
+        driver_ref = driver['driverRef']
+        name = driver['forename'] + "  " + driver['surname']
+        image_path = f'images/drivers/{driver_ref}.png'
+        tempDict = {'driver_ref' : driver_ref, 'image_path' : image_path, 'name' : name , 'id' :driver['driverId']}
+        currentMonthDrivers.append(tempDict)
+        index+=1
+
+
+    thisSeasonResults = db.results.find({'year' : int(currentYear)})
+    seasonDriverPoints =  {}
+    seasonConstructorPoints = {}
+    for result in thisSeasonResults:
+        driver = result['driverId']
+        driverPoints = result['points']
+        driverName = result['driverName']
+        
+        constructor = result['constructorId']
+        constructPoints = result['points']
+        constructorName = result['constructorName']
+        if driver in seasonDriverPoints:
+            currentPoints = seasonDriverPoints[driver][1]
+            seasonDriverPoints[driver][1] = currentPoints + driverPoints
+        else:
+            seasonDriverPoints[driver] = [driverName , driverPoints]
+
+        if constructor in seasonConstructorPoints:
+            currentPoints = seasonConstructorPoints[constructor][1]
+            seasonConstructorPoints[constructor][1] = currentPoints + constructPoints
+        else:
+            seasonConstructorPoints[constructor] = [constructorName, constructPoints]
+    
+    sortedDriverSeasonLeaders = []
+    for key in sorted(seasonDriverPoints.keys(), key=lambda k: seasonDriverPoints[k][1], reverse=True):
+       sortedDriverSeasonLeaders.append(seasonDriverPoints[key])
+
+    sortedConstructorSeasonLeaders = []
+
+    for key in sorted(seasonConstructorPoints.keys(), key=lambda k: seasonConstructorPoints[k][1], reverse=True):
+        sortedConstructorSeasonLeaders.append(seasonConstructorPoints[key])
+
+    recentRaces = recentRaces[:5]
+    sortedConstructorSeasonLeaders = sortedConstructorSeasonLeaders[:5]
+    sortedDriverSeasonLeaders =  sortedDriverSeasonLeaders[:5]
+
+    drivers = db.drivers.aggregate([{'$sample': {'size': 10}}])
+    popularDrivers = []
+    for driver in drivers:
+        driver_ref = driver['driverRef']
+        name = driver['forename'] + "  " + driver['surname']
+        image_path = f'images/drivers/{driver_ref}.png'
+        tempDict = {'driver_ref' : driver_ref, 'image_path' : image_path, 'name' : name, 'id' : driver['driverId']}
+        popularDrivers.append(tempDict)
+
+    circuits = db.circuits.aggregate([{'$sample' : {'size': 10}}])
+    popularCircuits = []
+    for circuit in circuits:
+        if 'circuitRef' in circuit.keys():
+            circuit_ref = circuit['circuitRef']
+            name = circuit['name']
+            image_path = f'images/circuits/{circuit_ref}.png'
+            tempDict = {'circuit_ref' : circuit_ref, 'name' : name, 'image_path' : image_path, 'id' : circuit['circuitId']}
+            popularCircuits.append(tempDict)
+
+
+    return render_template('home.html' , recentRaces = recentRaces , monthDrivers = currentMonthDrivers, 
+                            driverSeasonStandings = sortedDriverSeasonLeaders, 
+                            constructorSeasonStandings = sortedConstructorSeasonLeaders,
+                            year = currentYear, monthName = currentMonthName, popularCircuits = popularCircuits, popularDrivers=popularDrivers)
 
 
 if __name__ == '__main__':
