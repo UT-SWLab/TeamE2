@@ -76,6 +76,16 @@ def driver_model():
     return render_template('drivers-model.html', drivers=drivers, pages=pages, page=page)
 
 
+@app.route('/driver-search')
+def driver_search():
+    """
+    Populate driver search result page
+    """
+    query = request.args['search'] 
+    print('user entered query:')
+    print(query)
+
+
 @app.route('/models_constructors')
 def constructor_model():
     page = request.args.get('page', 1, type=int)
@@ -104,6 +114,16 @@ def constructor_model():
     pages = int(len(constructors)/per_page)
     constructors = constructors[page*per_page: page*per_page+per_page]
     return render_template('constructors-model.html', constructors=constructors, pages=pages, page=page)
+
+
+@app.route('/constructor-search')
+def constructor_search():
+    """
+    Populate constructor search result page
+    """
+    query = request.args['search'] 
+    print('user entered query:')
+    print(query)
 
 
 @app.route('/models_circuits')
@@ -141,6 +161,16 @@ def circuit_model():
     pages = int(len(circuits) / per_page)
     circuits = circuits[page * per_page: page * per_page + per_page]
     return render_template('circuits-model.html', circuits=circuits, pages=pages, page=page)
+
+
+@app.route('/circuit-search')
+def circuit_search():
+    """
+    Populate circuit search result page
+    """
+    query = request.args['search'] 
+    print('user entered query:')
+    print(query)
 
 
 @app.route('/drivers')
