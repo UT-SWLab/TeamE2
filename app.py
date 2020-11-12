@@ -33,9 +33,11 @@ def about():
 
 @app.route('/models_drivers')
 def driver_model():
+    
+    driver_list = db.drivers.find() 
+    # search(, db.drivers)
     page = request.args.get('page', 1, type=int)
     page = page - 1
-    driver_list = db.drivers.find()
     drivers = []
     for driver in driver_list:
         if 'driverId' in driver.keys():      
@@ -64,8 +66,6 @@ def driver_model():
             # Get image
             driver_ref = driver['driverRef']
             img_path = f'images/drivers/{driver_ref}.png'
-            print(img_path)
-            print(os.getcwd())
             if not os.path.exists(f'./static/{img_path}'):
                 img_path = NO_IMG
             drivers[-1].update({'imgpath': img_path})
@@ -76,21 +76,14 @@ def driver_model():
     return render_template('drivers-model.html', drivers=drivers, pages=pages, page=page)
 
 
-@app.route('/driver-search')
-def driver_search():
-    """
-    Populate driver search result page
-    """
-    query = request.args['search'] 
-    print('user entered query:')
-    print(query)
-
-
 @app.route('/models_constructors')
 def constructor_model():
+    
+    # get constructors from search
+    constructor_list = search('name', db.constructors)
+
     page = request.args.get('page', 1, type=int)
     page = page - 1
-    constructor_list = db.constructors.find()
     constructors = []
     topDriver = "N/A"
     for constructor in constructor_list:
@@ -116,21 +109,14 @@ def constructor_model():
     return render_template('constructors-model.html', constructors=constructors, pages=pages, page=page)
 
 
-@app.route('/constructor-search')
-def constructor_search():
-    """
-    Populate constructor search result page
-    """
-    query = request.args['search'] 
-    print('user entered query:')
-    print(query)
-
-
 @app.route('/models_circuits')
 def circuit_model():
+
+    # get constructors from search
+    circuit_list = search('name', db.circuits)
+
     page = request.args.get('page', 1, type=int)
     page = page - 1
-    circuit_list = db.circuits.find()
     circuits = []
     for circuit in circuit_list:
         if 'circuitId' in circuit.keys():
@@ -161,16 +147,6 @@ def circuit_model():
     pages = int(len(circuits) / per_page)
     circuits = circuits[page * per_page: page * per_page + per_page]
     return render_template('circuits-model.html', circuits=circuits, pages=pages, page=page)
-
-
-@app.route('/circuit-search')
-def circuit_search():
-    """
-    Populate circuit search result page
-    """
-    query = request.args['search'] 
-    print('user entered query:')
-    print(query)
 
 
 @app.route('/drivers')
@@ -345,6 +321,25 @@ def home():
         print()
         print(driver)
     return render_template('home.html' , recentRaces = recentRaces , todayDrivers = todaysDrivers)
+
+
+def search(field, collection):
+    """
+    Purpose:
+        Filter model page by user search query
+    
+    Args:
+        field:      {str}        field to search through   
+        collection: {collection} target PyMongo database collection
+
+    Returns:
+        {list} List of search results
+    """
+    query = request.args.get('search', '', type=str).rstrip()
+    if query == '':
+        return collection.find()
+    else:
+        return collection.find({field :{'$regex' : f'{query}?', '$options' : 'i'}})
 
 
 if __name__ == '__main__':
