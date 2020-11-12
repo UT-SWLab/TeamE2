@@ -34,8 +34,31 @@ def about():
 @app.route('/models_drivers')
 def driver_model():
     
-    driver_list = db.drivers.find() 
-    # search(, db.drivers)
+    query = request.args.get('search', '', type=str).rstrip()
+    if query == '':
+        driver_list = db.drivers.find()
+    else:
+        # Search token in forenames and surnames
+        tokens = query.split()
+        if len(tokens) == 1:
+            driver_list = list(search('forename', db.drivers))
+            surname_list = search('surname', db.drivers)
+
+            for driver in surname_list:
+                if driver not in driver_list:
+                    driver_list.append(driver)
+        else:
+            # Search first token in forenames, search other tokens in surnames
+            driver_list = list(db.drivers.find({'forename' :{'$regex' : f'{tokens[0]}?', '$options' : 'i'}}))
+            surname_cursors = []
+
+            for i in range(1, len(tokens)):
+                surname_cursors.append(db.drivers.find({'surname' :{'$regex' : f'{tokens[i]}?', '$options' : 'i'}}))
+            for cursor in surname_cursors:
+                for driver in cursor:
+                    if driver not in driver_list:
+                        driver_list.append(driver)
+
     page = request.args.get('page', 1, type=int)
     page = page - 1
     drivers = []
