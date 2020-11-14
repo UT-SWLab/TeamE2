@@ -5,13 +5,17 @@ from collections import defaultdict
 from datetime import datetime
 
 # 3rd party packages
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, session
 from flask_pymongo import pymongo
+from flask_session import Session
 
 app = Flask(__name__)
 dbUsername = 'formulaOne'
 dbPassword = '0WpPVH6LdcHiwdct'
 CONNECTION_STRING = "mongodb+srv://" + dbUsername + ":" + dbPassword + "@formulaonedb.bue6f.gcp.mongodb.net/<dbname>?retryWrites=true&w=majority"
+SESSION_TYPE = 'filesystem'
+app.config.from_object(__name__)
+Session(app)
 
 client = pymongo.MongoClient(CONNECTION_STRING)
 db = client.get_database('FormulaOneDB')
@@ -35,112 +39,271 @@ def about():
 def driver_model():
     page = request.args.get('page', 1, type=int)
     page = page - 1
-    driver_list = db.drivers.find()
-    drivers = []
-    for driver in driver_list:
-        if 'driverId' in driver.keys():      
-            drivers.append(
-                {'driverId': driver['driverId'], 'driverRef': driver['driverRef'], 
-                'surname': driver['surname'], 'forename': driver['forename'], 'nationality': driver['nationality']})
-            if 'constructor' not in driver:
-                con = list(db.results.find({'driverId': driver['driverId']}))
-                all_constructors = []
-                for c in con:
-                    constructorId = c['constructorId']
-                    constructorName = db.constructors.find_one({'constructorId': c['constructorId']})['name']
-                    constructor = {'id': constructorId, 'name': constructorName}
-                    if constructor not in all_constructors:
-                        all_constructors.append(constructor)
-                all_constructors.reverse() #newest to oldest
-                # print(all_constructors)
-                db.drivers.update_one({'_id': driver['_id']}, {'$set': {'constructor': all_constructors[0]}})
-                db.drivers.update_one({'_id': driver['_id']}, {'$set': {'all_constructors': all_constructors}})
-            else:
-                # TODO: Consider adding logging, print statements clutter up the terminal
-                # print('found constructor for driver: ' + str(driver['driverId']))
-                drivers[-1].update({'constructor': driver['constructor']})
-            drivers[-1].update({'link': 'drivers?id='+str(driver['driverId'])})
+    if 'current_dsort' not in session:
+        session['current_dsort'] = 'alpha'
+    if 'current_dnat' not in session:
+        session['current_dnat'] = 'all'
+    if 'current_dcon' not in session:
+        session['current_dcon'] = 'all'
+    if 'drivers' not in session:
+        print('finding drivers')
+        driver_list = db.drivers.find()
+        drivers = []
+        for driver in driver_list:
+            if 'driverId' in driver.keys():      
+                drivers.append(
+                    {'driverId': driver['driverId'], 'driverRef': driver['driverRef'], 
+                    'surname': driver['surname'], 'forename': driver['forename'], 'nationality': driver['nationality']})
+                if 'constructor' not in driver:
+                    con = list(db.results.find({'driverId': driver['driverId']}))
+                    all_constructors = []
+                    for c in con:
+                        constructorId = c['constructorId']
+                        constructorName = db.constructors.find_one({'constructorId': c['constructorId']})['name']
+                        constructor = {'id': constructorId, 'name': constructorName}
+                        if constructor not in all_constructors:
+                            all_constructors.append(constructor)
+                    all_constructors.reverse() #newest to oldest
+                    db.drivers.update_one({'_id': driver['_id']}, {'$set': {'constructor': all_constructors[0]}})
+                    db.drivers.update_one({'_id': driver['_id']}, {'$set': {'all_constructors': all_constructors}})
+                else:
+                    drivers[-1].update({'constructor': driver['constructor']})
+                drivers[-1].update({'link': 'drivers?id='+str(driver['driverId'])})
 
-            # Get image
-            driver_ref = driver['driverRef']
-            img_path = f'images/drivers/{driver_ref}.png'
-            print(img_path)
-            print(os.getcwd())
-            if not os.path.exists(f'./static/{img_path}'):
-                img_path = NO_IMG
-            drivers[-1].update({'imgpath': img_path})
-
+                # Get image
+                driver_ref = driver['driverRef']
+                img_path = f'images/drivers/{driver_ref}.png'
+                if not os.path.exists(f'./static/{img_path}'):
+                    img_path = NO_IMG
+                drivers[-1].update({'imgpath': img_path})
+        session['drivers'] = drivers
+        session['drivers'] = sorted(session['drivers'], key=lambda x: (x['surname'].lower(), x['forename'].lower()))
+        session['driver_nationalities'] = []
+        session['driver_constructors'] = []
+        for driver in session['drivers']:
+            if driver['nationality'] not in session['driver_nationalities']:
+                session['driver_nationalities'].append(driver['nationality'])
+            if driver['constructor']['name'] not in session['driver_constructors']:
+                session['driver_constructors'].append(driver['constructor']['name'])
+        session['driver_nationalities'] = sorted(session['driver_nationalities'], key=lambda x: x)
+        session['driver_constructors'] = sorted(session['driver_constructors'], key=lambda x: x)
+    if 'current_drivers' not in session:
+        session['current_drivers'] = session['drivers']
     per_page = 20
-    pages = int(len(drivers) / per_page)
-    drivers = drivers[page * per_page: page * per_page + per_page]
-    return render_template('drivers-model.html', drivers=drivers, pages=pages, page=page)
+    pages = int(len(session['current_drivers']) / per_page)
+    drivers = session['current_drivers'][page * per_page: page * per_page + per_page]
+    return render_template('drivers-model.html', drivers=drivers, pages=pages, page=page, 
+        nationalities=session['driver_nationalities'], constructors=session['driver_constructors'],
+        dsort=session['current_dsort'], dnat=session['current_dnat'], dcon=session['current_dcon'])
+
+
+@app.route('/update_models_drivers')
+def update_models_drivers():
+    page = 0
+    per_page = 20
+
+    session['current_dsort'] = request.args['sort']
+    session['current_dnat'] = request.args['nationality']
+    session['current_dcon'] = request.args['constructor'].replace('_', ' ')
+    
+    #filter by nationality and constructor
+    
+    if request.args['nationality'] == 'all' and request.args['constructor'] == 'all':
+        session['current_drivers'] = session['drivers']
+    elif request.args['nationality'] == 'all' and request.args['constructor'] != 'all':
+        session['current_drivers'] = []
+        for driver in session['drivers']:
+            con = driver['constructor']['name']
+            if con.replace(' ', '_') == request.args['constructor']:
+                session['current_drivers'].append(driver)
+    elif request.args['nationality'] != 'all' and request.args['constructor'] == 'all':
+        session['current_drivers'] = []
+        for driver in session['drivers']:
+            if driver['nationality'] == request.args['nationality']:
+                session['current_drivers'].append(driver)
+    else:
+        session['current_drivers'] = []
+        for driver in session['drivers']:
+            con = driver['constructor']['name']
+            if driver['nationality'] == request.args['nationality'] and con.replace(' ', '_') == request.args['constructor']:
+                session['current_drivers'].append(driver)
+
+    #sorts
+    sort = request.args['sort']
+    if sort == 'alpha':
+        session['current_drivers'] = sorted(session['current_drivers'], key=lambda x: (x['surname'].lower(), x['forename'].lower()))
+    elif sort == 'alphaR':
+        session['current_drivers'] = sorted(session['current_drivers'], key=lambda x: (x['surname'].lower(), x['forename'].lower()), reverse=True)
+
+    print(session['drivers'])
+    drivers = session['current_drivers'][page * per_page: page * per_page + per_page]
+    pages = int(len(session['current_drivers']) / per_page)
+    return render_template('drivers-model.html', drivers=drivers, pages=pages, page=page, 
+        nationalities=session['driver_nationalities'], constructors=session['driver_constructors'],
+        dsort=session['current_dsort'], dnat=session['current_dnat'], dcon=session['current_dcon'])
 
 
 @app.route('/models_constructors')
 def constructor_model():
     page = request.args.get('page', 1, type=int)
     page = page - 1
-    constructor_list = db.constructors.find()
-    constructors = []
-    topDriver = "N/A"
-    for constructor in constructor_list:
-        if 'constructorId' in constructor.keys():
-            constructors.append(
-                {'constructorId': constructor['constructorId'], 'constructorRef': constructor['constructorRef'], 
-                'name': constructor['name'], 'nationality': constructor['nationality']}) 
-            if 'topDriverName' in constructor.keys():
-                constructors[-1].update({'top_driver': constructor['topDriverName']})
-            else:
-                constructors[-1].update({'top_driver': 'N/A'})
-            constructors[-1].update({'link': 'constructors?id='+str(constructor['constructorId'])})
+    if 'current_consort' not in session:
+        session['current_consort'] = 'alpha'
+    if 'current_connat' not in session:
+        session['current_connat'] = 'all'
+    
+    if 'constructors' not in session:
+        constructor_list = db.constructors.find()
+        constructors = []
+        for constructor in constructor_list:
+            if 'constructorId' in constructor.keys():
+                constructors.append(
+                    {'constructorId': constructor['constructorId'], 'constructorRef': constructor['constructorRef'], 
+                    'name': constructor['name'], 'nationality': constructor['nationality']}) 
+                if 'topDriverName' in constructor.keys():
+                    constructors[-1].update({'top_driver': constructor['topDriverName']})
+                else:
+                    constructors[-1].update({'top_driver': 'N/A'})
+                constructors[-1].update({'link': 'constructors?id='+str(constructor['constructorId'])})
 
-            # Get image
-            constructor_ref = constructor['constructorRef']
-            img_path = f'images/constructors/{constructor_ref}.png'
-            if not os.path.exists(f'./static/{img_path}'):
-                img_path = NO_IMG
-            constructors[-1].update({'imgpath': img_path})
+                # Get image
+                constructor_ref = constructor['constructorRef']
+                img_path = f'images/constructors/{constructor_ref}.png'
+                if not os.path.exists(f'./static/{img_path}'):
+                    img_path = NO_IMG
+                constructors[-1].update({'imgpath': img_path})
+        session['constructors'] = constructors
+        session['constructors'] = sorted(session['constructors'], key=lambda x: x['name'])
+        session['constructor_nationalities'] = []
+        for constructor in session['constructors']:
+            if constructor['nationality'] not in session['constructor_nationalities']:
+                session['constructor_nationalities'].append(constructor['nationality'])
+        session['constructor_nationalities'] = sorted(session['constructor_nationalities'], key=lambda x: x)
+    if 'current_constructors' not in session:
+        session['current_constructors'] = session['constructors']
     per_page = 20
-    pages = int(len(constructors)/per_page)
-    constructors = constructors[page*per_page: page*per_page+per_page]
-    return render_template('constructors-model.html', constructors=constructors, pages=pages, page=page)
+    pages = int(len(session['current_constructors'])/per_page)
+    constructors = session['current_constructors'][page*per_page: page*per_page+per_page]
+    return render_template('constructors-model.html', constructors=constructors, pages=pages, page=page,
+        nationalities=session['constructor_nationalities'], consort=session['current_consort'],
+        connat=session['current_connat'])
+
+
+@app.route('/update_models_constructors')
+def update_models_constructors():
+    page = 0
+    per_page = 20
+    session['current_consort'] = request.args['sort']
+    session['current_connat'] = request.args['nationality'].replace('_', ' ')
+
+    #filter by nationality
+    if request.args['nationality'] == 'all':
+        session['current_constructors'] = session['constructors']
+    else:
+        session['current_constructors'] = []
+        for constructor in session['constructors']:
+            nat = constructor['nationality']
+            if nat.replace(' ', '_') == request.args['nationality']:
+                session['current_constructors'].append(constructor)
+    
+    #sorts
+    sort = request.args['sort']
+    if sort == 'alpha':
+        session['current_constructors'] = sorted(session['current_constructors'], key=lambda x: x['name'])
+    elif sort == 'alphaR':
+        session['current_constructors'] = sorted(session['current_constructors'], key=lambda x: x['name'], reverse=True)
+
+    constructors = session['current_constructors'][page * per_page: page * per_page + per_page]
+    pages = int(len(session['current_constructors']) / per_page)
+
+    return render_template('constructors-model.html', constructors=constructors, pages=pages, page=page,
+        nationalities=session['constructor_nationalities'], consort=session['current_consort'],
+        connat=session['current_connat'])
 
 
 @app.route('/models_circuits')
 def circuit_model():
     page = request.args.get('page', 1, type=int)
     page = page - 1
-    circuit_list = db.circuits.find()
-    circuits = []
-    for circuit in circuit_list:
-        if 'circuitId' in circuit.keys():
-            circuits.append(
-                {'circuitId': circuit['circuitId'], 'circuitRef': circuit['circuitRef'], 
-                'name': circuit['name'], 'location': circuit['location'], 'country': circuit['country']})
-            if 'most_recent_race' not in circuit.keys():
-                mrr = db.races.find({'circuitId': circuit['circuitId']}).sort([('date', -1)])
-                mrr = list(mrr)
-                if len(mrr) > 0:
-                    mrr = mrr[0]
-                    print(mrr['name'] + ' ' + mrr['date'])
-                    db.circuits.update_one({'_id': circuit['_id']}, {'$set': {'most_recent_race': mrr['name'] + ' ' + mrr['date']}})
-                else:
-                    db.circuits.update_one({'_id': circuit['_id']}, {'$set': {'most_recent_race': 'N/A'}})
-            else:
-                print('found most recent race for circuit: ' + str(circuit['circuitId']))
-                circuits[-1].update({'most_recent_race': circuit['most_recent_race']})
-            circuits[-1].update({'link': 'circuits?id='+str(circuit['circuitId'])})
+    if 'current_csort' not in session:
+        session['current_csort'] = 'alpha'
+    if 'current_ccountry' not in session:
+        session['current_ccountry'] = 'all'
 
-            # Get image
-            circuit_ref = circuit['circuitRef']
-            img_path = f'images/circuits/{circuit_ref}.png'
-            if not os.path.exists(f'./static/{img_path}'):
-                img_path = NO_IMG
-            circuits[-1].update({'imgpath': img_path})
+    if 'circuits' not in session:
+        circuit_list = db.circuits.find()
+        circuits = []
+        for circuit in circuit_list:
+            if 'circuitId' in circuit.keys():
+                circuits.append(
+                    {'circuitId': circuit['circuitId'], 'circuitRef': circuit['circuitRef'], 
+                    'name': circuit['name'], 'location': circuit['location'], 'country': circuit['country']})
+                if 'most_recent_race' not in circuit.keys():
+                    mrr = db.races.find({'circuitId': circuit['circuitId']}).sort([('date', -1)])
+                    mrr = list(mrr)
+                    if len(mrr) > 0:
+                        mrr = mrr[0]
+                        print(mrr['name'] + ' ' + mrr['date'])
+                        db.circuits.update_one({'_id': circuit['_id']}, {'$set': {'most_recent_race': mrr['name'] + ' ' + mrr['date']}})
+                    else:
+                        db.circuits.update_one({'_id': circuit['_id']}, {'$set': {'most_recent_race': 'N/A'}})
+                else:
+                    print('found most recent race for circuit: ' + str(circuit['circuitId']))
+                    circuits[-1].update({'most_recent_race': circuit['most_recent_race']})
+                circuits[-1].update({'link': 'circuits?id='+str(circuit['circuitId'])})
+
+                # Get image
+                circuit_ref = circuit['circuitRef']
+                img_path = f'images/circuits/{circuit_ref}.png'
+                if not os.path.exists(f'./static/{img_path}'):
+                    img_path = NO_IMG
+                circuits[-1].update({'imgpath': img_path})
+        session['circuits'] = circuits
+        session['circuits'] = sorted(session['circuits'], key=lambda x: x['name'])
+        session['circuit_countries'] = []
+        for circuit in session['circuits']:
+            if circuit['country'] not in session['circuit_countries']:
+                session['circuit_countries'].append(circuit['country'])
+        session['circuit_countries'] = sorted(session['circuit_countries'], key=lambda x: x)
+    if 'current_circuits' not in session:
+        session['current_circuits'] = session['circuits']    
     per_page = 20
-    pages = int(len(circuits) / per_page)
-    circuits = circuits[page * per_page: page * per_page + per_page]
-    return render_template('circuits-model.html', circuits=circuits, pages=pages, page=page)
+    pages = int(len(session['current_circuits']) / per_page)
+    circuits = session['current_circuits'][page * per_page: page * per_page + per_page]
+    return render_template('circuits-model.html', circuits=circuits, pages=pages, page=page,
+        countries=session['circuit_countries'], csort=session['current_csort'], ccountry = session['current_ccountry'])
+
+
+@app.route('/update_models_circuits')
+def update_models_circuits():
+    page = 0
+    per_page = 20
+
+    session['current_csort'] = request.args['sort']
+    session['current_ccountry'] = request.args['country'].replace('_', ' ')
+    
+    #filter by country
+    if request.args['country'] == 'all':
+        session['current_circuits'] = session['circuits']
+    else:
+        session['current_circuits'] = []
+        for circuit in session['circuits']:
+            country = circuit['country']
+            if country.replace(' ', '_') == request.args['country']:
+                session['current_circuits'].append(circuit)
+    
+    #sorts
+    sort = request.args['sort']
+    if sort == 'alpha':
+        session['current_circuits'] = sorted(session['current_circuits'], key=lambda x: x['name'])
+    elif sort == 'alphaR':
+        session['current_circuits'] = sorted(session['current_circuits'], key=lambda x: x['name'], reverse=True)
+
+    circuits = session['current_circuits'][page * per_page: page * per_page + per_page]
+    pages = int(len(session['current_circuits']) / per_page)
+
+    return render_template('circuits-model.html', circuits=circuits, pages=pages, page=page,
+        countries=session['circuit_countries'], csort=session['current_csort'], ccountry = session['current_ccountry'])
 
 
 @app.route('/drivers')
@@ -318,4 +481,5 @@ def home():
 
 
 if __name__ == '__main__':
+    app.secret_key = os.urandom(24)
     app.run(debug=True)

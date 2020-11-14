@@ -18,27 +18,58 @@
         - allows for searching, sorting, and filtering
 -->
 <div class="container my-5">
+  <form action="{{url_for('update_models_constructors')}}">
+    <label for="sort">Sort:</label>
+    <select name="sort" id="sort">
+      {% if consort == 'alpha' %}
+        <option value="alpha" selected>A-Z</option>
+        <option value="alphaR">Z-A</option>
+      {% else %}
+        <option value="alpha">A-Z</option>
+        <option value="alphaR" selected>Z-A</option>
+      {% endif %}
+    </select>
+    <label for="nationality">Nationality:</label>
+    <select name='nationality'>
+      {% if connat == 'all' %}
+        <option value="all" selected>All</option>
+      {% else %}
+        <option value="all">All</option>
+      {% endif %}
+      {% for nationality in nationalities %}
+        {% if nationality == connat %} 
+         <option value={{nationality.replace(' ', '_')}} selected>{{nationality}}</option>
+        {% else %}
+          <option value={{nationality.replace(' ', '_')}}>{{nationality}}</option>
+        {% endif %}
+      {% endfor %}
+    </select>
+    <br><br>
+    <input type="submit" value="Update">
+  </form>
+</div>
+<div class="container my-5">
   {% if constructors %}
   {% set index = 0 %}
   {% for i in range((constructors|length)|int) %}
   <div class="row justify-content-center">
     <div class="cards">
-      {% for j in range(4) %}
-        {% if constructors|length > 4*i+j %}
-          {% set imgurl = url_for('static', filename=constructors[4*i+j]['imgpath']) %}
+      {% for j in range(3) %}
+        {% if constructors|length > 3*i+j %}
+          {% set imgurl = url_for('static', filename=constructors[3*i+j]['imgpath']) %}
           <!--Card template from https://codepen.io/veronicadev/pen/WJyOwG-->
           <article class="card card--1">
           <div class="card__img" style="background-image: url({{imgurl}})"></div>
-          <a href={{constructors[4*i+j]['link']}} class="card_link">
+          <a href={{constructors[3*i+j]['link']}} class="card_link">
             <div class="card__img--hover" style="background-image: url({{imgurl}})"></div>
             </a>
           <div class="card__info">
             <span class="card__category"> Constructor</span>
-            <h3 class="card__title">{{constructors[4*i+j]['name']}}</h3>
+            <h3 class="card__title">{{constructors[3*i+j]['name']}}</h3>
             <span class="card__category">Nationality</span>
-            <h6 class="card__title">{{constructors[4*i+j]['nationality']}}</h6>
+            <h6 class="card__title">{{constructors[3*i+j]['nationality']}}</h6>
             <span class="card__category">Top Driver</span> 
-            <h6 class="card__title">{{constructors[4*i+j]['top_driver']}}</h6>
+            <h6 class="card__title">{{constructors[3*i+j]['top_driver']}}</h6>
           </div>
           </article>
         {% endif %}
