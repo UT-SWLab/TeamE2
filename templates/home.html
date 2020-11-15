@@ -49,7 +49,7 @@
                 {% if driverSeasonStandings is defined and driverSeasonStandings %}
                 <div class="container text-center">
                     {% for driver in driverSeasonStandings %}
-                    <p class="data-subtext">{{ driver[0]}} {{ driver[1] }}</p>
+                    <p class="data-subtext"><a href="{{ 'drivers?id='+driver[2] | string }}">{{ driver[0]}} {{ driver[1] }}</a></p>
                     {% endfor %}
                 </div>
                 {% endif %}
@@ -61,7 +61,7 @@
                 {% if constructorSeasonStandings is defined and constructorSeasonStandings %}
                 <div class="container text-center">
                     {% for constructor in constructorSeasonStandings %}
-                    <p class="data-subtext">{{ constructor[0] }} {{ constructor[1] }}</p>
+                    <p class="data-subtext"><a href="{{ 'constructors?id='+constructor[2] | string }}">{{ constructor[0] }} {{ constructor[1] }}</a></p>
                     {% endfor %}
                 </div>
                 {% endif %}
@@ -78,11 +78,17 @@
                         {% for driver in monthDrivers %}
                         {% if loop.index == 1%}
                         <div class="carousel-item active text-center">
-                            <img src="{{ url_for('static' , filename = driver['image_path']) }}" href="/drivers?id={{driver['driverId']}}">
+                            <a href="{{ 'drivers?id='+driver['id'] | string }}">
+                                <img src="{{ url_for('static' , filename = driver['image_path']) }}" href="/drivers?id={{driver['driverId']}}">
+                                <p class="data-subtext">{{driver['name']}}</p>
+                            </a>
                         </div>
                         {% else %}
                         <div class="carousel-item text-center">
-                            <img src="{{ url_for('static' , filename = driver['image_path']) }}" href="/drivers?id={{driver['driverId']}}">
+                            <a href="{{ 'drivers?id='+driver['id'] | string }}">
+                                <img src="{{ url_for('static' , filename = driver['image_path']) }}" href="/drivers?id={{driver['driverId']}}">
+                                <p class="data-subtext">{{driver['name']}}</p>
+                            </a>
                         </div>
                         {% endif %}
                         {% endfor %}
@@ -108,11 +114,17 @@
                             {% for driver in popularDrivers %}
                             {% if loop.index == 1%}
                             <div class="carousel-item active text-center">
-                                <img src="{{ url_for('static' , filename = driver['image_path']) }}" href="/drivers?id={{driver['driverId']}}">
+                                <a href="{{ 'drivers?id='+driver['id'] | string }}">
+                                    <img src="{{ url_for('static' , filename = driver['image_path']) }}" href="/drivers?id={{driver['driverId']}}">
+                                    <p class="data-subtext">{{driver['name']}}</p>
+                                </a>
                             </div>
                             {% else %}
                             <div class="carousel-item text-center">
-                                <img src="{{ url_for('static' , filename = driver['image_path']) }}" href="/drivers?id={{driver['driverId']}}">
+                                <a href="{{ 'drivers?id='+driver['id'] | string }}">
+                                    <img src="{{ url_for('static' , filename = driver['image_path']) }}" href="/drivers?id={{driver['driverId']}}">
+                                    <p class="data-subtext">{{driver['name']}}</p>
+                                </a>
                             </div>
                             {% endif %}
                             {% endfor %}
@@ -138,11 +150,17 @@
                                 {% for circuit in popularCircuits %}
                                 {% if loop.index == 1%}
                                 <div class="carousel-item active text-center">
-                                    <img src="{{ url_for('static' , filename = circuit['image_path']) }}" href="/circuits?id={{circuit['circuitId']}}">
+                                    <a href="{{ 'circuits?id='+circuit['id'] | string }}">
+                                        <img src="{{ url_for('static' , filename = circuit['image_path']) }}" href="/circuits?id={{circuit['circuitId']}}">
+                                        <p class="data-subtext">{{circuit['name']}}</p>
+                                    </a>
                                 </div>
                                 {% else %}
                                 <div class="carousel-item text-center">
-                                    <img src="{{ url_for('static' , filename = circuit['image_path']) }}" href="/circuits?id={{circuit['circuitId']}}">
+                                    <a href="{{ 'circuits?id='+circuit['id'] | string }}">
+                                        <img src="{{ url_for('static' , filename = circuit['image_path']) }}" href="/circuits?id={{circuit['circuitId']}}">
+                                        <p class="data-subtext">{{circuit['name']}}</p>
+                                    </a>
                                 </div>
                                 {% endif %}
                                 {% endfor %}
@@ -164,4 +182,4 @@
         </div>
     </div>
 </div>
-    {% endblock %}
+{% endblock %}
