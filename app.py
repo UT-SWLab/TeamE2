@@ -33,9 +33,34 @@ def about():
 
 @app.route('/models_drivers')
 def driver_model():
+    
+    query = request.args.get('search', '', type=str).rstrip()
+    if query == '':
+        driver_list = db.drivers.find()
+    else:
+        # Search token in forenames and surnames
+        tokens = query.split()
+        if len(tokens) == 1:
+            driver_list = list(search('forename', db.drivers))
+            surname_list = search('surname', db.drivers)
+
+            for driver in surname_list:
+                if driver not in driver_list:
+                    driver_list.append(driver)
+        else:
+            # Search first token in forenames, search other tokens in surnames
+            driver_list = list(db.drivers.find({'forename' :{'$regex' : f'{tokens[0]}?', '$options' : 'i'}}))
+            surname_cursors = []
+
+            for i in range(1, len(tokens)):
+                surname_cursors.append(db.drivers.find({'surname' :{'$regex' : f'{tokens[i]}?', '$options' : 'i'}}))
+            for cursor in surname_cursors:
+                for driver in cursor:
+                    if driver not in driver_list:
+                        driver_list.append(driver)
+
     page = request.args.get('page', 1, type=int)
     page = page - 1
-    driver_list = db.drivers.find()
     drivers = []
     for driver in driver_list:
         if 'driverId' in driver.keys():      
@@ -64,8 +89,6 @@ def driver_model():
             # Get image
             driver_ref = driver['driverRef']
             img_path = f'images/drivers/{driver_ref}.png'
-            print(img_path)
-            print(os.getcwd())
             if not os.path.exists(f'./static/{img_path}'):
                 img_path = NO_IMG
             drivers[-1].update({'imgpath': img_path})
@@ -78,9 +101,12 @@ def driver_model():
 
 @app.route('/models_constructors')
 def constructor_model():
+    
+    # get constructors from search
+    constructor_list = search('name', db.constructors)
+
     page = request.args.get('page', 1, type=int)
     page = page - 1
-    constructor_list = db.constructors.find()
     constructors = []
     topDriver = "N/A"
     for constructor in constructor_list:
@@ -108,9 +134,12 @@ def constructor_model():
 
 @app.route('/models_circuits')
 def circuit_model():
+
+    # get constructors from search
+    circuit_list = search('name', db.circuits)
+
     page = request.args.get('page', 1, type=int)
     page = page - 1
-    circuit_list = db.circuits.find()
     circuits = []
     for circuit in circuit_list:
         if 'circuitId' in circuit.keys():
@@ -386,6 +415,25 @@ def home():
                             driverSeasonStandings = sortedDriverSeasonLeaders, 
                             constructorSeasonStandings = sortedConstructorSeasonLeaders,
                             year = currentYear, monthName = currentMonthName, popularCircuits = popularCircuits, popularDrivers=popularDrivers)
+
+
+def search(field, collection):
+    """
+    Purpose:
+        Filter model page by user search query
+    
+    Args:
+        field:      {str}        field to search through   
+        collection: {collection} target PyMongo database collection
+
+    Returns:
+        {list} List of search results
+    """
+    query = request.args.get('search', '', type=str).rstrip()
+    if query == '':
+        return collection.find()
+    else:
+        return collection.find({field :{'$regex' : f'{query}?', '$options' : 'i'}})
 
 
 if __name__ == '__main__':

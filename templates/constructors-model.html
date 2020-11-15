@@ -18,6 +18,14 @@
         - allows for searching, sorting, and filtering
 -->
 <div class="container my-5">
+  <div class="searchbar">
+    <form style="width: 100%;" action="/models_constructors" method="get">
+      <input id="searchboxs" class="col-6" type="text" name="search" placeholder="Enter a query ...">
+      <button type="submit">Submit</button>
+    </form>
+    <br>
+  </div>
+
   {% if constructors %}
   {% set index = 0 %}
   {% for i in range((constructors|length)|int) %}

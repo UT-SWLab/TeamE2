@@ -18,6 +18,14 @@
         - allows for searching, sorting, and filtering
 -->
 <div class="container my-5">
+  <div class="searchbar">
+    <form style="width: 100%;" action="/models_drivers" method="get">
+      <input id="searchbox" class="col-6" type="text" name="search" placeholder="Enter a query ...">
+      <button type="submit">Submit</button>
+    </form>
+    <br>
+  </div>
+
   {% if drivers %}
   {% set index = 0 %}
   {% for i in range((drivers|length)|int) %}
