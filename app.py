@@ -41,8 +41,8 @@ def driver_model():
         # Search token in forenames and surnames
         tokens = query.split()
         if len(tokens) == 1:
-            driver_list = list(search('forename', db.drivers))
-            surname_list = search('surname', db.drivers)
+            driver_list = list(search('forename', db.drivers, query))
+            surname_list = search('surname', db.drivers, query)
 
             for driver in surname_list:
                 if driver not in driver_list:
@@ -103,8 +103,8 @@ def driver_model():
 def constructor_model():
     
     # get constructors from search
-    constructor_list = search('name', db.constructors)
-
+    query = request.args.get('search', '', type=str).rstrip()
+    constructor_list = search('name', db.constructors, query)
     page = request.args.get('page', 1, type=int)
     page = page - 1
     constructors = []
@@ -134,9 +134,9 @@ def constructor_model():
 
 @app.route('/models_circuits')
 def circuit_model():
-
+    query = request.args.get('search', '', type=str).rstrip()
     # get constructors from search
-    circuit_list = search('name', db.circuits)
+    circuit_list = search('name', db.circuits, query)
 
     page = request.args.get('page', 1, type=int)
     page = page - 1
@@ -156,7 +156,7 @@ def circuit_model():
                 else:
                     db.circuits.update_one({'_id': circuit['_id']}, {'$set': {'most_recent_race': 'N/A'}})
             else:
-                print('found most recent race for circuit: ' + str(circuit['circuitId']))
+                #print('found most recent race for circuit: ' + str(circuit['circuitId']))
                 circuits[-1].update({'most_recent_race': circuit['most_recent_race']})
             circuits[-1].update({'link': 'circuits?id='+str(circuit['circuitId'])})
 
@@ -346,7 +346,7 @@ def home():
     return render_template('home.html' , recentRaces = recentRaces , todayDrivers = todaysDrivers)
 
 
-def search(field, collection):
+def search(field, collection, query):
     """
     Purpose:
         Filter model page by user search query
@@ -354,11 +354,11 @@ def search(field, collection):
     Args:
         field:      {str}        field to search through   
         collection: {collection} target PyMongo database collection
+        query: {str}             data to be sarched for in the collection
 
     Returns:
         {list} List of search results
     """
-    query = request.args.get('search', '', type=str).rstrip()
     if query == '':
         return collection.find()
     else:

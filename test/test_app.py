@@ -1,6 +1,7 @@
 import unittest
 from flask import Flask, render_template, request
 from flask_pymongo import pymongo
+from app import search
 
 class TestApp(unittest.TestCase):
     
@@ -256,7 +257,27 @@ class TestApp(unittest.TestCase):
         self.assertEqual(desiredDocumentCount , actualDocumentCount)
 
 
+    def test_SpecificSearch(self):
+        field = 'forename'
+        collection = self.db.drivers
+        query = 'Samuel'
+        self.db.drivers.insert_one({'forename' : 'Samuel'})
+        drivers = search(field , collection, query)
+        for driver in drivers:
+            self.assertEquals(driver['forename'] , query)
+    
+    def test_GeneralSearch(self):
+        field = 'forename'
+        collection =  self.db.drivers
+        query = ''
+        drivers = search(field, collection, query)
+        drivers = list(drivers)
+        desiredNumDrivers = collection.count_documents({})
+        self.assertEquals(desiredNumDrivers,len(drivers))
 
+    
+
+       
     
         
 
