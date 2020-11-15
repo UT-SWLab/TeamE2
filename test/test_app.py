@@ -256,7 +256,6 @@ class TestApp(unittest.TestCase):
         desiredDocumentCount = 0
         self.assertEqual(desiredDocumentCount , actualDocumentCount)
 
-
     def test_SpecificSearch(self):
         field = 'forename'
         collection = self.db.drivers

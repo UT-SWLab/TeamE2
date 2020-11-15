@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/home.css')}}">
 {% endblock %}
 {% block body %}
 <!--
@@ -19,158 +20,166 @@
     - champion in the lead
     
 -->
-    <div class="jumbotron text-center mb-0">
-        <h1>Formula 1 DB</h1>
-        <p>The number 1 source for formula 1 information</p>
-    </div>
-    <div class="container">
-        <div class="row">
-            <div class="col-8">
-                <div class="row">
-                    <h1 class="text-center"> </h1>
+<div class="jumbotron text-center mb-0">
+    <h1>Formula 1 DB</h1>
+    <p class="data-subtext">The number 1 source for Formula 1 information</p>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-8">
+            <div class="row">
+                <h1 class="text-center"> </h1>
+            </div>
+            <div class="row">
+                <div class="container-fluid">
+                    <p class="data-header text-center">Upcoming Races in {{ year }}</p>
                 </div>
-                <div class="row">
-                    <div class="container-fluid">
-                        <h1 class="text-center">Upcoming Races</h1>
-                    </div>
-                    {% if recentRaces is defined and recentRaces %}
-                    <div class="container text-center">
-                      {% for race in recentRaces %}
-                        <p> {{ race['name'] }}</p>
-                      {% endfor %}
+                {% if recentRaces is defined and recentRaces %}
+                <div class="container text-center">
+                    {% for race in recentRaces %}
+                    <p class="data-subtext"> {{ race['name'] }}</p>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+            <div class="row">
+                <div class="container-fluid">
+                    <p class="data-header text-center">Driver {{ year }} Season standings</p>
+                </div>
+                {% if driverSeasonStandings is defined and driverSeasonStandings %}
+                <div class="container text-center">
+                    {% for driver in driverSeasonStandings %}
+                    <p class="data-subtext"><a href="{{ 'drivers?id='+driver[2] | string }}">{{ driver[0]}} {{ driver[1] }}</a></p>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+            <div class="row">
+                <div class="container-fluid">
+                    <p class="data-header text-center">Constructor {{ year }} Season Standings</p>
+                </div>
+                {% if constructorSeasonStandings is defined and constructorSeasonStandings %}
+                <div class="container text-center">
+                    {% for constructor in constructorSeasonStandings %}
+                    <p class="data-subtext"><a href="{{ 'constructors?id='+constructor[2] | string }}">{{ constructor[0] }} {{ constructor[1] }}</a></p>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="container mb-3">
+                <span class="data-header text-center mt-3">Drivers Born in &nbsp;</span>
+                <span class="data-header">{{ monthName }}</span>
+                {% if monthDrivers %}
+                <div id="monthCarousel" class="carousel slide" data-ride="carousel">
+                    <!-- The slideshow -->
+                    <div class="carousel-inner">
+                        {% for driver in monthDrivers %}
+                        {% if loop.index == 1%}
+                        <div class="carousel-item active text-center">
+                            <a href="{{ 'drivers?id='+driver['id'] | string }}">
+                                <img src="{{ url_for('static' , filename = driver['image_path']) }}" href="/drivers?id={{driver['driverId']}}">
+                                <p class="data-subtext">{{driver['name']}}</p>
+                            </a>
+                        </div>
+                        {% else %}
+                        <div class="carousel-item text-center">
+                            <a href="{{ 'drivers?id='+driver['id'] | string }}">
+                                <img src="{{ url_for('static' , filename = driver['image_path']) }}" href="/drivers?id={{driver['driverId']}}">
+                                <p class="data-subtext">{{driver['name']}}</p>
+                            </a>
+                        </div>
+                        {% endif %}
+                        {% endfor %}
+                        <div>
+                            <!-- Left and right controls -->
+                            <a class="carousel-control-prev" href="#monthCarousel" data-slide="prev">
+                                <span class="carousel-control-prev-icon bg-dark"></span>
+                            </a>
+                            <a class="carousel-control-next" href="#monthCarousel" data-slide="next">
+                                <span class="carousel-control-next-icon bg-dark"></span>
+                            </a>
+                        </div>
                     </div>
                     {% endif %}
                 </div>
-                <div>
-                    <h1 class="text-center">Season Statistics</h1>
-                    <p class="text-center"> Data Generation WIP </p>
-                </div>
-                <div>
-                    <h1 class="text-center">Trophy Club</h1>
-                    <p class="text-center"> Data Generation WIP </p>
-                </div>
-                <div>
-                    <h1 class="text-center">Funny Statistics</h1>
-                    <p class="text-center"> Data Generation WIP</p>
-                </div>
-            </div>
-            <div class="col-4">
-                <div class="container mb-3">
-      
-                    <h2 class="text-center mt-3">Today in history</h2>
-                    <div id="historyCarousel" class="carousel slide" data-ride="carousel">
-                    
-                      <!-- Indicators -->
-                      <ul class="carousel-indicators">
-                        <li data-target="#historyCarousel" data-slide-to="0" class="active"></li>
-                        <li data-target="#historyCarousel" data-slide-to="1"></li>
-                        <li data-target="#historyCarousel" data-slide-to="2"></li>
-                      </ul>
-                      
-                      <!-- The slideshow -->
-                      <div class="carousel-inner">
-                        <div class="carousel-item active text-center">
-                          <img src="{{ url_for('static', filename='images/home/lewishamilton.png') }}" alt="Los Angeles" height="70%" width="70%">
-                        </div>
-                        <div class="carousel-item text-center">
-                          <img src="{{ url_for('static', filename='images/home/maxverstappen.png') }}" alt="Los Angeles" height="70%" width="70%">
-                        </div>
-                        <div class="carousel-item text-center">
-                          <img src="{{ url_for('static', filename='images/home/monzaCircuit.png') }}" alt="Los Angeles" height="70%" width="70%">
-                        </div>
-                        <div class="carousel-item text-center">
-                          <img src="{{ url_for('static', filename='images/home/BritishGrandPrix.png') }}" alt="Los Angeles" height="70%" width="70%">
-                        </div>
-                      </div>
-                      <div>
-                          <!-- Left and right controls -->
-                          <a class="carousel-control-prev" href="#historyCarousel" data-slide="prev">
-                              <span class="carousel-control-prev-icon bg-dark"></span>
-                          </a>
-                          <a class="carousel-control-next" href="#historyCarousel" data-slide="next">
-                              <span class="carousel-control-next-icon bg-dark"></span>
-                          </a>
-                      </div>
-                    </div>
-                    
-                </div>
                 <div class="container mb-3">
 
-                    <h2 class="text-center">Popular Drivers</h2>
-                    <div id="myCarousel" class="carousel slide" data-ride="carousel">
-                    
-                      <!-- Indicators -->
-                      <ul class="carousel-indicators">
-                        <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
-                        <li data-target="#myCarousel" data-slide-to="1"></li>
-                        <li data-target="#myCarousel" data-slide-to="2"></li>
-                      </ul>
-                      
-                      <!-- The slideshow -->
-                      <div class="carousel-inner">
-                        <div class="carousel-item active text-center">
-                          <img src="{{ url_for('static', filename='images/home/lewishamilton.png') }}" alt="Los Angeles" height="70%" width="70%">
+                    <p class="data-header text-center mt-3">Popular Drivers</p>
+                    {% if popularDrivers %}
+                    <div id="popularDriverCarousel" class="carousel slide" data-ride="carousel">
+                        <!-- The slideshow -->
+                        <div class="carousel-inner">
+                            {% for driver in popularDrivers %}
+                            {% if loop.index == 1%}
+                            <div class="carousel-item active text-center">
+                                <a href="{{ 'drivers?id='+driver['id'] | string }}">
+                                    <img src="{{ url_for('static' , filename = driver['image_path']) }}" href="/drivers?id={{driver['driverId']}}">
+                                    <p class="data-subtext">{{driver['name']}}</p>
+                                </a>
+                            </div>
+                            {% else %}
+                            <div class="carousel-item text-center">
+                                <a href="{{ 'drivers?id='+driver['id'] | string }}">
+                                    <img src="{{ url_for('static' , filename = driver['image_path']) }}" href="/drivers?id={{driver['driverId']}}">
+                                    <p class="data-subtext">{{driver['name']}}</p>
+                                </a>
+                            </div>
+                            {% endif %}
+                            {% endfor %}
+                            <div>
+                                <!-- Left and right controls -->
+                                <a class="carousel-control-prev" href="#popularDriverCarousel" data-slide="prev">
+                                    <span class="carousel-control-prev-icon bg-dark"></span>
+                                </a>
+                                <a class="carousel-control-next" href="#popularDriverCarousel" data-slide="next">
+                                    <span class="carousel-control-next-icon bg-dark"></span>
+                                </a>
+                            </div>
                         </div>
-                        <div class="carousel-item text-center">
-                          <img src="{{ url_for('static', filename='images/home/maxverstappen.png') }}" alt="Los Angeles" height="70%" width="70%">
-                        </div>
-                        <div class="carousel-item text-center">
-                          <img src="{{ url_for('static', filename='images/home/sebastianvettel.png') }}" alt="Los Angeles" height="70%" width="70%">
-                        </div>
-                        <div class="carousel-item text-center">
-                          <img src="{{ url_for('static', filename='images/home/valtteribottas.png') }}" alt="Los Angeles" height="70%" width="70%"">
-                        </div>
-                      </div>
-                      <div>
-                          <!-- Left and right controls -->
-                          <a class="carousel-control-prev" href="#myCarousel" data-slide="prev">
-                              <span class="carousel-control-prev-icon bg-dark"></span>
-                          </a>
-                          <a class="carousel-control-next" href="#myCarousel" data-slide="next">
-                              <span class="carousel-control-next-icon bg-dark"></span>
-                          </a>
-                      </div>
+                        {% endif %}
                     </div>
-                    
-                </div>
-                <div class="container mb-3">
-      
-                    <h2 class="text-center mt-3">Popular Circuits</h2>
-                    <div id="circuitCarousel" class="carousel slide" data-ride="carousel">
-                    
-                      <!-- Indicators -->
-                      <ul class="carousel-indicators">
-                        <li data-target="#circuitCarousel" data-slide-to="0" class="active"></li>
-                        <li data-target="#circuitCarousel" data-slide-to="1"></li>
-                        <li data-target="#circuitCarousel" data-slide-to="2"></li>
-                      </ul>
-                      
-                      <!-- The slideshow -->
-                      <div class="carousel-inner">
-                        <div class="carousel-item active text-center">
-                          <img src="{{ url_for('static', filename='images/home/BritishGrandPrix.png') }}" alt="Los Angeles" height="70%" width="70%">
+                    <div class="container mb-3">
+                        {% if popularCircuits %}
+                        <p class="data-header text-center mt-3">Popular Circuits</p>
+
+                        <div id="historyCarousel" class="carousel slide" data-ride="carousel">
+                            <!-- The slideshow -->
+                            <div class="carousel-inner">
+                                {% for circuit in popularCircuits %}
+                                {% if loop.index == 1%}
+                                <div class="carousel-item active text-center">
+                                    <a href="{{ 'circuits?id='+circuit['id'] | string }}">
+                                        <img src="{{ url_for('static' , filename = circuit['image_path']) }}" href="/circuits?id={{circuit['circuitId']}}">
+                                        <p class="data-subtext">{{circuit['name']}}</p>
+                                    </a>
+                                </div>
+                                {% else %}
+                                <div class="carousel-item text-center">
+                                    <a href="{{ 'circuits?id='+circuit['id'] | string }}">
+                                        <img src="{{ url_for('static' , filename = circuit['image_path']) }}" href="/circuits?id={{circuit['circuitId']}}">
+                                        <p class="data-subtext">{{circuit['name']}}</p>
+                                    </a>
+                                </div>
+                                {% endif %}
+                                {% endfor %}
+                                <div>
+                                    <!-- Left and right controls -->
+                                    <a class="carousel-control-prev" href="#historyCarousel" data-slide="prev">
+                                        <span class="carousel-control-prev-icon bg-dark"></span>
+                                    </a>
+                                    <a class="carousel-control-next" href="#historyCarousel" data-slide="next">
+                                        <span class="carousel-control-next-icon bg-dark"></span>
+                                    </a>
+                                </div>
+                            </div>
+                            {% endif %}
                         </div>
-                        <div class="carousel-item text-center">
-                          <img src="{{ url_for('static', filename='images/home/monzaCircuit.png') }}" alt="Los Angeles" height="70%" width="70%">
-                        </div>
-                        <div class="carousel-item text-center">
-                          <img src="{{ url_for('static', filename='images/home/nurburgringGrandPrix.png') }}" alt="Los Angeles" height="70%" width="70%"">
-                        </div>
-                      </div>
-                      <div>
-                          <!-- Left and right controls -->
-                          <a class="carousel-control-prev" href="#circuitCarousel" data-slide="prev">
-                              <span class="carousel-control-prev-icon bg-dark"></span>
-                          </a>
-                          <a class="carousel-control-next" href="#circuitCarousel" data-slide="next">
-                              <span class="carousel-control-next-icon bg-dark"></span>
-                          </a>
-                      </div>
                     </div>
-                    
                 </div>
             </div>
         </div>
     </div>
-    </body>
-  {% endblock %}  
+</div>
+{% endblock %}
