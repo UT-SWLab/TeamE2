@@ -95,7 +95,7 @@ def driver_model():
     per_page = 20
     pages = int(len(drivers) / per_page)
     drivers = drivers[page * per_page: page * per_page + per_page]
-    return render_template('drivers-model.html', drivers=drivers, pages=pages, page=page)
+    return render_template('drivers-model.html', drivers=drivers, pages=pages, page=page, query=query)
 
 
 @app.route('/models_constructors')
@@ -127,7 +127,7 @@ def constructor_model():
     per_page = 20
     pages = int(len(constructors) / per_page)
     constructors = constructors[page * per_page: page * per_page + per_page]
-    return render_template('constructors-model.html', constructors=constructors, pages=pages, page=page)
+    return render_template('constructors-model.html', constructors=constructors, pages=pages, page=page, query=query)
 
 
 @app.route('/models_circuits')
@@ -168,7 +168,7 @@ def circuit_model():
     per_page = 20
     pages = int(len(circuits) / per_page)
     circuits = circuits[page * per_page: page * per_page + per_page]
-    return render_template('circuits-model.html', circuits=circuits, pages=pages, page=page)
+    return render_template('circuits-model.html', circuits=circuits, pages=pages, page=page, query=query)
 
 
 @app.route('/drivers')
@@ -437,7 +437,7 @@ def search(field, collection, query):
     if query == '':
         return collection.find()
     else:
-        return collection.find({field: {'$regex': f'{query}?', '$options': 'i'}})
+        return collection.find({field: {'$regex': f'.*{query}.*?', '$options': 'i'}})
 
 
 if __name__ == '__main__':
