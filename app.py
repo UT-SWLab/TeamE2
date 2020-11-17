@@ -3,6 +3,7 @@ import json
 import os
 from collections import defaultdict
 from datetime import date
+import unicodedata
 
 # 3rd party packages
 from flask import Flask, render_template, request
@@ -33,30 +34,12 @@ def about():
 
 @app.route('/models_drivers')
 def driver_model():
+    # get drivers from search, filtering, and sorting
     query = request.args.get('search', '', type=str).rstrip()
-    if query == '':
-        driver_list = db.drivers.find()
-    else:
-        # Search token in forenames and surnames
-        tokens = query.split()
-        if len(tokens) == 1:
-            driver_list = list(search('forename', db.drivers, query))
-            surname_list = search('surname', db.drivers, query)
-
-            for driver in surname_list:
-                if driver not in driver_list:
-                    driver_list.append(driver)
-        else:
-            # Search first token in forenames, search other tokens in surnames
-            driver_list = list(db.drivers.find({'forename': {'$regex': f'{tokens[0]}?', '$options': 'i'}}))
-            surname_cursors = []
-
-            for i in range(1, len(tokens)):
-                surname_cursors.append(db.drivers.find({'surname': {'$regex': f'{tokens[i]}?', '$options': 'i'}}))
-            for cursor in surname_cursors:
-                for driver in cursor:
-                    if driver not in driver_list:
-                        driver_list.append(driver)
+    filtered = request.args.get('filtered', '', type=str)
+    driver_list = get_driver_list(filtered, query)
+    sort = request.args.get('sort', '', type=str)
+    driver_list = sort_models(driver_list, sort, filtered)
 
     page = request.args.get('page', 1, type=int)
     page = page - 1
@@ -92,17 +75,21 @@ def driver_model():
                 img_path = NO_IMG
             drivers[-1].update({'imgpath': img_path})
 
-    per_page = 20
+    per_page = 18
     pages = int(len(drivers) / per_page)
     drivers = drivers[page * per_page: page * per_page + per_page]
-    return render_template('drivers-model.html', drivers=drivers, pages=pages, page=page)
+    return render_template('drivers-model.html', drivers=drivers, pages=pages, page=page, query=query, filtered=filtered, sort=sort)
 
 
 @app.route('/models_constructors')
 def constructor_model():
-    # get constructors from search
+    # get constructors from search, filtering, and sorting
     query = request.args.get('search', '', type=str).rstrip()
-    constructor_list = search('name', db.constructors, query)
+    filtered = request.args.get('filtered', '', type=str)
+    sort = request.args.get('sort', '', type=str)
+    constructor_list = search(filtered, db.constructors, query)
+    constructor_list = sort_models(constructor_list, sort, filtered)
+
     page = request.args.get('page', 1, type=int)
     page = page - 1
     constructors = []
@@ -124,17 +111,21 @@ def constructor_model():
             if not os.path.exists(f'./static/{img_path}'):
                 img_path = NO_IMG
             constructors[-1].update({'imgpath': img_path})
-    per_page = 20
+    per_page = 18
     pages = int(len(constructors) / per_page)
     constructors = constructors[page * per_page: page * per_page + per_page]
-    return render_template('constructors-model.html', constructors=constructors, pages=pages, page=page)
+    return render_template('constructors-model.html', constructors=constructors, pages=pages,
+        page=page, query=query, filtered=filtered, sort=sort)
 
 
 @app.route('/models_circuits')
 def circuit_model():
+    # get circuits from search, filtering, and sorting
     query = request.args.get('search', '', type=str).rstrip()
-    # get constructors from search
-    circuit_list = search('name', db.circuits, query)
+    filtered = request.args.get('filtered', '', type=str)
+    sort = request.args.get('sort', '', type=str)
+    circuit_list = get_circuit_list(filtered, query)
+    circuit_list = sort_models(circuit_list, sort, filtered)
 
     page = request.args.get('page', 1, type=int)
     page = page - 1
@@ -165,10 +156,11 @@ def circuit_model():
             if not os.path.exists(f'./static/{img_path}'):
                 img_path = NO_IMG
             circuits[-1].update({'imgpath': img_path})
-    per_page = 20
+    per_page = 16
     pages = int(len(circuits) / per_page)
     circuits = circuits[page * per_page: page * per_page + per_page]
-    return render_template('circuits-model.html', circuits=circuits, pages=pages, page=page)
+    return render_template('circuits-model.html', circuits=circuits, pages=pages, page=page,
+        query=query, filtered=filtered, sort=sort)
 
 
 @app.route('/drivers')
@@ -430,24 +422,230 @@ def home():
                            popularDrivers=popularDrivers)
 
 
+def get_driver_list(select, query):
+    """
+    Purpose:
+        Seach drivers using various selectors
+    
+    Args:
+        select: {str}   selector type
+        query:  {str}   data to be searched for in the collection
+
+    Returns:
+        {list} List of search results
+    """
+    driver_list = list()
+    if query == '':
+        driver_list = list(db.drivers.find()) 
+        return driver_list
+    
+    if select == 'constructor':
+        field = 'constructor.name'
+        driver_list = list(db.drivers.find({field: {'$regex': f'.*{query}.*?', '$options': 'i'}}))
+    elif select == 'nationality':
+        driver_list = list(db.drivers.find({select: {'$regex': f'.*{query}.*?', '$options': 'i'}}))
+    else:
+        driver_list = driver_name_search(query)
+    return driver_list
+
+
+
+def driver_name_search(query):
+    """
+    Purpose:
+        Seach driver names with a query
+    
+    Args:
+        query: {str} data to be sarched for in the collection
+
+    Returns:
+        {list} List of search results
+    """
+    # Search token in forenames and surnames
+    tokens = query.split()
+    if len(tokens) == 1:
+        driver_list = list(search('forename', db.drivers, query))
+        surname_list = search('surname', db.drivers, query)
+
+        for driver in surname_list:
+            if driver not in driver_list:
+                driver_list.append(driver)
+    else:
+        # Search first token in forenames, search other tokens in surnames
+        driver_list = list(db.drivers.find({'forename': {'$regex': f'{tokens[0]}?', '$options': 'i'}}))
+        surname_cursors = []
+
+        for i in range(1, len(tokens)):
+            surname_cursors.append(db.drivers.find({'surname': {'$regex': f'{tokens[i]}?', '$options': 'i'}}))
+        for cursor in surname_cursors:
+            for driver in cursor:
+                if driver not in driver_list:
+                    driver_list.append(driver)
+    return driver_list
+
+
+def get_circuit_list(select, query):
+    """
+    Purpose:
+        Seach circuits using various selectors
+    
+    Args:
+        select: {str}   selector type
+        query:  {str}   data to be searched for in the collection
+
+    Returns:
+        {list} List of search results
+    """
+    circuit_list = list()
+    if query == '':
+        circuit_list = list(db.circuits.find())
+        return circuit_list
+    
+    if select == 'name' or select == 'most_recent_race':
+        circuit_list = list(db.circuits.find({select: {'$regex': f'.*{query}.*?', '$options': 'i'}}))
+    else:
+        circuit_list = circuit_location_search(query)
+    return circuit_list
+
+
+
+def circuit_location_search(query):
+    """
+    Purpose:
+        Seach circuit locations with a query
+    
+    Args:
+        query: {str} data to be sarched for in the collection
+
+    Returns:
+        {list} List of search results
+    """
+    # Search token in forenames and surnames
+    tokens = query.split()
+    circuit_list = list()
+    if len(tokens) == 1:
+        location_list = list(search('location', db.circuits, query))
+        country_list = search('country', db.circuits, query)
+
+        for circuit in country_list:
+            if circuit not in location_list:
+                location_list.append(circuit)
+        circuit_list = location_list
+    else:
+        location_cursors = list()
+        country_cursors = list()
+        for i in range(0, len(tokens)):
+            location_cursors.append(db.circuits.find({'location': {'$regex': f'{tokens[i]}?', '$options': 'i'}}))
+            country_cursors.append(db.circuits.find({'location': {'$regex': f'{tokens[i]}?', '$options': 'i'}}))
+
+        for cursor in location_cursors:
+            for circuit in cursor:
+                if circuit not in circuit_list:
+                    circuit_list.append(circuit)
+        for cursor in country_cursors:
+            for circuit in cursor:
+                if circuit not in circuit_list:
+                    circuit_list.append(circuit)
+    return circuit_list
+
+
 def search(field, collection, query):
     """
     Purpose:
-        Filter model page by user search query
+        Search desired field with a query
     
     Args:
         field:      {str}        field to search through   
         collection: {collection} target PyMongo database collection
-        query: {str}             data to be sarched for in the collection
+        query:      {str}        data to be sarched for in the collection
 
     Returns:
         {list} List of search results
     """
     if query == '':
-        return collection.find()
+        return list(collection.find())
     else:
-        return collection.find({field: {'$regex': f'{query}?', '$options': 'i'}})
+        return list(collection.find({field: {'$regex': f'.*{query}.*?', '$options': 'i'}}))
 
+
+def sort_models(models, sort, filtered):
+    if sort == '' or sort == 'relevance':
+        # sort by relevance
+        return models
+    elif len(models) == 0:
+        # return if no results
+        return models
+    elif 'driverId' in models[0]:
+        if filtered == 'name':
+            if sort == 'alpha':
+                # alphabetical sort
+                return sorted(models, key=lambda x:(remove_accents(x['forename']), remove_accents(x['forename'])))
+            elif sort == 'reverse_alpha':
+                # reverse alphabetical sort
+                return sorted(models, key=lambda x:(remove_accents(x['forename']), remove_accents(x['forename'])), reverse=True)
+        elif filtered == 'nationality':
+            if sort == 'alpha':
+                # alphabetical sort
+                return sorted(models, key=lambda x: x['nationality'])
+            elif sort == 'reverse_alpha':
+                # reverse alphabetical sort
+                return sorted(models, key=lambda x: x['nationality'], reverse=True)
+        elif filtered == 'constructor':
+            if sort == 'alpha':
+                # alphabetical sort
+                return sorted(models, key=lambda x: remove_accents(x['constructor']['name']))
+            elif sort == 'reverse_alpha':
+                # reverse alphabetical sort
+                return sorted(models, key=lambda x: remove_accents(x['constructor']['name']), reverse=True)
+    elif 'constructorId' in models[0]:
+        if filtered == 'name':
+            if sort == 'alpha':
+                # alphabetical sort
+                return sorted(models, key=lambda x: remove_accents(x['name']))
+            elif sort == 'reverse_alpha':
+                # reverse alphabetical sort
+                return sorted(models, key=lambda x: remove_accents(x['name']), reverse=True)
+        elif filtered == 'nationality':
+            if sort == 'alpha':
+                # alphabetical sort
+                return sorted(models, key=lambda x: x['nationality'])
+            elif sort == 'reverse_alpha':
+                # reverse alphabetical sort
+                return sorted(models, key=lambda x: x['nationality'], reverse=True)
+        elif filtered == 'top_driver':
+            if sort == 'alpha':
+                # alphabetical sort
+                return sorted(models, key=lambda x: remove_accents(x['topDriverName']))
+            elif sort == 'reverse_alpha':   
+                # reverse alphabetical sort
+                return sorted(models, key=lambda x: remove_accents(x['topDriverName']), reverse=True)         
+    elif 'circuitId' in models[0]:
+        if filtered == 'name':
+            if sort == 'alpha':
+                # alphabetical sort
+                return sorted(models, key=lambda x: remove_accents(x['name']))
+            elif sort == 'reverse_alpha':
+                # reverse alphabetical sort
+                return sorted(models, key=lambda x: remove_accents(x['name']), reverse=True)
+        elif filtered == 'location':
+            if sort == 'alpha':
+                # alphabetical sort
+                return sorted(models, key=lambda x:(remove_accents(x['location']), remove_accents(x['country'])))
+            elif sort == 'reverse_alpha':
+                # reverse alphabetical sort
+                return sorted(models, key=lambda x:(remove_accents(x['location']), remove_accents(x['country'])), reverse=True)
+        elif filtered == 'most_recent_race':
+            if sort == 'alpha':
+                # alphabetical sort
+                return sorted(models, key=lambda x: remove_accents(x['most_recent_race']))
+            elif sort == 'reverse_alpha':
+                # reverse alphabetical sort
+                return sorted(models, key=lambda x: remove_accents(x['most_recent_race']), reverse=True)
+
+
+def remove_accents(input_str):
+    nfkd_form = unicodedata.normalize('NFKD', input_str)
+    return u"".join([c for c in nfkd_form if not unicodedata.combining(c)])
 
 if __name__ == '__main__':
     app.run(debug=True)
