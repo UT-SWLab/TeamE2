@@ -448,8 +448,6 @@ def get_driver_list(select, query):
         driver_list = driver_name_search(query)
     return driver_list
 
-
-
 def driver_name_search(query):
     """
     Purpose:
