@@ -34,29 +34,8 @@ def about():
 @app.route('/models_drivers')
 def driver_model():
     query = request.args.get('search', '', type=str).rstrip()
-    if query == '':
-        driver_list = db.drivers.find()
-    else:
-        # Search token in forenames and surnames
-        tokens = query.split()
-        if len(tokens) == 1:
-            driver_list = list(search('forename', db.drivers, query))
-            surname_list = search('surname', db.drivers, query)
-
-            for driver in surname_list:
-                if driver not in driver_list:
-                    driver_list.append(driver)
-        else:
-            # Search first token in forenames, search other tokens in surnames
-            driver_list = list(db.drivers.find({'forename': {'$regex': f'{tokens[0]}?', '$options': 'i'}}))
-            surname_cursors = []
-
-            for i in range(1, len(tokens)):
-                surname_cursors.append(db.drivers.find({'surname': {'$regex': f'{tokens[i]}?', '$options': 'i'}}))
-            for cursor in surname_cursors:
-                for driver in cursor:
-                    if driver not in driver_list:
-                        driver_list.append(driver)
+    search_select = request.args.get('search_select', '', type=str)
+    driver_list = get_driver_list(search_select, query)
 
     page = request.args.get('page', 1, type=int)
     page = page - 1
@@ -95,14 +74,16 @@ def driver_model():
     per_page = 20
     pages = int(len(drivers) / per_page)
     drivers = drivers[page * per_page: page * per_page + per_page]
-    return render_template('drivers-model.html', drivers=drivers, pages=pages, page=page, query=query)
+    return render_template('drivers-model.html', drivers=drivers, pages=pages, page=page, query=query, search_select=search_select)
 
 
 @app.route('/models_constructors')
 def constructor_model():
     # get constructors from search
     query = request.args.get('search', '', type=str).rstrip()
+    search_select = request.args.get('search_select', '', type=str)
     constructor_list = search('name', db.constructors, query)
+
     page = request.args.get('page', 1, type=int)
     page = page - 1
     constructors = []
@@ -127,13 +108,14 @@ def constructor_model():
     per_page = 20
     pages = int(len(constructors) / per_page)
     constructors = constructors[page * per_page: page * per_page + per_page]
-    return render_template('constructors-model.html', constructors=constructors, pages=pages, page=page, query=query)
+    return render_template('constructors-model.html', constructors=constructors, pages=pages, page=page, query=query, search_select=search_select)
 
 
 @app.route('/models_circuits')
 def circuit_model():
+    # get circuits from search
     query = request.args.get('search', '', type=str).rstrip()
-    # get constructors from search
+    search_select = request.args.get('search_select', '', type=str)
     circuit_list = search('name', db.circuits, query)
 
     page = request.args.get('page', 1, type=int)
@@ -168,7 +150,7 @@ def circuit_model():
     per_page = 20
     pages = int(len(circuits) / per_page)
     circuits = circuits[page * per_page: page * per_page + per_page]
-    return render_template('circuits-model.html', circuits=circuits, pages=pages, page=page, query=query)
+    return render_template('circuits-model.html', circuits=circuits, pages=pages, page=page, query=query, search_select=search_select)
 
 
 @app.route('/drivers')
@@ -421,15 +403,77 @@ def home():
                            popularDrivers=popularDrivers)
 
 
+def get_driver_list(select, query):
+    """
+    Purpose:
+        Seach drivers using various selectors
+    
+    Args:
+        select: {str}   selector type
+        query:  {str}   data to be sarched for in the collection
+
+    Returns:
+        {list} List of search results
+    """
+    driver_list = list()
+    if query == '':
+        driver_list = list(db.drivers.find())
+        return driver_list
+    
+    if select == 'constructor':
+        field = 'constructor.name'
+        driver_list = list(db.drivers.find({field: {'$regex': f'.*{query}.*?', '$options': 'i'}}))
+    elif select == 'nationality':
+        driver_list = list(db.drivers.find({select: {'$regex': f'.*{query}.*?', '$options': 'i'}}))
+    else:
+        driver_list = driver_name_search(query)
+    return driver_list
+
+
+
+def driver_name_search(query):
+    """
+    Purpose:
+        Seach driver names with a query
+    
+    Args:
+        query:  {str}   data to be sarched for in the collection
+
+    Returns:
+        {list} List of search results
+    """
+    # Search token in forenames and surnames
+    tokens = query.split()
+    if len(tokens) == 1:
+        driver_list = list(search('forename', db.drivers, query))
+        surname_list = search('surname', db.drivers, query)
+
+        for driver in surname_list:
+            if driver not in driver_list:
+                driver_list.append(driver)
+    else:
+        # Search first token in forenames, search other tokens in surnames
+        driver_list = list(db.drivers.find({'forename': {'$regex': f'{tokens[0]}?', '$options': 'i'}}))
+        surname_cursors = []
+
+        for i in range(1, len(tokens)):
+            surname_cursors.append(db.drivers.find({'surname': {'$regex': f'{tokens[i]}?', '$options': 'i'}}))
+        for cursor in surname_cursors:
+            for driver in cursor:
+                if driver not in driver_list:
+                    driver_list.append(driver)
+    return driver_list
+
+
 def search(field, collection, query):
     """
     Purpose:
-        Filter model page by user search query
+        Search desired field with a query
     
     Args:
         field:      {str}        field to search through   
         collection: {collection} target PyMongo database collection
-        query: {str}             data to be sarched for in the collection
+        query:      {str}        data to be sarched for in the collection
 
     Returns:
         {list} List of search results
