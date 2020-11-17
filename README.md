@@ -52,9 +52,8 @@ You will need the `gcloud` binary, [click me for gcloud installation instruction
 | As a developer, I want to be able to test my search and filtering functions so that I can ensure accurate results. | person |  hrs. |  hrs. |
 | As a user, I want an interactive home page that gives me some relevant information so that I can browse the site more easily. | person |  hrs. |  hrs. |
 | As a user, I want to be able to filter model instances so that I can find the information that I want more easily. | person |  hrs. |  hrs. |
-| As a user, I want to filter races by location so that I can find a race near me. | person |  hrs. |  hrs. |
-
-
+| As a user, I want to be able to sort model instances so that I can find the information that I want more easily. | person |  hrs. |  hrs. |
+| As a user, I want to be able to search model instances so that I can find the information that I want more easily. | person |  hrs. |  hrs. |
 
 ## Environment Setup:
 You will need a working version of Python 3 installed on your computer. Create the virtual environment using this command:
