@@ -25,13 +25,10 @@
     <p class="data-subtext">The number 1 source for Formula 1 information</p>
 </div>
 <div class="container">
-    <div class="row">
-        <div class="col-8">
-            <div class="row">
-                <h1 class="text-center"> </h1>
-            </div>
-            <div class="row">
-                <div class="container-fluid">
+    <div class="column">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="container-fluid row justify-content-center">
                     <p class="data-header text-center">Upcoming Races in {{ year }}</p>
                 </div>
                 {% if recentRaces is defined and recentRaces %}
@@ -42,35 +39,8 @@
                 </div>
                 {% endif %}
             </div>
-            <div class="row">
-                <div class="container-fluid">
-                    <p class="data-header text-center">Driver {{ year }} Season standings</p>
-                </div>
-                {% if driverSeasonStandings is defined and driverSeasonStandings %}
-                <div class="container text-center">
-                    {% for driver in driverSeasonStandings %}
-                    <p class="data-subtext"><a href="{{ 'drivers?id='+driver[2] | string }}">{{ driver[0]}} {{ driver[1] }}</a></p>
-                    {% endfor %}
-                </div>
-                {% endif %}
-            </div>
-            <div class="row">
-                <div class="container-fluid">
-                    <p class="data-header text-center">Constructor {{ year }} Season Standings</p>
-                </div>
-                {% if constructorSeasonStandings is defined and constructorSeasonStandings %}
-                <div class="container text-center">
-                    {% for constructor in constructorSeasonStandings %}
-                    <p class="data-subtext"><a href="{{ 'constructors?id='+constructor[2] | string }}">{{ constructor[0] }} {{ constructor[1] }}</a></p>
-                    {% endfor %}
-                </div>
-                {% endif %}
-            </div>
-        </div>
-        <div class="col-4">
-            <div class="container mb-3">
-                <span class="data-header text-center mt-3">Drivers Born in &nbsp;</span>
-                <span class="data-header">{{ monthName }}</span>
+            <div class="col-md-6">
+                <p class="data-header text-center mt-3">Drivers Born in {{ monthName }}</p>
                 {% if monthDrivers %}
                 <div id="monthCarousel" class="carousel slide" data-ride="carousel">
                     <!-- The slideshow -->
@@ -79,14 +49,14 @@
                         {% if loop.index == 1%}
                         <div class="carousel-item active text-center">
                             <a href="{{ 'drivers?id='+driver['id'] | string }}">
-                                <img src="{{ url_for('static' , filename = driver['image_path']) }}" href="/drivers?id={{driver['driverId']}}">
+                                <img class="driver-image" src="{{ url_for('static' , filename = driver['image_path']) }}" href="/drivers?id={{driver['driverId']}}">
                                 <p class="data-subtext">{{driver['name']}}</p>
                             </a>
                         </div>
                         {% else %}
                         <div class="carousel-item text-center">
                             <a href="{{ 'drivers?id='+driver['id'] | string }}">
-                                <img src="{{ url_for('static' , filename = driver['image_path']) }}" href="/drivers?id={{driver['driverId']}}">
+                                <img class="driver-image" src="{{ url_for('static' , filename = driver['image_path']) }}" href="/drivers?id={{driver['driverId']}}">
                                 <p class="data-subtext">{{driver['name']}}</p>
                             </a>
                         </div>
@@ -104,82 +74,112 @@
                     </div>
                     {% endif %}
                 </div>
-                <div class="container mb-3">
-
-                    <p class="data-header text-center mt-3">Popular Drivers</p>
-                    {% if popularDrivers %}
-                    <div id="popularDriverCarousel" class="carousel slide" data-ride="carousel">
-                        <!-- The slideshow -->
-                        <div class="carousel-inner">
-                            {% for driver in popularDrivers %}
-                            {% if loop.index == 1%}
-                            <div class="carousel-item active text-center">
-                                <a href="{{ 'drivers?id='+driver['id'] | string }}">
-                                    <img src="{{ url_for('static' , filename = driver['image_path']) }}" href="/drivers?id={{driver['driverId']}}">
-                                    <p class="data-subtext">{{driver['name']}}</p>
-                                </a>
-                            </div>
-                            {% else %}
-                            <div class="carousel-item text-center">
-                                <a href="{{ 'drivers?id='+driver['id'] | string }}">
-                                    <img src="{{ url_for('static' , filename = driver['image_path']) }}" href="/drivers?id={{driver['driverId']}}">
-                                    <p class="data-subtext">{{driver['name']}}</p>
-                                </a>
-                            </div>
-                            {% endif %}
-                            {% endfor %}
-                            <div>
-                                <!-- Left and right controls -->
-                                <a class="carousel-control-prev" href="#popularDriverCarousel" data-slide="prev">
-                                    <span class="carousel-control-prev-icon bg-dark"></span>
-                                </a>
-                                <a class="carousel-control-next" href="#popularDriverCarousel" data-slide="next">
-                                    <span class="carousel-control-next-icon bg-dark"></span>
-                                </a>
-                            </div>
+            </div>
+        </div>
+        <br>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="container-fluid row justify-content-center">
+                    <p class="data-header text-center">Driver {{ year }} Season standings</p>
+                </div>
+                {% if driverSeasonStandings is defined and driverSeasonStandings %}
+                <div class="container text-center">
+                    {% for driver in driverSeasonStandings %}
+                    <p class="data-subtext"><a href="{{ 'drivers?id='+driver[2] | string }}">{{ driver[0]}} {{ driver[1] }}</a></p>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+            <div class="col-md-6 ">
+                <p class="data-header text-center  mt-3">Popular Drivers</p>
+                {% if popularDrivers %}
+                <div id="popularDriverCarousel" class="carousel slide" data-ride="carousel">
+                    <!-- The slideshow -->
+                    <div class="carousel-inner">
+                        {% for driver in popularDrivers %}
+                        {% if loop.index == 1%}
+                        <div class="carousel-item active text-center">
+                            <a href="{{ 'drivers?id='+driver['id'] | string }}">
+                                <img class="driver-image" src="{{ url_for('static' , filename = driver['image_path']) }}" href="/drivers?id={{driver['driverId']}}">
+                                <p class="data-subtext">{{driver['name']}}</p>
+                            </a>
+                        </div>
+                        {% else %}
+                        <div class="carousel-item text-center">
+                            <a href="{{ 'drivers?id='+driver['id'] | string }}">
+                                <img class="driver-image" src="{{ url_for('static' , filename = driver['image_path']) }}" href="/drivers?id={{driver['driverId']}}">
+                                <p class="data-subtext">{{driver['name']}}</p>
+                            </a>
                         </div>
                         {% endif %}
-                    </div>
-                    <div class="container mb-3">
-                        {% if popularCircuits %}
-                        <p class="data-header text-center mt-3">Popular Circuits</p>
-
-                        <div id="historyCarousel" class="carousel slide" data-ride="carousel">
-                            <!-- The slideshow -->
-                            <div class="carousel-inner">
-                                {% for circuit in popularCircuits %}
-                                {% if loop.index == 1%}
-                                <div class="carousel-item active text-center">
-                                    <a href="{{ 'circuits?id='+circuit['id'] | string }}">
-                                        <img src="{{ url_for('static' , filename = circuit['image_path']) }}" href="/circuits?id={{circuit['circuitId']}}">
-                                        <p class="data-subtext">{{circuit['name']}}</p>
-                                    </a>
-                                </div>
-                                {% else %}
-                                <div class="carousel-item text-center">
-                                    <a href="{{ 'circuits?id='+circuit['id'] | string }}">
-                                        <img src="{{ url_for('static' , filename = circuit['image_path']) }}" href="/circuits?id={{circuit['circuitId']}}">
-                                        <p class="data-subtext">{{circuit['name']}}</p>
-                                    </a>
-                                </div>
-                                {% endif %}
-                                {% endfor %}
-                                <div>
-                                    <!-- Left and right controls -->
-                                    <a class="carousel-control-prev" href="#historyCarousel" data-slide="prev">
-                                        <span class="carousel-control-prev-icon bg-dark"></span>
-                                    </a>
-                                    <a class="carousel-control-next" href="#historyCarousel" data-slide="next">
-                                        <span class="carousel-control-next-icon bg-dark"></span>
-                                    </a>
-                                </div>
-                            </div>
-                            {% endif %}
+                        {% endfor %}
+                        <div>
+                            <!-- Left and right controls -->
+                            <a class="carousel-control-prev" href="#popularDriverCarousel" data-slide="prev">
+                                <span class="carousel-control-prev-icon bg-dark"></span>
+                            </a>
+                            <a class="carousel-control-next" href="#popularDriverCarousel" data-slide="next">
+                                <span class="carousel-control-next-icon bg-dark"></span>
+                            </a>
                         </div>
                     </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
+        <br>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="container-fluid row justify-content-center">
+                    <p class="data-header text-center">Constructor {{ year }} Season Standings</p>
+                </div>
+                {% if constructorSeasonStandings is defined and constructorSeasonStandings %}
+                <div class="container text-center">
+                    {% for constructor in constructorSeasonStandings %}
+                    <p class="data-subtext"><a href="{{ 'constructors?id='+constructor[2] | string }}">{{ constructor[0] }} {{ constructor[1] }}</a></p>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+            <div class="col-md-6">
+                {% if popularCircuits %}
+                <p class="data-header text-center mt-3">Popular Circuits</p>
+
+                <div id="historyCarousel" class="carousel slide" data-ride="carousel">
+                    <!-- The slideshow -->
+                    <div class="carousel-inner">
+                        {% for circuit in popularCircuits %}
+                        {% if loop.index == 1%}
+                        <div class="carousel-item active text-center">
+                            <a href="{{ 'circuits?id='+circuit['id'] | string }}">
+                                <img class="circuit-image" src="{{ url_for('static' , filename = circuit['image_path']) }}" href="/circuits?id={{circuit['circuitId']}}">
+                                <p class="data-subtext">{{circuit['name']}}</p>
+                            </a>
+                        </div>
+                        {% else %}
+                        <div class="carousel-item text-center">
+                            <a href="{{ 'circuits?id='+circuit['id'] | string }}">
+                                <img class="circuit-image" src="{{ url_for('static' , filename = circuit['image_path']) }}" href="/circuits?id={{circuit['circuitId']}}">
+                                <p class="data-subtext">{{circuit['name']}}</p>
+                            </a>
+                        </div>
+                        {% endif %}
+                        {% endfor %}
+                        <div>
+                            <!-- Left and right controls -->
+                            <a class="carousel-control-prev" href="#historyCarousel" data-slide="prev">
+                                <span class="carousel-control-prev-icon bg-dark"></span>
+                            </a>
+                            <a class="carousel-control-next" href="#historyCarousel" data-slide="next">
+                                <span class="carousel-control-next-icon bg-dark"></span>
+                            </a>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <br>
     </div>
 </div>
 {% endblock %}

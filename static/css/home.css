@@ -13,3 +13,19 @@
     font-size: 24px;
     font-weight: 200;
 }
+
+.driver-image{
+    min-width: 100px;
+    min-height: 250px;
+    max-height: 250px;
+}
+
+.circuit-image{
+    min-width: 100px;
+    max-width:200px;
+    min-height: 100px;
+}
+
+.row {
+	margin-bottom:20px;
+}
