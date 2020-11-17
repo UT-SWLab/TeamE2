@@ -46,6 +46,15 @@ You will need the `gcloud` binary, [click me for gcloud installation instruction
 | As a user, I want to navigate through the model instances using an intuitive feature. | Alan | 3 hrs. | 4 hrs. |
 | As a user, I want to see the fastest laps of all time on a circuit to see what kind of speed the drivers are able to accomplish. | Kevin | 2 hrs. | 2 hrs. |
 
+## Phase 3 Completion Times:
+| Story | Assignee | Estimated Time | Completion Time |
+| ----- | -------- | -------------- | --------------- |
+| story here | Alan |  hrs. |  hrs. |
+| story here | Kevin |  hrs. |  hrs. |
+| story here | Edie |  hrs. |  hrs. |
+| story here | Sam |  hrs. |  hrs. |
+
+
 
 ## Environment Setup:
 You will need a working version of Python 3 installed on your computer. Create the virtual environment using this command:
