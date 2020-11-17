@@ -612,7 +612,7 @@ def sort_models(models, sort, filtered):
             elif sort == 'reverse_alpha':
                 # reverse alphabetical sort
                 return sorted(models, key=lambda x: x['nationality'], reverse=True)
-        elif filtered == 'top_driver':
+        elif filtered == 'topDriverName':
             if sort == 'alpha':
                 # alphabetical sort
                 return sorted(models, key=lambda x: remove_accents(x['topDriverName']))
