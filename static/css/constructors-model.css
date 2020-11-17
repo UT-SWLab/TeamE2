@@ -122,3 +122,11 @@
   .card:hover .card__info-hover {
     opacity: 1;
   }
+
+form {
+    width: 100%;
+    font-family: 'Raleway', sans-serif; 
+    font-size: 20px;
+    font-weight: bold; 
+    text-align:center;"
+}
