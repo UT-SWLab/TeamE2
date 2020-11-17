@@ -20,13 +20,14 @@
 <div class="container my-5">
   <div class="searchbar">
     <form style="width: 100%;" action="/models_drivers" method="get">
-      <label for="search_select">Search for:</label>
-      <select id="search_select" name="search_select">
+      <label for="search_select">Search drivers by:</label>
+      <select id="search_select" name="search_select" required="required">
+        <option value="">Please choose an option</option>
         <option value="name">Name</option>
-        <option value="constructor">Constructor</option>
         <option value="nationality">Nationality</option>
+        <option value="constructor">Constructor</option>
       </select>
-      <input id="search" class="col-6" type="text" name="search" placeholder="Enter a query ...">
+      <input id="search" class="col-6" type="text" name="search" placeholder="Enter a query ..." required="required">
       <button type="submit">Submit</button>
     </form>
     <br>
@@ -72,7 +73,7 @@
           </a>
         </li>
         {% endif %}
-        {% set skip = {'left': False, 'right': False} %}
+        {% set skip = {'left': False, 'right': False} %}  
         {% set rightskip = False %}
         {% for i in range(pages+1) %}
           {% if i == page %}

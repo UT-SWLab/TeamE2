@@ -82,7 +82,7 @@ def constructor_model():
     # get constructors from search
     query = request.args.get('search', '', type=str).rstrip()
     search_select = request.args.get('search_select', '', type=str)
-    constructor_list = search('name', db.constructors, query)
+    constructor_list = search(search_select, db.constructors, query)
 
     page = request.args.get('page', 1, type=int)
     page = page - 1
@@ -116,7 +116,7 @@ def circuit_model():
     # get circuits from search
     query = request.args.get('search', '', type=str).rstrip()
     search_select = request.args.get('search_select', '', type=str)
-    circuit_list = search('name', db.circuits, query)
+    circuit_list = get_circuit_list(search_select, query)
 
     page = request.args.get('page', 1, type=int)
     page = page - 1
@@ -410,7 +410,7 @@ def get_driver_list(select, query):
     
     Args:
         select: {str}   selector type
-        query:  {str}   data to be sarched for in the collection
+        query:  {str}   data to be searched for in the collection
 
     Returns:
         {list} List of search results
@@ -437,7 +437,7 @@ def driver_name_search(query):
         Seach driver names with a query
     
     Args:
-        query:  {str}   data to be sarched for in the collection
+        query: {str} data to be sarched for in the collection
 
     Returns:
         {list} List of search results
@@ -463,6 +463,71 @@ def driver_name_search(query):
                 if driver not in driver_list:
                     driver_list.append(driver)
     return driver_list
+
+
+def get_circuit_list(select, query):
+    """
+    Purpose:
+        Seach circuits using various selectors
+    
+    Args:
+        select: {str}   selector type
+        query:  {str}   data to be searched for in the collection
+
+    Returns:
+        {list} List of search results
+    """
+    circuit_list = list()
+    if query == '':
+        circuit_list = list(db.circuits.find())
+        return circuit_list
+    
+    if select == 'name' or select == 'most_recent_race':
+        circuit_list = list(db.circuits.find({select: {'$regex': f'.*{query}.*?', '$options': 'i'}}))
+    else:
+        circuit_list = circuit_location_search(query)
+    return circuit_list
+
+
+
+def circuit_location_search(query):
+    """
+    Purpose:
+        Seach circuit locations with a query
+    
+    Args:
+        query: {str} data to be sarched for in the collection
+
+    Returns:
+        {list} List of search results
+    """
+    # Search token in forenames and surnames
+    tokens = query.split()
+    circuit_list = list()
+    if len(tokens) == 1:
+        location_list = list(search('location', db.circuits, query))
+        country_list = search('country', db.circuits, query)
+
+        for circuit in country_list:
+            if circuit not in location_list:
+                location_list.append(circuit)
+        circuit_list = location_list
+    else:
+        location_cursors = list()
+        country_cursors = list()
+        for i in range(0, len(tokens)):
+            location_cursors.append(db.circuits.find({'location': {'$regex': f'{tokens[i]}?', '$options': 'i'}}))
+            country_cursors.append(db.circuits.find({'location': {'$regex': f'{tokens[i]}?', '$options': 'i'}}))
+
+        for cursor in location_cursors:
+            for circuit in cursor:
+                if circuit not in circuit_list:
+                    circuit_list.append(circuit)
+        for cursor in country_cursors:
+            for circuit in cursor:
+                if circuit not in circuit_list:
+                    circuit_list.append(circuit)
+    return circuit_list
 
 
 def search(field, collection, query):
