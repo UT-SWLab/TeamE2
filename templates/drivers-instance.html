@@ -28,111 +28,114 @@
 
     <h1 class="instance-header">{{ name }}</h1>
     <img src="{{ url_for('static', filename=img_path) }}" gs height="30%" width="30%">
-    <div class="row">
-        <div class="column">
-            <span class="data-subtext">{{ bio }}</span>
-            <p class="data-subtext"><a href="{{ url }}">Read More</a></p>
-            <span class="data-header">Date of Birth:&nbsp;</span>
-            <span class="data-text">{{ dob }}</span>
-            <br>
-            <span class="data-header">Nationality:&nbsp;</span>
-            <span class="data-text">{{ nation }}</span>
-            <br>
-            {% if number != "\\N" %}
-            <!-- Need to check because only new drivers have a number -->
-            <span class="data-header">Number:&nbsp;</span>
-            <span class="data-text">{{ number }}</span>
-            <br>
-            {% endif %}
-            <span class="data-header">Latest Constructor:&nbsp;</span>
-            <span class="data-text"><a href="{{ 'constructors?id='+constructor['id'] | string }}">{{ constructor['name'] }}</a></span>
-            <br>
-            <span class="data-header">Past Constructors:&nbsp;</span>
-            {% if teams|length > 1 %}
-            <ul>
-                {% for team in teams[1:] %}
-                <!-- Skip first (current) construcotr -->
-
-                <li class="data-text"><a href="{{ 'constructors?id='+team['id'] | string }}">{{ team['name'] }}</a></li>
-
-                {% endfor %}
-                {% else %}
-                <span class="data-text">None</span>
+    <div class="column">
+        <div class="row">
+            <div class="column">
+                <span class="data-subtext">{{ bio }}</span>
+                <p class="data-subtext"><a href="{{ url }}">Read More</a></p>
+                <span class="data-header">Date of Birth:&nbsp;</span>
+                <span class="data-text">{{ dob }}</span>
+                <br>
+                <span class="data-header">Nationality:&nbsp;</span>
+                <span class="data-text">{{ nation }}</span>
+                <br>
+                {% if number != "\\N" %}
+                <!-- Need to check because only new drivers have a number -->
+                <span class="data-header">Number:&nbsp;</span>
+                <span class="data-text">{{ number }}</span>
                 <br>
                 {% endif %}
-            </ul>
+                <span class="data-header">Latest Constructor:&nbsp;</span>
+                <span class="data-text"><a href="{{ 'constructors?id='+constructor['id'] | string }}">{{ constructor['name'] }}</a></span>
+                <br>
+                <span class="data-header">Past Constructors:&nbsp;</span>
+                {% if teams|length > 1 %}
+                <ul>
+                    {% for team in teams[1:] %}
+                    <!-- Skip first (current) construcotr -->
+
+                    <li class="data-text"><a href="{{ 'constructors?id='+team['id'] | string }}">{{ team['name'] }}</a></li>
+
+                    {% endfor %}
+                    {% else %}
+                    <span class="data-text">None</span>
+                    <br>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+        <div class="container container-no-pad">
+            <div class="column">
+                <span class="data-header">Latest Races</span>
+               <div class='table-responsive'> <div style="overflow-x:auto;">
+                    <table class="table" style="display: inline-block">
+                        <thead>
+                            <th scope="col">Race</th>
+                            <th scope="col">Position</th>
+                            <th scope="col">Constructor</th>
+                            <th scope="col">Circuit</th>
+                            <th scope="col">Points</th>
+                            <th scope="col">Time</th>
+                            <th scope="col">Laps</th>
+                            <th scope="col">Fastest Lap</th>
+                            <th scope="col">Fastest Lap Time</th>
+
+                        </thead>
+                        <tbody>
+                            <tr>
+                                {% for race in latest %}
+                                <td> {{ race['raceName'] }} </td>
+                                <td> {{ race['position'] }} </td>
+                                <td><a href="{{ 'constructors?id='+race['constructorId'] | string }}">{{ race['constructorName'] }}</a></td>
+                                <td><a href="{{ 'circuits?id='+race['circuitId'] | string }}">{{ race['circuitName'] }}</a></td>
+                                <td> {{ race['points'] }} </td>
+                                <td> {{ race['time'] }} </td>
+                                <td> {{ race['laps'] }} </td>
+                                <td> #{{ race['fastestLap'] }} </td>
+                                <td> {{ race['fastestLapTime'] }} </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                   </div>
+                </div>
+                {% if victories|length > 0 %}
+                <span class="data-header">First Place Finshes </span>
+                <div class='table-responsive'> <div style="overflow-x:auto;">
+                    <table class="table" style="display: inline-block">
+                        <thead>
+                            <th scope="col">Race</th>
+                            <th scope="col">Constructor</th>
+                            <th scope="col">Circuit</th>
+                            <th scope="col">Points</th>
+                            <th scope="col">Time</th>
+                            <th scope="col">Laps</th>
+                            <th scope="col">Fastest Lap</th>
+                            <th scope="col">Fastest Lap Time</th>
+
+                        </thead>
+                        <tbody>
+                            <tr>
+                                {% for victory in victories %}
+                                <td> {{ victory['raceName'] }} </td>
+                                <td><a href="{{ 'constructors?id='+victory['constructorId'] | string }}">{{ victory['constructorName'] }}</a></td>
+                                <td><a href="{{ 'circuits?id='+victory['circuitId'] | string }}">{{ victory['circuitName'] }}</a></td>
+                                <td> {{ victory['points'] }} </td>
+                                <td> {{ victory['time'] }} </td>
+                                <td> {{ victory['laps'] }} </td>
+                                <td> #{{ victory['fastestLap'] }} </td>
+                                <td> {{ victory['fastestLapTime'] }} </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    </div>
+                </div>
+                {% else %}
+                <span class="data-text">This driver has not won yet.</span>
+                {% endif %}
+            </div>
         </div>
     </div>
-    <div class="row">
-        <div class="column">
-            <span class="data-header">Latest Races</span>
-            <div class="table-responsive">
-                <table class="table">
-                    <thead>
-                        <th scope="col">Race</th>
-                        <th scope="col">Position</th>
-                        <th scope="col">Constructor</th>
-                        <th scope="col">Circuit</th>
-                        <th scope="col">Points</th>
-                        <th scope="col">Time</th>
-                        <th scope="col">Laps</th>
-                        <th scope="col">Fastest Lap</th>
-                        <th scope="col">Fastest Lap Time</th>
-
-                    </thead>
-                    <tbody>
-                        <tr>
-                            {% for race in latest %}
-                            <td> {{ race['raceName'] }} </td>
-                            <td> {{ race['position'] }} </td>
-                            <td><a href="{{ 'constructors?id='+race['constructorId'] | string }}">{{ race['constructorName'] }}</a></td>
-                            <td><a href="{{ 'circuits?id='+race['circuitId'] | string }}">{{ race['circuitName'] }}</a></td>
-                            <td> {{ race['points'] }} </td>
-                            <td> {{ race['time'] }} </td>
-                            <td> {{ race['laps'] }} </td>
-                            <td> #{{ race['fastestLap'] }} </td>
-                            <td> {{ race['fastestLapTime'] }} </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-            {% if victories|length > 0 %}
-            <span class="data-header">First Place Finshes </span>
-            <div class="table-responsive">
-                <table class="table">
-                    <thead>
-                        <th scope="col">Race</th>
-                        <th scope="col">Constructor</th>
-                        <th scope="col">Circuit</th>
-                        <th scope="col">Points</th>
-                        <th scope="col">Time</th>
-                        <th scope="col">Laps</th>
-                        <th scope="col">Fastest Lap</th>
-                        <th scope="col">Fastest Lap Time</th>
-
-                    </thead>
-                    <tbody>
-                        <tr>
-                            {% for victory in victories %}
-                            <td> {{ victory['raceName'] }} </td>
-                            <td><a href="{{ 'constructors?id='+victory['constructorId'] | string }}">{{ victory['constructorName'] }}</a></td>
-                            <td><a href="{{ 'circuits?id='+victory['circuitId'] | string }}">{{ victory['circuitName'] }}</a></td>
-                            <td> {{ victory['points'] }} </td>
-                            <td> {{ victory['time'] }} </td>
-                            <td> {{ victory['laps'] }} </td>
-                            <td> #{{ victory['fastestLap'] }} </td>
-                            <td> {{ victory['fastestLapTime'] }} </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-            {% else %}
-            <span class="data-text">This driver has not won yet.</span>
-            {% endif %}
-        </div>
-    </div>
-
 </div>
 {% endblock %}

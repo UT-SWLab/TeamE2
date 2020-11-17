@@ -15,89 +15,90 @@
 <div class="container-lg mt-3 border: 0px">
     <h1 class="instance-header">{{ name }}</h1>
     <img src="{{ url_for('static', filename=img_path) }}" gs height="30%" width="30%">
-
-    <div class="row">
-        <div class="column">
-            <span class="data-subtext">{{bio}}</span>
-            <p class="data-subtext"><a href="{{ url }}">Read More</a></p>
-            <span class="data-header">Nationality:&nbsp;</span>
-            <span class="data-text">{{nation}}</span>
-            <br>
-            <span class="data-header">Top Driver:&nbsp;</span>
-            <span class="data-text"><a href="{{ 'drivers?id='+top_driver['id'] | string }}">{{ top_driver['name'] }}</a></span>
-            <span class="data-subtext">({{top_driver['points'] |string }} points)</span>
-            <br>
-            <span class="data-header">Latest Drivers:&nbsp;</span>
-            {% if drivers is defined and drivers %}
-            <br>
-            {% for driver in drivers %}
-            <ul>
-                <li class="data-text"><a href="{{ 'drivers?id='+driver['driverId'] | string }}">{{ driver['name'] }}</a></li>
-            </ul>
-            {% endfor %}
-            {% else %}
-            <span class="data-text">None</span>
-            <br>
-            {% endif %}
-            {% if wins|length > 0 %}
-            <span class="data-header">Total Race Victories:&nbsp;</span>
-            <span class="data-text">{{ total_wins }}</span>
-            {% else %}
-            <span class="data-header">This constructor has no race victories.</span>
-            {% endif %}
-        </div>
-
-    </div>
-    <div class="row">
-        <div class="column">
-            {% if wins|length > 0 %}
-            <p class="data-header">Latest Race Victories:</p>
-            <div class="table-responsive">
-                <table class="table">
-                    <thead>
-                        <th scope="col">Race</th>
-                        <th scope="col">Points</th>
-                        <th scope="col">Circuit</th>
-                        <th scope="col">Date</th>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            {% for win in wins %}
-                            <td>{{ win['raceName'] }}</td>
-                            <td>{{ win['points'] }}</td>
-                            <td><a href="{{ 'circuits?id='+win['circuitId'] | string }}">{{ win['circuitName'] }}</a></td>
-                            <td> {{ win['date'] }} </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+    <div class="column">
+        <div class="row">
+            <div class="column">
+                <span class="data-subtext">{{bio}}</span>
+                <p class="data-subtext"><a href="{{ url }}">Read More</a></p>
+                <span class="data-header">Nationality:&nbsp;</span>
+                <span class="data-text">{{nation}}</span>
+                <br>
+                <span class="data-header">Top Driver:&nbsp;</span>
+                <span class="data-text"><a href="{{ 'drivers?id='+top_driver['id'] | string }}">{{ top_driver['name'] }}</a></span>
+                <span class="data-subtext">({{top_driver['points'] |string }} points)</span>
+                <br>
+                <span class="data-header">Latest Drivers:&nbsp;</span>
+                {% if drivers is defined and drivers %}
+                <br>
+                {% for driver in drivers %}
+                <ul>
+                    <li class="data-text"><a href="{{ 'drivers?id='+driver['driverId'] | string }}">{{ driver['name'] }}</a></li>
+                </ul>
+                {% endfor %}
+                {% else %}
+                <span class="data-text">None</span>
+                <br>
+                {% endif %}
+                {% if wins|length > 0 %}
+                <span class="data-header">Total Race Victories:&nbsp;</span>
+                <span class="data-text">{{ total_wins }}</span>
+                {% else %}
+                <span class="data-header">This constructor has no race victories.</span>
+                {% endif %}
             </div>
-            {% endif %}
-            <span class="data-header">Latest Races</span>
-            <div class="table-responsive">
-                <table class="table">
-                    <thead>
-                        <th scope="col">Race</th>
-                        <th scope="col">Points</th>
-                        <th scope="col">Circuit</th>
-                        <th scope="col">Date</th>
-                        <th scope="col">Position</th>
+
+        </div>
+        <div class="container container-no-pad">
+            <div class="column">
+                {% if wins|length > 0 %}
+                <p class="data-header">Latest Race Victories:</p>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <th scope="col">Race</th>
+                            <th scope="col">Points</th>
+                            <th scope="col">Circuit</th>
+                            <th scope="col">Date</th>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                {% for win in wins %}
+                                <td>{{ win['raceName'] }}</td>
+                                <td>{{ win['points'] }}</td>
+                                <td><a href="{{ 'circuits?id='+win['circuitId'] | string }}">{{ win['circuitName'] }}</a></td>
+                                <td> {{ win['date'] }} </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% endif %}
+                <span class="data-header">Latest Races</span>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <th scope="col">Race</th>
+                            <th scope="col">Points</th>
+                            <th scope="col">Circuit</th>
+                            <th scope="col">Date</th>
+                            <th scope="col">Position</th>
 
 
-                    </thead>
-                    <tbody>
-                        <tr>
-                            {% for race in latest_races %}
-                            <td> {{ race['raceName'] }} </td>
-                            <td> {{ race['points'] }} </td>
-                            <td><a href="{{ 'circuits?id='+race['circuitId'] | string }}">{{ race['circuitName'] }}</a></td>
-                            <td> {{ race['date'] }} </td>
-                            <td> {{ race['position'] }} </td>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                {% for race in latest_races %}
+                                <td> {{ race['raceName'] }} </td>
+                                <td> {{ race['points'] }} </td>
+                                <td><a href="{{ 'circuits?id='+race['circuitId'] | string }}">{{ race['circuitName'] }}</a></td>
+                                <td> {{ race['date'] }} </td>
+                                <td> {{ race['position'] }} </td>
 
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>

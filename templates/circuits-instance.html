@@ -15,80 +15,82 @@
 
 
 <div class="container-lg mt-3 border: 0px">
+
     <h1 class="instance-header">{{ name }}</h1>
     <img src="{{ url_for('static', filename=img_path) }}" gs height="30%" width="30%">
-
-    <div class="row">
-        <div class="column">
-            <span class="data-subtext">{{ bio }}</span>
-            <p class="data-subtext"><a href="{{ url }}">Read More</a></p>
-            <span class="data-header">Location: &nbsp;</span>
-            <span class="data-text">{{ locality }}, {{ country }}</span>
-            <p class="data-subtext">Coordinates: ({{ lat }}, {{ long }})</p>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="column">
-               <span class="data-header">Fastest Laps of All Time</span>
-            <br>
-            <br>
-             <div class="table-responsive">
-                <table class="table">
-                    <thead>
-                        <th scope="col">Driver</th>
-                        <th scope="col">Constructor</th>
-                        <th scope="col">Race</th>
-                        <th scope="col">Lap Time</th>
-                        <th scope="col">Lap Speed</th>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            {% for lap in lap_times %}
-                            <td><a href="{{ 'drivers?id='+lap['driverId'] | string }}">{{ lap['driverName'] }}</a></td>
-                            <td><a href="{{ 'constructors?id='+lap['constructorId'] | string }}">{{ lap['constructorName'] }}</a></td>
-                            <td> {{ lap['raceName'] }} </td>
-                            <td> {{ lap['fastestLapTime'] }} </td>
-                            <td> {{ lap['speed'] }} km/h </td> 
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-                 <br>
+    <div class="column">
+        <div class="row">
+            <div class="column">
+                <span class="data-subtext">{{ bio }}</span>
+                <p class="data-subtext"><a href="{{ url }}">Read More</a></p>
+                <span class="data-header">Location: &nbsp;</span>
+                <span class="data-text">{{ locality }}, {{ country }}</span>
+                <p class="data-subtext">Coordinates: ({{ lat }}, {{ long }})</p>
             </div>
-            <span class="data-header">Latest Race: </span>
-            <span class="data-text">{{ latest_race_name }}</span>
-            <br>
-            <br>
-            <span class="data-subtext">{{ latest_race_name }} Results</span>
-            <div class="table-responsive">
-                <table class="table">
-                    <thead>
-                        <th scope="col">Position</th>
-                        <th scope="col">Driver</th>
-                        <th scope="col">Constructor</th>
-                        <th scope="col">Points</th>
-                        <th scope="col">Time</th>
-                        <th scope="col">Rank</th>
-                        <th scope="col">Fastest Lap</th>
-                        <th scope="col">Laps</th>
+        </div>
 
-                    </thead>
-                    <tbody>
-                        <tr>
-                            {% for driver in latest_results %}
-                            <td>{{ driver['position'] }}</td>
-                            <td><a href="{{ 'drivers?id='+driver['driverId'] | string }}">{{ driver['driverName'] }}</a></td>
-                            <td><a href="{{ 'constructors?id='+driver['constructorId'] | string }}">{{ driver['constructorName'] }}</a></td>
-                            <td> {{ driver['points'] }} </td>
-                            <td> {{ driver['time'] }} </td>
-                            <td> {{ driver['rank'] }} </td>
-                            <td> #{{ driver['fastestLap'] }} </td>
-                            <td> {{ driver['laps'] }} </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+        <div class="container container-no-pad">
+            <div class="column">
+                <span class="data-header">Fastest Laps of All Time</span>
+                <br>
+                <br>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <th scope="col">Driver</th>
+                            <th scope="col">Constructor</th>
+                            <th scope="col">Race</th>
+                            <th scope="col">Lap Time</th>
+                            <th scope="col">Lap Speed</th>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                {% for lap in lap_times %}
+                                <td><a href="{{ 'drivers?id='+lap['driverId'] | string }}">{{ lap['driverName'] }}</a></td>
+                                <td><a href="{{ 'constructors?id='+lap['constructorId'] | string }}">{{ lap['constructorName'] }}</a></td>
+                                <td> {{ lap['raceName'] }} </td>
+                                <td> {{ lap['fastestLapTime'] }} </td>
+                                <td> {{ lap['speed'] }} km/h </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <br>
+                </div>
+                <span class="data-header">Latest Race: </span>
+                <span class="data-text">{{ latest_race_name }}</span>
+                <br>
+                <br>
+                <span class="data-subtext">{{ latest_race_name }} Results</span>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <th scope="col">Position</th>
+                            <th scope="col">Driver</th>
+                            <th scope="col">Constructor</th>
+                            <th scope="col">Points</th>
+                            <th scope="col">Time</th>
+                            <th scope="col">Rank</th>
+                            <th scope="col">Fastest Lap</th>
+                            <th scope="col">Laps</th>
+
+                        </thead>
+                        <tbody>
+                            <tr>
+                                {% for driver in latest_results %}
+                                <td>{{ driver['position'] }}</td>
+                                <td><a href="{{ 'drivers?id='+driver['driverId'] | string }}">{{ driver['driverName'] }}</a></td>
+                                <td><a href="{{ 'constructors?id='+driver['constructorId'] | string }}">{{ driver['constructorName'] }}</a></td>
+                                <td> {{ driver['points'] }} </td>
+                                <td> {{ driver['time'] }} </td>
+                                <td> {{ driver['rank'] }} </td>
+                                <td> #{{ driver['fastestLap'] }} </td>
+                                <td> {{ driver['laps'] }} </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
