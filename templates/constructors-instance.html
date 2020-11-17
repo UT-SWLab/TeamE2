@@ -73,6 +73,32 @@
                 </table>
             </div>
             {% endif %}
+            <span class="data-header">Latest Races</span>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <th scope="col">Race</th>
+                        <th scope="col">Points</th>
+                        <th scope="col">Circuit</th>
+                        <th scope="col">Date</th>
+                        <th scope="col">Position</th>
+
+
+                    </thead>
+                    <tbody>
+                        <tr>
+                            {% for race in latest_races %}
+                            <td> {{ race['raceName'] }} </td>
+                            <td> {{ race['points'] }} </td>
+                            <td><a href="{{ 'circuits?id='+race['circuitId'] | string }}">{{ race['circuitName'] }}</a></td>
+                            <td> {{ race['date'] }} </td>
+                            <td> {{ race['position'] }} </td>
+
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>

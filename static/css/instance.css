@@ -10,46 +10,46 @@ img {
     margin: 10px 20px 10px 0px;
 }
 
-.instance-header{
+.instance-header {
     border-bottom: 1px solid black;
 }
 
-.data-header{ 
-    font-size: 36px; 
+.data-header {
+    font-size: 36px;
     font-weight: 400;
-    
+
 }
 
-.data-text{
-    font-size: 36px; 
+.data-text {
+    font-size: 36px;
     font-weight: 200;
 }
 
-.data-subtext{
+.data-subtext {
     font-size: 24px;
     font-weight: 200;
 }
 
-.list-element{
+.list-element {
     font-size: 30px;
     font-weight: 200;
 }
 
-ul{
-    list-style-type: none; 
+ul {
+    list-style-type: none;
     padding-left: 0;
 }
 
-li{
+li {
     padding-left: 0;
 }
 
-thead{
+thead {
     background-color: #dc3546;
     /* same as "navbar" */
-    color:white;
+    color: white;
 }
 
-th{
+th {
     font-weight: 600;
 }

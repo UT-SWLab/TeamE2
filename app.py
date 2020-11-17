@@ -155,7 +155,7 @@ def circuit_model():
                 else:
                     db.circuits.update_one({'_id': circuit['_id']}, {'$set': {'most_recent_race': 'N/A'}})
             else:
-                #print('found most recent race for circuit: ' + str(circuit['circuitId']))
+                # print('found most recent race for circuit: ' + str(circuit['circuitId']))
                 circuits[-1].update({'most_recent_race': circuit['most_recent_race']})
             circuits[-1].update({'link': 'circuits?id=' + str(circuit['circuitId'])})
 
@@ -250,6 +250,16 @@ def constructor_instance():
     if len(wins) >= 5:
         wins = wins[:5]  # Take the 5 latest victories
 
+    db_races = db.constructor_results.find({'constructorId': constructor_id})
+
+    latest_races = []
+    for r in db_races:
+        latest_races.append({'raceName': r['raceName'], 'date': r['raceDate'], 'circuitId': r['circuitId'],
+                             'circuitName': r['circuitName'], 'points': r['points'], 'position': r['position']})
+    latest_races = sorted(latest_races, key=lambda i: i['date'], reverse=True)
+    if len(latest_races) >= 5:
+        latest_races = latest_races[:5]
+
     # Get image
     constructor_ref = constructor['constructorRef']
     img_path = f'images/constructors/{constructor_ref}.png'
@@ -258,10 +268,9 @@ def constructor_instance():
 
     return render_template('constructors-instance.html', name=name, nation=nation,
                            drivers=team_drivers, wins=wins, img_path=img_path, url=url, bio=bio,
-                           total_wins=total_wins, top_driver=top_driver)
+                           total_wins=total_wins, top_driver=top_driver, latest_races=latest_races)
 
 
-# Add circuitID to results.csv to make it easier to find race participants and constructor winenrs
 @app.route('/circuits')
 def circuit_instance():
     circuit_id = request.args['id']
