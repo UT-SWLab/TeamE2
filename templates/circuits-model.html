@@ -21,8 +21,7 @@
   <div class="searchbar">
     <form action="/models_circuits" method="get">
       <label for="filtered">Search circuits by:</label>
-      <select id="filtered" name="filtered" required="required">
-        <option value="">Select Filter</option>
+      <select id="filtered" name="filtered">
         <option value="name">Name</option>
         <option value="location">Location</option>
         <option value="most_recent_race">Most Recent Race</option>
@@ -34,7 +33,7 @@
         <option value="reverse_alpha">Reverse Alphabetical (Z-A)</option>
       </select>
       <br>
-      <input id="search" class="col-6" type="text" name="search" placeholder="Enter a query ..." required="required">
+      <input id="search" class="col-6" type="text" name="search" placeholder="Enter a query ...">
       <button type="submit">Submit</button>
     </form>
     <br>

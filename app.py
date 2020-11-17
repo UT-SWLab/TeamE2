@@ -125,7 +125,9 @@ def circuit_model():
     filtered = request.args.get('filtered', '', type=str)
     sort = request.args.get('sort', '', type=str)
     circuit_list = get_circuit_list(filtered, query)
+    print(len(circuit_list))
     circuit_list = sort_models(circuit_list, sort, filtered)
+    print(len(circuit_list))
 
     page = request.args.get('page', 1, type=int)
     page = page - 1
@@ -576,7 +578,7 @@ def sort_models(models, sort, filtered):
         # return if no results
         return models
     elif 'driverId' in models[0]:
-        if filtered == 'name':
+        if filtered == 'name' or filtered == '':
             if sort == 'alpha':
                 # alphabetical sort
                 return sorted(models, key=lambda x:(remove_accents(x['forename']), remove_accents(x['forename'])))
@@ -598,7 +600,7 @@ def sort_models(models, sort, filtered):
                 # reverse alphabetical sort
                 return sorted(models, key=lambda x: remove_accents(x['constructor']['name']), reverse=True)
     elif 'constructorId' in models[0]:
-        if filtered == 'name':
+        if filtered == 'name' or filtered == '':
             if sort == 'alpha':
                 # alphabetical sort
                 return sorted(models, key=lambda x: remove_accents(x['name']))
@@ -620,7 +622,7 @@ def sort_models(models, sort, filtered):
                 # reverse alphabetical sort
                 return sorted(models, key=lambda x: remove_accents(x['topDriverName']), reverse=True)         
     elif 'circuitId' in models[0]:
-        if filtered == 'name':
+        if filtered == 'name' or filtered == '':
             if sort == 'alpha':
                 # alphabetical sort
                 return sorted(models, key=lambda x: remove_accents(x['name']))
