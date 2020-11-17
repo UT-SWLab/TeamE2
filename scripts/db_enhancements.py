@@ -1,6 +1,4 @@
-
 import pymongo as pymongo
-
 
 dbUsername = 'formulaOne'
 dbPassword = '0WpPVH6LdcHiwdct'
@@ -119,7 +117,54 @@ def best_driver():
             print("ERROR with " + c['constructorName'])
 
 
+def constructor_results():
+    # query = {"position": {"$exists": False}}
+    # db_results = list(db.constructor_results.find(query))
+    db_results = db.constructor_results.find()
+    results = []
+
+    for s in db_results:
+        results.append(
+            {'_id': s['_id'], 'raceId': s['raceId'], 'constructorId': s['constructorId'], 'points': s['points']})
+
+    count = 0
+    for s in results:
+        try:
+            count = count + 1
+            if count == 100:
+                print(count)
+                count = 0
+            constructor = db.constructors.find_one({'constructorId': s['constructorId']})
+            race = db.races.find_one({'raceId': s['raceId']})
+            circuit = db.circuits.find_one({'circuitId': race['circuitId']})
+            if db.constructor_standings.count_documents(
+                    {'raceId': s['raceId'], 'constructorId': s['constructorId']}) != 0:
+
+                standing = db.constructor_standings.find_one(
+                    {'raceId': s['raceId'], 'constructorId': s['constructorId']})
+
+                position = standing['position']
+            else:
+                position = '\\N'
+            constructorName = constructor['name']
+            raceName = str(race['year']) + ' ' + race['name']
+            raceDate = race['date']
+            circuitName = circuit['name']
+            circuitId = circuit['circuitId']
+
+            db.constructor_results.update_one({"_id": s["_id"]}, {"$set": {"constructorName": constructorName}})
+            db.constructor_results.update_one({"_id": s["_id"]}, {"$set": {"raceName": raceName}})
+            db.constructor_results.update_one({"_id": s["_id"]}, {"$set": {"raceDate": raceDate}})
+            db.constructor_results.update_one({"_id": s["_id"]}, {"$set": {"position": position}})
+            db.constructor_results.update_one({"_id": s["_id"]}, {"$set": {"circuitName": circuitName}})
+            db.constructor_results.update_one({"_id": s["_id"]}, {"$set": {"circuitId": circuitId}})
+        except:
+            print("ERROR: " + str(s['_id']))
+
+
+
 if __name__ == '__main__':
     results()
     constructor_standings()
     best_driver()
+    constructor_results()
