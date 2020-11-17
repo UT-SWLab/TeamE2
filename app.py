@@ -440,7 +440,6 @@ def get_driver_list(select, query):
     if query == '':
         driver_list = list(db.drivers.find()) 
         return driver_list
-    
     if select == 'constructor':
         field = 'constructor.name'
         driver_list = list(db.drivers.find({field: {'$regex': f'.*{query}.*?', '$options': 'i'}}))
@@ -449,8 +448,6 @@ def get_driver_list(select, query):
     else:
         driver_list = driver_name_search(query)
     return driver_list
-
-
 
 def driver_name_search(query):
     """
@@ -485,7 +482,6 @@ def driver_name_search(query):
                     driver_list.append(driver)
     return driver_list
 
-
 def get_circuit_list(select, query):
     """
     Purpose:
@@ -508,8 +504,6 @@ def get_circuit_list(select, query):
     else:
         circuit_list = circuit_location_search(query)
     return circuit_list
-
-
 
 def circuit_location_search(query):
     """
@@ -550,7 +544,6 @@ def circuit_location_search(query):
                     circuit_list.append(circuit)
     return circuit_list
 
-
 def search(field, collection, query):
     """
     Purpose:
@@ -568,7 +561,6 @@ def search(field, collection, query):
         return list(collection.find())
     else:
         return list(collection.find({field: {'$regex': f'.*{query}.*?', '$options': 'i'}}))
-
 
 def sort_models(models, sort, filtered):
     if sort == '' or sort == 'relevance':

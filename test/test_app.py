@@ -1,7 +1,13 @@
 import unittest
 from flask import Flask, render_template, request
 from flask_pymongo import pymongo
-from app import search
+
+import os, sys
+currentdir = os.path.dirname(os.path.realpath(__file__))
+parentdir = os.path.dirname(currentdir)
+sys.path.append(parentdir)
+
+from app import search, get_driver_list, driver_name_search, get_circuit_list, circuit_location_search, sort_models, remove_accents
 
 class TestApp(unittest.TestCase):
     
@@ -249,7 +255,7 @@ class TestApp(unittest.TestCase):
         self.db.constructors_standings.update_one({'constructorName' : 'Samuel Yeboah'} , {'$set' : {'raceName' : desiredRaceName}})
         standings = self.db.constructors_standings.find_one({'raceName' : desiredRaceName})
         self.assertEqual(desiredRaceName , standings['raceName'])
-        
+
     def test_deleteConstructorStandings(self): 
         self.db.constructors_standings.delete_many({'constructorName' : "John Hopkins"})
         actualDocumentCount = self.db.constructors_standings.count_documents({'constructorName' : 'John Hopkins' })
@@ -274,19 +280,92 @@ class TestApp(unittest.TestCase):
         desiredNumDrivers = collection.count_documents({})
         self.assertEquals(desiredNumDrivers,len(drivers))
 
+    def test_getDriverListEmptyQuery(self):
+        desiredNumDrivers = self.db.drivers.count_documents({})
+        query = ''
+        select = ''
+        numDrivers = len(get_driver_list(select,query))
+        self.assertEqual(desiredNumDrivers,numDrivers)
     
+    def test_getDriverListByConstructors(self):
+        select = 'constructor'
+        query = 'mercedes'
+        desiredConstructor = "mercedes"
+        drivers = get_driver_list(select,query)
+        for driver in drivers:
+            if driver['forename'] == 'lewis':
+                self.assertEqual(desiredConstructor,driver['constructor']['name'])
 
-       
+    def test_getDriverListByNationality(self):
+        select = 'nationality'
+        query = 'british'
+        drivers = get_driver_list(select,query)
+        desiredNationality = 'british'
+        for driver in drivers:
+            if driver['forename'] == 'lewis':
+                self.assertEqual(desiredNationality,driver['nationality'])
     
+    def test_SingleTokendriverNameSearch(self):
+        query = 'lewis'
+        select = ''
+        desiredDriverForename = 'Lewis'
+        desiredDriverSurname = 'Hamilton'
+        driverList = driver_name_search(query)
+        for driver in driverList:
+            if driver['surname'] == 'hamilton':
+                self.assertEqual(desiredDriverForename,driver['forename'])
+
+    def test_multipleTokenDriverNameSearch(self):
+        query = 'Lewis Hamilton'
+        select = ''
+        desiredDriverForename = 'Lewis'
+        desiredDriverSurname = 'Hamilton'
+        driverList = driver_name_search(query)
+        for driver in driverList:
+            if driver['surname'] == 'hamilton':
+                self.assertEqual(desiredDriverSurname,driver['surname'])
+
+    def test_getCircuitListEmptyQuerry(self):
+        query = ''
+        select = ''
+        desiredDocumentCount = self.db.circuits.count_documents({})
+        actualDocumentCount = len(get_circuit_list(select,query))
+        self.assertEqual(desiredDocumentCount,actualDocumentCount)
+
+    def test_getCircuitListByName(self):
+        select = 'name'
+        query = 'as'
+        circuitList =  get_circuit_list(select , query)
+        desiredResult = True
+        for circuit in circuitList:
+            result = query in circuit['name']
+            self.assertEqual(desiredResult,result) 
         
+    def test_singleTokenCircuitLocationSearch(self):
+        query = 'hello'
+        circuitList = circuit_location_search(query)
+        desiredLength = 0
+        self.assertEqual(desiredLength , len(circuitList))
 
+    def test_multipleTokenCircuitLocationSearch(self):
+        query = 'hello world'
+        circuitList = circuit_location_search(query)
+        desiredLength = 0
+        self.assertEqual(desiredLength , len(circuitList))
 
+    def test_removeAccents(self):
+        strWithAccents = 'orčpžsíáýd'
+        desiredResult = 'orcpzsiayd'
+        self.assertEqual(desiredResult, remove_accents(strWithAccents))
 
-        
-
-    
-    
-
+    def test_sortModels(self):
+        models = list(self.db.drivers.find({'constructor.name' : 'Mercedes'}))
+        sort = 'alpha'
+        filtered = 'name'
+        sortedModels = sort_models(models,sort,filtered)
+        desiredSortedModels = sorted(models, key=lambda x: x['forename'])
+        for i  in range(0,len(sortedModels)):
+            self.assertEqual(desiredSortedModels[i]['driverId'] , sortedModels[i]['driverId'])
 
 if __name__ == '__main__':
     unittest.main()
