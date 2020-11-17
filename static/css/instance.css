@@ -53,3 +53,7 @@ thead {
 th {
     font-weight: 600;
 }
+
+.container-no-pad{
+    padding: 0px;
+}
