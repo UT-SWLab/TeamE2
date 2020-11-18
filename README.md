@@ -49,11 +49,12 @@ You will need the `gcloud` binary, [click me for gcloud installation instruction
 ## Phase 3 Completion Times:
 | Story | Assignee | Estimated Time | Completion Time |
 | ----- | -------- | -------------- | --------------- |
-| As a developer, I want to be able to test my search and filtering functions so that I can ensure accurate results. | person |  hrs. |  hrs. |
-| As a user, I want an interactive home page that gives me some relevant information so that I can browse the site more easily. | person |  hrs. |  hrs. |
-| As a user, I want to be able to filter model instances so that I can find the information that I want more easily. | person |  hrs. |  hrs. |
-| As a user, I want to be able to sort model instances so that I can find the information that I want more easily. | person |  hrs. |  hrs. |
-| As a user, I want to be able to search model instances so that I can find the information that I want more easily. | person |  hrs. |  hrs. |
+| As a developer, I want to be able to test my search and filtering functions so that I can ensure accurate results. | Sam |  5 hrs. | 2 hrs. |
+| As a user, I want an interactive home page that gives me some relevant information so that I can browse the site more easily. | Sam / Kevin |  2 hrs. | 4 hrs. |
+| As a user, I want to be able to filter model instances so that I can find the information that I want more easily. | Edie / Alan |  3 hrs. |  3 hrs. |
+| As a user, I want to be able to sort model instances so that I can find the information that I want more easily. | Alan / Edie |  3 hrs. |  3 hrs. |
+| As a user, I want to be able to search model instances so that I can find the information that I want more easily. | Edie / Alan |  6 hrs. | 4 hrs. |
+| As a user, I want the website to be responsive to my screen size, even if it is very small. | Kevin | 3 hrs. | 3 hrs. |
 
 ## Environment Setup:
 You will need a working version of Python 3 installed on your computer. Create the virtual environment using this command:
