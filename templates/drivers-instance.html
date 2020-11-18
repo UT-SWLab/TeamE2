@@ -27,47 +27,69 @@
 <div class="container-lg mt-3 border: 0px">
 
     <h1 class="instance-header">{{ name }}</h1>
-    <img src="{{ url_for('static', filename=img_path) }}" gs height="30%" width="30%">
-    <div class="column">
+    <div class="container container-no-pad">
         <div class="row">
-            <div class="column">
-                <span class="data-subtext">{{ bio }}</span>
+            <div class="col-md-8 col-no-pad">
+                <span class="data-subtext">{{bio}}</span>
                 <p class="data-subtext"><a href="{{ url }}">Read More</a></p>
-                <span class="data-header">Date of Birth:&nbsp;</span>
-                <span class="data-text">{{ dob }}</span>
-                <br>
-                <span class="data-header">Nationality:&nbsp;</span>
-                <span class="data-text">{{ nation }}</span>
-                <br>
-                {% if number != "\\N" %}
-                <!-- Need to check because only new drivers have a number -->
-                <span class="data-header">Number:&nbsp;</span>
-                <span class="data-text">{{ number }}</span>
-                <br>
-                {% endif %}
-                <span class="data-header">Latest Constructor:&nbsp;</span>
-                <span class="data-text"><a href="{{ 'constructors?id='+constructor['id'] | string }}">{{ constructor['name'] }}</a></span>
-                <br>
-                <span class="data-header">Past Constructors:&nbsp;</span>
-                {% if teams|length > 1 %}
-                <ul>
-                    {% for team in teams[1:] %}
-                    <!-- Skip first (current) construcotr -->
+                <div class="row">
+                    <span class="data-header">Date of Birth:&nbsp;</span>
+                    <span class="data-text">{{ dob }}</span>
+                    
+                </div>
+                <div class="row">
+                    <span class="data-header">Nationality:&nbsp;</span>
+                    <span class="data-text">{{ nation }}</span>
 
-                    <li class="data-text"><a href="{{ 'constructors?id='+team['id'] | string }}">{{ team['name'] }}</a></li>
-
-                    {% endfor %}
-                    {% else %}
-                    <span class="data-text">None</span>
-                    <br>
+                </div>
+                <div class="row">
+                    {% if number != "\\N" %}
+                    <!-- Need to check because only new drivers have a number -->
+                    <span class="data-header">Number:&nbsp;</span>
+                    <span class="data-text">{{ number }}</span>
                     {% endif %}
-                </ul>
+                </div>
+                <div class="row" style="padding-bottom: 10px">
+                    <span class="data-header">Latest Constructor:&nbsp;</span>
+                    <span class="data-text"><a href="{{ 'constructors?id='+constructor['id'] | string }}">{{ constructor['name'] }}</a></span>
+                    
+                    
+                </div>
+
+                <div class="row">
+                    <div class="column">
+                        <span class="data-header">Past Constructors:&nbsp;</span>
+                        {% if teams|length > 1 %}
+                        <ul>
+                            {% for team in teams[1:] %}
+                            <!-- Skip first (current) construcotr -->
+
+                            <li class="data-text"><a href="{{ 'constructors?id='+team['id'] | string }}">{{ team['name'] }}</a></li>
+
+                            {% endfor %}
+                            {% else %}
+                            <span class="data-text">None</span>
+                            <br>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+
+
+            </div>
+            <div class="col-md-4 col-no-pad">
+                <img class="img-fluid" src="{{ url_for('static', filename=img_path) }}" gs height="100%" width="90%">
+
             </div>
         </div>
-        <div class="container container-no-pad">
-            <div class="column">
-                <span class="data-header">Latest Races</span>
-               <div class='table-responsive'> <div style="overflow-x:auto;">
+
+
+    </div>
+    <div class="container container-no-pad">
+        <div class="col-md-9 col-no-pad">
+            <span class="data-header">Latest Races</span>
+            <div class='table-responsive'>
+                <div style="overflow-x:auto;">
                     <table class="table" style="display: inline-block">
                         <thead>
                             <th scope="col">Race</th>
@@ -97,11 +119,12 @@
                             {% endfor %}
                         </tbody>
                     </table>
-                   </div>
                 </div>
-                {% if victories|length > 0 %}
-                <span class="data-header">First Place Finshes </span>
-                <div class='table-responsive'> <div style="overflow-x:auto;">
+            </div>
+            {% if victories|length > 0 %}
+            <span class="data-header">First Place Finshes </span>
+            <div class='table-responsive'>
+                <div style="overflow-x:auto;">
                     <table class="table" style="display: inline-block">
                         <thead>
                             <th scope="col">Race</th>
@@ -129,12 +152,11 @@
                             {% endfor %}
                         </tbody>
                     </table>
-                    </div>
                 </div>
-                {% else %}
-                <span class="data-text">This driver has not won yet.</span>
-                {% endif %}
             </div>
+            {% else %}
+            <span class="data-text">This driver has not won yet.</span>
+            {% endif %}
         </div>
     </div>
 </div>
