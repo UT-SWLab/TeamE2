@@ -3,12 +3,16 @@ import unittest
 
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.ui import Select
 
 # You will need to change this if you are not using chromedriver for chrome v86
 DRIVER_PATH = os.path.join(os.getcwd(), 'chromedriver')
 
 # Homepage url
 HOME_URL = 'https://f1stat-292509.uc.r.appspot.com/'
+
+# Local debug URL
+# HOME_URL = 'http://127.0.0.1:5000/'
 
 class GUI_Test(unittest.TestCase):
     # navbar tests
@@ -280,6 +284,334 @@ class GUI_Test(unittest.TestCase):
         driver.find_element_by_link_text('Ferrari').click()
         self.assertEqual(driver.current_url, f'{HOME_URL}constructors?id=6')
 
+    
+    # Test search/filter/sort GUI on driver model page
+    def test_driver_model_name_filter(self):
+        driver = webdriver.Chrome(executable_path=DRIVER_PATH)
+        driver.get(f'{HOME_URL}models_drivers')
+
+        filtered = 'name'
+        select = Select(driver.find_element_by_id('filtered'))
+        select.select_by_value(filtered)
+        driver.find_element_by_id('submit').click()
+        self.assertEqual(driver.current_url, f'{HOME_URL}models_drivers?filtered={filtered}&sort=relevance&search=')
+
+    def test_driver_model_name_filter_paginate(self):
+        driver = webdriver.Chrome(executable_path=DRIVER_PATH)
+        driver.get(f'{HOME_URL}models_drivers')
+
+        filtered = 'name'
+        select = Select(driver.find_element_by_id('filtered'))
+        select.select_by_value(filtered)
+        driver.find_element_by_id('submit').click()
+
+        nextPage = driver.find_element_by_css_selector("[aria-label='Next']")
+        nextPage.click()
+        self.assertEqual(driver.current_url, f'{HOME_URL}models_drivers?page=2&search=&filtered={filtered}&sort=relevance')
+
+    def test_driver_model_nationality_filter(self):
+        driver = webdriver.Chrome(executable_path=DRIVER_PATH)
+        driver.get(f'{HOME_URL}models_drivers')
+
+        filtered = 'nationality'
+        select = Select(driver.find_element_by_id('filtered'))
+        select.select_by_value('nationality')
+        driver.find_element_by_id('submit').click()
+        self.assertEqual(driver.current_url, f'{HOME_URL}models_drivers?filtered={filtered}&sort=relevance&search=')
+
+    def test_driver_model_nationality_filter_paginate(self):
+        driver = webdriver.Chrome(executable_path=DRIVER_PATH)
+        driver.get(f'{HOME_URL}models_drivers')
+
+        filtered = 'nationality'
+        select = Select(driver.find_element_by_id('filtered'))
+        select.select_by_value('nationality')
+        driver.find_element_by_id('submit').click()
+
+        nextPage = driver.find_element_by_css_selector("[aria-label='Next']")
+        nextPage.click()
+        self.assertEqual(driver.current_url, f'{HOME_URL}models_drivers?page=2&search=&filtered={filtered}&sort=relevance')
+
+    def test_driver_model_constructor_filter(self):
+        driver = webdriver.Chrome(executable_path=DRIVER_PATH)
+        driver.get(f'{HOME_URL}models_drivers')
+
+        filtered = 'constructor'
+        select = Select(driver.find_element_by_id('filtered'))
+        select.select_by_value(filtered)
+        driver.find_element_by_id('submit').click()
+        self.assertEqual(driver.current_url, f'{HOME_URL}models_drivers?filtered={filtered}&sort=relevance&search=')
+    
+    def test_driver_model_constructor_filter_paginate(self):
+        driver = webdriver.Chrome(executable_path=DRIVER_PATH)
+        driver.get(f'{HOME_URL}models_drivers')
+
+        filtered = 'constructor'
+        select = Select(driver.find_element_by_id('filtered'))
+        select.select_by_value(filtered)
+        driver.find_element_by_id('submit').click()
+
+        nextPage = driver.find_element_by_css_selector("[aria-label='Next']")
+        nextPage.click()
+        self.assertEqual(driver.current_url, f'{HOME_URL}models_drivers?page=2&search=&filtered={filtered}&sort=relevance')
+
+    def test_driver_model_relevance_sort(self):
+        driver = webdriver.Chrome(executable_path=DRIVER_PATH)
+        driver.get(f'{HOME_URL}models_drivers')
+
+        sort = 'relevance'
+        select = Select(driver.find_element_by_id('sort'))
+        select.select_by_value(sort)
+        driver.find_element_by_id('submit').click()
+        self.assertEqual(driver.current_url, f'{HOME_URL}models_drivers?filtered=name&sort={sort}&search=')
+
+    def test_driver_model_relevance_sort_paginate(self):
+        driver = webdriver.Chrome(executable_path=DRIVER_PATH)
+        driver.get(f'{HOME_URL}models_drivers')
+
+        sort = 'relevance'
+        select = Select(driver.find_element_by_id('sort'))
+        select.select_by_value(sort)
+        driver.find_element_by_id('submit').click()
+
+        nextPage = driver.find_element_by_css_selector("[aria-label='Next']")
+        nextPage.click()
+        self.assertEqual(driver.current_url, f'{HOME_URL}models_drivers?page=2&search=&filtered=name&sort={sort}')
+
+    def test_driver_model_alpha_sort(self):
+        driver = webdriver.Chrome(executable_path=DRIVER_PATH)
+        driver.get(f'{HOME_URL}models_drivers')
+
+        sort = 'alpha'
+        select = Select(driver.find_element_by_id('sort'))
+        select.select_by_value(sort)
+        driver.find_element_by_id('submit').click()
+        self.assertEqual(driver.current_url, f'{HOME_URL}models_drivers?filtered=name&sort={sort}&search=')
+
+    def test_driver_model_alpha_sort_paginate(self):
+        driver = webdriver.Chrome(executable_path=DRIVER_PATH)
+        driver.get(f'{HOME_URL}models_drivers')
+
+        sort = 'alpha'
+        select = Select(driver.find_element_by_id('sort'))
+        select.select_by_value(sort)
+        driver.find_element_by_id('submit').click()
+
+        nextPage = driver.find_element_by_css_selector("[aria-label='Next']")
+        nextPage.click()
+        self.assertEqual(driver.current_url, f'{HOME_URL}models_drivers?page=2&search=&filtered=name&sort={sort}')
+
+    def test_driver_model_reverse_alpha_sort(self):
+        driver = webdriver.Chrome(executable_path=DRIVER_PATH)
+        driver.get(f'{HOME_URL}models_drivers')
+
+        sort = 'alpha'
+        select = Select(driver.find_element_by_id('sort'))
+        select.select_by_value(sort)
+        driver.find_element_by_id('submit').click()
+        self.assertEqual(driver.current_url, f'{HOME_URL}models_drivers?filtered=name&sort={sort}&search=')
+
+    def test_driver_model_reverse_alpha_sort_paginate(self):
+        driver = webdriver.Chrome(executable_path=DRIVER_PATH)
+        driver.get(f'{HOME_URL}models_drivers')
+
+        sort = 'alpha'
+        select = Select(driver.find_element_by_id('sort'))
+        select.select_by_value(sort)
+        driver.find_element_by_id('submit').click()
+
+        nextPage = driver.find_element_by_css_selector("[aria-label='Next']")
+        nextPage.click()
+        self.assertEqual(driver.current_url, f'{HOME_URL}models_drivers?page=2&search=&filtered=name&sort={sort}')
+
+    def test_driver_model_search(self):
+        driver = webdriver.Chrome(executable_path=DRIVER_PATH)
+        driver.get(f'{HOME_URL}models_drivers')
+
+        query = 'a'
+        select = driver.find_element_by_id('search')
+        select.send_keys(query)
+        driver.find_element_by_id('submit').click()
+        self.assertEqual(driver.current_url, f'{HOME_URL}models_drivers?filtered=name&sort=relevance&search={query}')
+
+    def test_driver_model_search_paginate(self):
+        driver = webdriver.Chrome(executable_path=DRIVER_PATH)
+        driver.get(f'{HOME_URL}models_drivers')
+
+        query = 'a'
+        select = driver.find_element_by_id('search')
+        select.send_keys(query)
+        driver.find_element_by_id('submit').click()
+
+        nextPage = driver.find_element_by_css_selector("[aria-label='Next']")
+        nextPage.click()
+        self.assertEqual(driver.current_url, f'{HOME_URL}models_drivers?page=2&search={query}&filtered=name&sort=relevance')
+
+
+    # Test search/filter/sort GUI on constructor model page
+    def test_constructor_model_name_filter(self):
+        driver = webdriver.Chrome(executable_path=DRIVER_PATH)
+        driver.get(f'{HOME_URL}models_constructors')
+
+        filtered = 'name'
+        select = Select(driver.find_element_by_id('filtered'))
+        select.select_by_value(filtered)
+        driver.find_element_by_id('submit').click()
+        self.assertEqual(driver.current_url, f'{HOME_URL}models_constructors?filtered={filtered}&sort=relevance&search=')
+
+    def test_constructor_model_name_filter_paginate(self):
+        driver = webdriver.Chrome(executable_path=DRIVER_PATH)
+        driver.get(f'{HOME_URL}models_constructors')
+
+        filtered = 'name'
+        select = Select(driver.find_element_by_id('filtered'))
+        select.select_by_value(filtered)
+        driver.find_element_by_id('submit').click()
+
+        nextPage = driver.find_element_by_css_selector("[aria-label='Next']")
+        nextPage.click()
+        self.assertEqual(driver.current_url, f'{HOME_URL}models_constructors?page=2&search=&filtered={filtered}&sort=relevance')
+
+    def test_constructor_model_nationality_filter(self):
+        driver = webdriver.Chrome(executable_path=DRIVER_PATH)
+        driver.get(f'{HOME_URL}models_constructors')
+
+        filtered = 'nationality'
+        select = Select(driver.find_element_by_id('filtered'))
+        select.select_by_value('nationality')
+        driver.find_element_by_id('submit').click()
+        self.assertEqual(driver.current_url, f'{HOME_URL}models_constructors?filtered={filtered}&sort=relevance&search=')
+
+    def test_constructor_model_nationality_filter_paginate(self):
+        driver = webdriver.Chrome(executable_path=DRIVER_PATH)
+        driver.get(f'{HOME_URL}models_constructors')
+
+        filtered = 'nationality'
+        select = Select(driver.find_element_by_id('filtered'))
+        select.select_by_value('nationality')
+        driver.find_element_by_id('submit').click()
+
+        nextPage = driver.find_element_by_css_selector("[aria-label='Next']")
+        nextPage.click()
+        self.assertEqual(driver.current_url, f'{HOME_URL}models_constructors?page=2&search=&filtered={filtered}&sort=relevance')
+
+    def test_constructor_model_top_driver_filter(self):
+        driver = webdriver.Chrome(executable_path=DRIVER_PATH)
+        driver.get(f'{HOME_URL}models_constructors')
+
+        filtered = 'topDriverName'
+        select = Select(driver.find_element_by_id('filtered'))
+        select.select_by_value(filtered)
+        driver.find_element_by_id('submit').click()
+        self.assertEqual(driver.current_url, f'{HOME_URL}models_constructors?filtered={filtered}&sort=relevance&search=')
+    
+    def test_constructor_model_top_driver_filter_paginate(self):
+        driver = webdriver.Chrome(executable_path=DRIVER_PATH)
+        driver.get(f'{HOME_URL}models_constructors')
+
+        filtered = 'topDriverName'
+        select = Select(driver.find_element_by_id('filtered'))
+        select.select_by_value(filtered)
+        driver.find_element_by_id('submit').click()
+
+        nextPage = driver.find_element_by_css_selector("[aria-label='Next']")
+        nextPage.click()
+        self.assertEqual(driver.current_url, f'{HOME_URL}models_constructors?page=2&search=&filtered={filtered}&sort=relevance')
+
+    def test_constructor_model_relevance_sort(self):
+        driver = webdriver.Chrome(executable_path=DRIVER_PATH)
+        driver.get(f'{HOME_URL}models_constructors')
+
+        sort = 'relevance'
+        select = Select(driver.find_element_by_id('sort'))
+        select.select_by_value(sort)
+        driver.find_element_by_id('submit').click()
+        self.assertEqual(driver.current_url, f'{HOME_URL}models_constructors?filtered=name&sort={sort}&search=')
+
+    def test_constructor_model_relevance_sort_paginate(self):
+        driver = webdriver.Chrome(executable_path=DRIVER_PATH)
+        driver.get(f'{HOME_URL}models_constructors')
+
+        sort = 'relevance'
+        select = Select(driver.find_element_by_id('sort'))
+        select.select_by_value(sort)
+        driver.find_element_by_id('submit').click()
+
+        nextPage = driver.find_element_by_css_selector("[aria-label='Next']")
+        nextPage.click()
+        self.assertEqual(driver.current_url, f'{HOME_URL}models_constructors?page=2&search=&filtered=name&sort={sort}')
+
+    def test_constructor_model_alpha_sort(self):
+        driver = webdriver.Chrome(executable_path=DRIVER_PATH)
+        driver.get(f'{HOME_URL}models_constructors')
+
+        sort = 'alpha'
+        select = Select(driver.find_element_by_id('sort'))
+        select.select_by_value(sort)
+        driver.find_element_by_id('submit').click()
+        self.assertEqual(driver.current_url, f'{HOME_URL}models_constructors?filtered=name&sort={sort}&search=')
+
+    def test_constructor_model_alpha_sort_paginate(self):
+        driver = webdriver.Chrome(executable_path=DRIVER_PATH)
+        driver.get(f'{HOME_URL}models_constructors')
+
+        sort = 'alpha'
+        select = Select(driver.find_element_by_id('sort'))
+        select.select_by_value(sort)
+        driver.find_element_by_id('submit').click()
+
+        nextPage = driver.find_element_by_css_selector("[aria-label='Next']")
+        nextPage.click()
+        self.assertEqual(driver.current_url, f'{HOME_URL}models_constructors?page=2&search=&filtered=name&sort={sort}')
+
+    def test_constructor_model_reverse_alpha_sort(self):
+        driver = webdriver.Chrome(executable_path=DRIVER_PATH)
+        driver.get(f'{HOME_URL}models_constructors')
+
+        sort = 'alpha'
+        select = Select(driver.find_element_by_id('sort'))
+        select.select_by_value(sort)
+        driver.find_element_by_id('submit').click()
+        self.assertEqual(driver.current_url, f'{HOME_URL}models_constructors?filtered=name&sort={sort}&search=')
+
+    def test_constructor_model_reverse_alpha_sort_paginate(self):
+        driver = webdriver.Chrome(executable_path=DRIVER_PATH)
+        driver.get(f'{HOME_URL}models_constructors')
+
+        sort = 'alpha'
+        select = Select(driver.find_element_by_id('sort'))
+        select.select_by_value(sort)
+        driver.find_element_by_id('submit').click()
+
+        nextPage = driver.find_element_by_css_selector("[aria-label='Next']")
+        nextPage.click()
+        self.assertEqual(driver.current_url, f'{HOME_URL}models_constructors?page=2&search=&filtered=name&sort={sort}')
+
+    def test_constructor_model_search(self):
+        driver = webdriver.Chrome(executable_path=DRIVER_PATH)
+        driver.get(f'{HOME_URL}models_constructors')
+
+        query = 'a'
+        select = driver.find_element_by_id('search')
+        select.send_keys(query)
+        driver.find_element_by_id('submit').click()
+        self.assertEqual(driver.current_url, f'{HOME_URL}models_constructors?filtered=name&sort=relevance&search={query}')
+
+    def test_constructor_model_search_paginate(self):
+        driver = webdriver.Chrome(executable_path=DRIVER_PATH)
+        driver.get(f'{HOME_URL}models_constructors')
+
+        query = 'a'
+        select = driver.find_element_by_id('search')
+        select.send_keys(query)
+        driver.find_element_by_id('submit').click()
+
+        nextPage = driver.find_element_by_css_selector("[aria-label='Next']")
+        nextPage.click()
+        self.assertEqual(driver.current_url, f'{HOME_URL}models_constructors?page=2&search={query}&filtered=name&sort=relevance')
+
+    
+    # Test search/filter/sort GUI on circuit model page
 
 if __name__ == '__main__':
     unittest.main()
