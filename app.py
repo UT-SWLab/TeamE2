@@ -20,13 +20,6 @@ db = client.get_database('FormulaOneDB')
 # Default filelr image
 NO_IMG = 'images/no_img.png'
 
-
-@app.route('/dbTest')
-def test():
-    db.db.collection.insert_one({"name": "John"})
-    return "Connected to the data base!"
-
-
 @app.route('/about')
 def about():
     return render_template('about.html')
@@ -80,7 +73,7 @@ def driver_model():
     drivers = drivers[page * per_page: page * per_page + per_page]
     return render_template('drivers-model.html', drivers=drivers, pages=pages, page=page, query=query, filtered=filtered, sort=sort)
 
-
+#facade to build a page
 @app.route('/models_constructors')
 def constructor_model():
     # get constructors from search, filtering, and sorting
@@ -118,6 +111,7 @@ def constructor_model():
         page=page, query=query, filtered=filtered, sort=sort)
 
 
+#Facade to build a page
 @app.route('/models_circuits')
 def circuit_model():
     # get circuits from search, filtering, and sorting
@@ -164,7 +158,6 @@ def circuit_model():
     return render_template('circuits-model.html', circuits=circuits, pages=pages, page=page,
         query=query, filtered=filtered, sort=sort)
 
-
 @app.route('/drivers')
 def driver_instance():
     driver_id = int(request.args['id'])
@@ -182,18 +175,7 @@ def driver_instance():
     cur_constructor = driver['constructor']
 
     victories = []
-    results = []
-    all_results = list(db.results.find({'driverId': driver_id}))
-    for result in all_results:
-        results.append({'raceId': result['raceId'], 'constructorId': result['constructorId'],
-                        'position': result['positionOrder'], 'points': result['points'],
-                        'laps': result['laps'], 'time': result['time'],
-                        'fastestLap': result['fastestLap'], 'fastestLapTime': result['fastestLapTime'],
-                        'date': result['raceDate'], 'raceName': result['raceName'],
-                        'constructorName': result['constructorName'], 'driverName': result['driverName'],
-                        'circuitId': result['circuitId'], 'circuitName': result['circuitName']
-                        })
-
+    results = get_result('driverId' , driver_id)
     for result in results:
         if result['position'] == 1:
             victories.append(result)
@@ -214,7 +196,6 @@ def driver_instance():
                            url=url, img_path=img_path, victories=victories, latest=latest, bio=bio,
                            constructor=cur_constructor)
 
-
 @app.route('/constructors')
 def constructor_instance():
     constructor_id = int(request.args['id'])
@@ -226,30 +207,16 @@ def constructor_instance():
     bio = constructor['bio']
     top_driver = {'id': constructor['topDriverId'], 'name': constructor['topDriverName'],
                   'points': constructor['topDriverPoints']}
+    team_drivers = get_drivers('constructor.id' , constructor_id)
 
-    drivers = db.drivers.find({"constructor.id": constructor_id})
-    team_drivers = []
-    for driver in drivers:
-        team_drivers.append({'driverId': driver['driverId'], 'name': driver['forename'] + " " + driver['surname']})
-
-    wins = []
-    db_victories = db.constructor_standings.find({'constructorId': constructor_id, 'position': 1})
-
-    for v in db_victories:
-        wins.append({'raceName': v['raceName'], 'date': v['raceDate'], 'circuitId': v['circuitId'],
-                     'circuitName': v['circuitName'], 'points': v['points']})
-
+    wins = list(db.constructor_standings.find('constructorId' : constructor_id, 'position' : 1))
     wins = sorted(wins, key=lambda i: i['date'], reverse=True)
     total_wins = len(wins)
-    if len(wins) >= 5:
+    if total_wins >= 5:
         wins = wins[:5]  # Take the 5 latest victories
 
     db_races = db.constructor_results.find({'constructorId': constructor_id})
-
-    latest_races = []
-    for r in db_races:
-        latest_races.append({'raceName': r['raceName'], 'date': r['raceDate'], 'circuitId': r['circuitId'],
-                             'circuitName': r['circuitName'], 'points': r['points'], 'position': r['position']})
+    latest_races = list(db.constructor_results.find({'constructorId': constructor_id}))
     latest_races = sorted(latest_races, key=lambda i: i['date'], reverse=True)
     if len(latest_races) >= 5:
         latest_races = latest_races[:5]
@@ -264,7 +231,6 @@ def constructor_instance():
                            drivers=team_drivers, wins=wins, img_path=img_path, url=url, bio=bio,
                            total_wins=total_wins, top_driver=top_driver, latest_races=latest_races)
 
-
 @app.route('/circuits')
 def circuit_instance():
     circuit_id = request.args['id']
@@ -278,45 +244,13 @@ def circuit_instance():
     circuit_id = circuit['circuitId']
     url = circuit['url']
     bio = circuit['bio']
+    latest_race = get_circuit_latest_race(circuit_id)
+    latest_race_name = latest_race['name']
+    latest_race_id = latest_race['raceId']
+    latest_race_results = get_result('raceId' , latest_race_id)
+    latest_race_results = sorted(latest_race_results, key=lambda i: i['position'])
 
-    races_list = db.races.find({'circuitId': int(circuit_id)})  # Get all races held at this circuit
-    races = []
-    for race in races_list:
-        races.append({'raceId': race['raceId'], 'name': race['name'], 'year': race['year'], 'url': race['url'],
-                      'date': race['date']})
-
-    latest_race_name = ""
-    results = None
-
-    races = sorted(races, key=lambda i: i['date'], reverse=True)
-    for race in races:
-        results = db.results.find({'raceId': race['raceId']})  # Results of the latest race
-        results = list(results)
-        if len(results) != 0:  # Ergast returns races that are scheduled for the future as well, so we have to make sure
-            # the latest race has actually happened
-            latest_race_name = str(race['year']) + " " + race['name']
-            break
-
-    driver_result_data = []
-    for result in results:
-        driver_result_data.append(
-            {'driverId': result['driverId'], 'driverName': result['driverName'], 'position': result['positionOrder'],
-             'points': result['points'], 'laps': result['laps'], 'time': result['time'],
-             'constructorId': result['constructorId'], 'fastestLapTime': result['fastestLapTime'],
-             'fastestLapSpeed': result['fastestLapSpeed'], 'fastestLap': result['fastestLap'],
-             'rank': result['rank'], 'constructorName': result['constructorName']})
-
-    driver_result_data = sorted(driver_result_data, key=lambda i: i['position'])
-
-    all_results = db.results.find({'circuitId': circuit_id})
-    fastest_lap_times = []
-    for result in all_results:
-        fastest_lap_times.append({'fastestLapTime': result['fastestLapTime'], 'driverId': result['driverId'],
-                                  'driverName': result['driverName'], 'raceName': result['raceName'],
-                                  'speed': result['fastestLapSpeed'], 'constructorId': result['constructorId'],
-                                  'constructorName': result['constructorName']})
-
-    fastest_lap_times = sorted(fastest_lap_times, key=lambda i: (i['fastestLapTime']))
+    fastest_lap_times = get_lap_times('circuitId' , circuit_id)
     if len(fastest_lap_times) >= 5:
         fastest_lap_times = fastest_lap_times[:5]
 
@@ -328,9 +262,8 @@ def circuit_instance():
 
     return render_template('circuits-instance.html', name=name, lat=lat,
                            long=longitude, locality=location, country=country, url=url,
-                           img_path=img_path, circuit_id=circuit_id, latest_results=driver_result_data,
+                           img_path=img_path, circuit_id=circuit_id, latest_results=latest_race_results,
                            latest_race_name=latest_race_name, bio=bio, lap_times=fastest_lap_times)
-
 
 @app.route('/')
 def home():
@@ -340,73 +273,66 @@ def home():
     currentDay = str(today).split("-")[2]
     currentYear = str(today).split("-")[0]
 
-    recentRaces = db.races.find({'year': int(currentYear)}).limit(5)
-    recentRaces = list(recentRaces)
-
-    regDate = "....-" + currentMonth + "-.."
-    drivers = db.drivers.find({'dob': {'$regex': regDate}}).limit(20)
-    drivers = list(drivers)
-    currentMonthDrivers = []
-    index = 0
-    for driver in drivers:
-        driver_ref = driver['driverRef']
-        name = driver['forename'] + "  " + driver['surname']
-        image_path = f'images/drivers/{driver_ref}.png'
-        if not os.path.exists(f'./static/{image_path}'):
-            image_path = NO_IMG
-        tempDict = {'driver_ref': driver_ref, 'image_path': image_path, 'name': name, 'id': driver['driverId']}
-        currentMonthDrivers.append(tempDict)
-        index += 1
-
-    thisSeasonResults = db.results.find({'year': int(currentYear)})
-    seasonDriverPoints = {}
-    seasonConstructorPoints = {}
-    for result in thisSeasonResults:
-        driver = result['driverId']
-        driverPoints = result['points']
-        driverName = result['driverName']
-
-        constructor = result['constructorId']
-        constructPoints = result['points']
-        constructorName = result['constructorName']
-        if driver in seasonDriverPoints:
-            currentPoints = seasonDriverPoints[driver][1]
-            seasonDriverPoints[driver][1] = currentPoints + driverPoints
-        else:
-            seasonDriverPoints[driver] = [driverName, driverPoints, driver]
-
-        if constructor in seasonConstructorPoints:
-            currentPoints = seasonConstructorPoints[constructor][1]
-            seasonConstructorPoints[constructor][1] = currentPoints + constructPoints
-        else:
-            seasonConstructorPoints[constructor] = [constructorName, constructPoints, constructor]
-
-    sortedDriverSeasonLeaders = []
-    for key in sorted(seasonDriverPoints.keys(), key=lambda k: seasonDriverPoints[k][1], reverse=True):
-        sortedDriverSeasonLeaders.append(seasonDriverPoints[key])
-
-    sortedConstructorSeasonLeaders = []
-
-    for key in sorted(seasonConstructorPoints.keys(), key=lambda k: seasonConstructorPoints[k][1], reverse=True):
-        sortedConstructorSeasonLeaders.append(seasonConstructorPoints[key])
+    recentRaces = get_races_from_year(int(currentYear))
+    currentMonthDrivers = get_drivers_from_month(currentMonth)
+    popularDrivers = get_random_drivers()
+    popularCircuits = get_random_circuits()
+    sortedConstructorSeasonLeaders = get_constructor_standings_from_year(currentYear)
+    sortedDriverSeasonLeaders = get_driver_standings_from_year(currentYear)
 
     recentRaces = recentRaces[:5]
     sortedConstructorSeasonLeaders = sortedConstructorSeasonLeaders[:5]
     sortedDriverSeasonLeaders = sortedDriverSeasonLeaders[:5]
 
-    drivers = db.drivers.aggregate([{'$sample': {'size': 10}}])
-    popularDrivers = []
-    for driver in drivers:
-        driver_ref = driver['driverRef']
-        name = driver['forename'] + "  " + driver['surname']
-        image_path = f'images/drivers/{driver_ref}.png'
-        if not os.path.exists(f'./static/{image_path}'):
-            image_path = NO_IMG
-        tempDict = {'driver_ref': driver_ref, 'image_path': image_path, 'name': name, 'id': driver['driverId']}
-        popularDrivers.append(tempDict)
+    return render_template('home.html', recentRaces=recentRaces, monthDrivers=currentMonthDrivers,
+                           driverSeasonStandings=sortedDriverSeasonLeaders,
+                           constructorSeasonStandings=sortedConstructorSeasonLeaders,
+                           year=currentYear, monthName=currentMonthName, popularCircuits=popularCircuits,
+                           popularDrivers=popularDrivers)
+def get_constructor_standings_from_year(year):
+    year = int(year)
+    results = db.results.find({'year': year})
+    seasonConstructorStandings = {}
+    for result in results:
+        constructor = result['constructorId']
+        constructPoints = result['points']
+        constructorName = result['constructorName']
+        if constructor in seasonConstructorStandings:
+            currentPoints = seasonConstructorStandings[constructor][1]
+            seasonConstructorStandings[constructor][1] = currentPoints + constructPoints
+        else:
+            seasonConstructorStandings[constructor] = [constructorName, constructPoints, constructor]
+    
+    sortedConstructorSeasonLeaders = []
+    for key in sorted(seasonConstructorStandings.keys(), key=lambda k: seasonConstructorStandings[k][1], reverse=True):
+        sortedConstructorSeasonLeaders.append(seasonConstructorStandings[key])
+    return sortedConstructorSeasonLeaders 
 
-    circuits = db.circuits.aggregate([{'$sample': {'size': 10}}])
-    popularCircuits = []
+def get_drivers(field , query):
+    driver_list = db.drivers.find({field : query})
+    return list(driver_list)
+
+def get_driver_standings_from_year(year):
+    results = db.results.find({'year' : int(year)})
+    seasonDriverStandings = {}
+    for result in results:
+        driver = result['driverId']
+        driverPoints = result['points']
+        driverName = result['driverName']
+        if driver in seasonDriverStandings:
+            currentPoints = seasonDriverStandings[driver][1]
+            seasonDriverStandings[driver][1] = currentPoints + driverPoints
+        else:
+            seasonDriverStandings[driver] = [driverName, driverPoints, driver]
+
+    sortedDriverSeasonLeaders = []
+    for key in sorted(seasonDriverStandings.keys(), key=lambda k: seasonDriverStandings[k][1], reverse=True):
+        sortedDriverSeasonLeaders.append(seasonDriverStandings[key])
+    return sortedDriverSeasonLeaders
+
+def get_random_circuits():
+    circuits = db.circuits.aggregate([{'$sample' : {'size' : 10}}])
+    randomCircuits = []
     for circuit in circuits:
         if 'circuitRef' in circuit.keys():
             circuit_ref = circuit['circuitRef']
@@ -415,14 +341,51 @@ def home():
             if not os.path.exists(f'./static/{image_path}'):
                 image_path = NO_IMG
             tempDict = {'circuit_ref': circuit_ref, 'name': name, 'image_path': image_path, 'id': circuit['circuitId']}
-            popularCircuits.append(tempDict)
+            randomCircuits.append(tempDict)
+    return randomCircuits
 
-    return render_template('home.html', recentRaces=recentRaces, monthDrivers=currentMonthDrivers,
-                           driverSeasonStandings=sortedDriverSeasonLeaders,
-                           constructorSeasonStandings=sortedConstructorSeasonLeaders,
-                           year=currentYear, monthName=currentMonthName, popularCircuits=popularCircuits,
-                           popularDrivers=popularDrivers)
+def get_random_drivers():
+    drivers = db.drivers.aggregate([{'$sample': {'size' : 10}}])
+    popularDrivers = []
+    for driver in drivers:
+        driver_ref = driver['driverRef']
+        name = driver['forename'] + "  " + driver['surname']
+        image_path = f'images/drivers/{driver_ref}.png'
+        if not os.path.exists(f'./static/{image_path}'):
+            image_path = NO_IMG
+        tempDict = {'driver_ref' : driver_ref, 'image_path' : image_path, 'name' : name, 'id': driver['driverId']}
+        popularDrivers.append(tempDict)
+    return popularDrivers
 
+def get_races(field , query):
+    races = db.races.find({field : query})
+    races = list(races)
+    return races
+
+def get_result(field , query):
+    result_list = db.results.find({field : query})
+    return list(result_list)
+
+def get_lap_times(field , query):
+    results = get_result(field,query)
+    lap_times = sorted(results, key=lambda i: (i['fastestLapTime']))
+    return lap_times
+
+def get_circuit_latest_race(circuitId):
+    races_list = db.races.find({'circuitId': int(circuitId)})  # Get all races held at this circuit
+    races = list(races_list)
+    latest_race_info = ""
+    results = None
+
+    races = sorted(races, key=lambda i: i['date'], reverse=True)
+    for race in races:
+        results = db.results.find({'raceId': race['raceId']})  # Results of the latest race
+        results = list(results)
+        if len(results) != 0:  # Ergast returns races that are scheduled for the future as well, so we have to make sure
+            # the latest race has actually happened
+            latest_race_info = {'year': race['year'], "name" : race['name'], 'raceId' : race['raceId']}
+            break
+    return latest_race_info
 
 def get_driver_list(select, query):
     """
@@ -481,6 +444,21 @@ def driver_name_search(query):
                 if driver not in driver_list:
                     driver_list.append(driver)
     return driver_list
+
+def get_drivers_from_month(month):
+    regExDate = "....-" + month + "-.."
+    drivers = db.drivers.find({"dob" : {'$regex' : regExDate}})
+    drivers = list(drivers)
+    finalDriverList = []
+    for driver in drivers:
+        driver_ref = driver['driverRef']
+        name  = driver['forename'] + " " + driver['surname']
+        image_path = f'images/drivers/{driver_ref}.png'
+        if not os.path.exists(f'./static/{image_path}'):
+            image_path = NO_IMG
+        tempDict = {'driver_ref': driver_ref, 'image_path': image_path, 'name': name, 'id': driver['driverId']}
+        finalDriverList.append(tempDict)
+    return finalDriverList
 
 def get_circuit_list(select, query):
     """
@@ -635,7 +613,6 @@ def sort_models(models, sort, filtered):
             elif sort == 'reverse_alpha':
                 # reverse alphabetical sort
                 return sorted(models, key=lambda x: remove_accents(x['most_recent_race']), reverse=True)
-
 
 def remove_accents(input_str):
     nfkd_form = unicodedata.normalize('NFKD', input_str)
