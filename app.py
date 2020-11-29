@@ -78,7 +78,8 @@ def driver_model():
     per_page = 18
     pages = int(len(drivers) / per_page)
     drivers = drivers[page * per_page: page * per_page + per_page]
-    return render_template('drivers-model.html', drivers=drivers, pages=pages, page=page, query=query, filtered=filtered, sort=sort)
+    return render_template('drivers-model.html', drivers=drivers, pages=pages, page=page, query=query,
+                           filtered=filtered, sort=sort)
 
 
 @app.route('/models_constructors')
@@ -115,7 +116,7 @@ def constructor_model():
     pages = int(len(constructors) / per_page)
     constructors = constructors[page * per_page: page * per_page + per_page]
     return render_template('constructors-model.html', constructors=constructors, pages=pages,
-        page=page, query=query, filtered=filtered, sort=sort)
+                           page=page, query=query, filtered=filtered, sort=sort)
 
 
 @app.route('/models_circuits')
@@ -162,7 +163,7 @@ def circuit_model():
     pages = int(len(circuits) / per_page)
     circuits = circuits[page * per_page: page * per_page + per_page]
     return render_template('circuits-model.html', circuits=circuits, pages=pages, page=page,
-        query=query, filtered=filtered, sort=sort)
+                           query=query, filtered=filtered, sort=sort)
 
 
 @app.route('/drivers')
@@ -181,6 +182,34 @@ def driver_instance():
     teams = driver['all_constructors']
     cur_constructor = driver['constructor']
 
+    # Data to be displayed in table form
+    victories, latest = driver_tables(driver_id)
+
+    # Get image
+    driver_ref = driver['driverRef']
+    img_path = f'images/drivers/{driver_ref}.png'
+    if not os.path.exists(f'./static/{img_path}'):
+        img_path = NO_IMG
+
+    return render_template('drivers-instance.html', name=name, code=code,
+                           dob=dob, nation=nationality, number=number, teams=teams,
+                           url=url, img_path=img_path, victories=victories, latest=latest, bio=bio,
+                           constructor=cur_constructor)
+
+
+def driver_tables(driver_id):
+    """
+     Purpose:
+         Finds all of a driver's victories and 5 latest races to be displayed as
+         tables on instance page
+
+     Args:
+         driver_id: {int} the driver's database ID
+
+     Returns:
+         {list} List of driver's victories/first-place finishes
+         {list} List of driver's 5 latest races
+     """
     victories = []
     results = []
     all_results = list(db.results.find({'driverId': driver_id}))
@@ -203,16 +232,7 @@ def driver_instance():
     if len(latest) >= 5:
         latest = latest[:5]  # List the driver's 5 latest races
 
-    # Get image
-    driver_ref = driver['driverRef']
-    img_path = f'images/drivers/{driver_ref}.png'
-    if not os.path.exists(f'./static/{img_path}'):
-        img_path = NO_IMG
-
-    return render_template('drivers-instance.html', name=name, code=code,
-                           dob=dob, nation=nationality, number=number, teams=teams,
-                           url=url, img_path=img_path, victories=victories, latest=latest, bio=bio,
-                           constructor=cur_constructor)
+    return victories, latest
 
 
 @app.route('/constructors')
@@ -226,12 +246,40 @@ def constructor_instance():
     bio = constructor['bio']
     top_driver = {'id': constructor['topDriverId'], 'name': constructor['topDriverName'],
                   'points': constructor['topDriverPoints']}
-
     drivers = db.drivers.find({"constructor.id": constructor_id})
     team_drivers = []
     for driver in drivers:
         team_drivers.append({'driverId': driver['driverId'], 'name': driver['forename'] + " " + driver['surname']})
 
+    # Data to be displayed in table form
+    wins, latest_races = constructor_tables(constructor_id)
+
+    total_wins = len(wins)
+
+    # Get image
+    constructor_ref = constructor['constructorRef']
+    img_path = f'images/constructors/{constructor_ref}.png'
+    if not os.path.exists(f'./static/{img_path}'):
+        img_path = NO_IMG
+
+    return render_template('constructors-instance.html', name=name, nation=nation,
+                           drivers=team_drivers, wins=wins, img_path=img_path, url=url, bio=bio,
+                           total_wins=total_wins, top_driver=top_driver, latest_races=latest_races)
+
+
+def constructor_tables(constructor_id):
+    """
+         Purpose:
+             Finds all of a constructor's victories and 5 latest races to be displayed as
+             tables on instance page
+
+         Args:
+             constructor_id: {int} the constructor's database ID
+
+         Returns:
+             {list} List of constructor's wins
+             {list} List of constructor's 5 latest races
+         """
     wins = []
     db_victories = db.constructor_standings.find({'constructorId': constructor_id, 'position': 1})
 
@@ -240,7 +288,7 @@ def constructor_instance():
                      'circuitName': v['circuitName'], 'points': v['points']})
 
     wins = sorted(wins, key=lambda i: i['date'], reverse=True)
-    total_wins = len(wins)
+
     if len(wins) >= 5:
         wins = wins[:5]  # Take the 5 latest victories
 
@@ -254,15 +302,7 @@ def constructor_instance():
     if len(latest_races) >= 5:
         latest_races = latest_races[:5]
 
-    # Get image
-    constructor_ref = constructor['constructorRef']
-    img_path = f'images/constructors/{constructor_ref}.png'
-    if not os.path.exists(f'./static/{img_path}'):
-        img_path = NO_IMG
-
-    return render_template('constructors-instance.html', name=name, nation=nation,
-                           drivers=team_drivers, wins=wins, img_path=img_path, url=url, bio=bio,
-                           total_wins=total_wins, top_driver=top_driver, latest_races=latest_races)
+    return wins, latest_races
 
 
 @app.route('/circuits')
@@ -279,6 +319,35 @@ def circuit_instance():
     url = circuit['url']
     bio = circuit['bio']
 
+    latest_race_results, fastest_lap_times, latest_race_name = circuit_tables(circuit_id)
+
+    # Get image
+    circuit_ref = circuit['circuitRef']
+    img_path = f'images/circuits/{circuit_ref}.png'
+    if not os.path.exists(f'./static/{img_path}'):
+        img_path = NO_IMG
+
+    return render_template('circuits-instance.html', name=name, lat=lat,
+                           long=longitude, locality=location, country=country, url=url,
+                           img_path=img_path, circuit_id=circuit_id, latest_results=latest_race_results,
+                           latest_race_name=latest_race_name, bio=bio, lap_times=fastest_lap_times)
+
+
+def circuit_tables(circuit_id):
+    """
+          Purpose:
+              Find the results of the latest race held on a circuit,
+              fastest laps of all time to occur on a circuit, and the name
+              of the latest race held on a circuit
+
+          Args:
+              circuit_id: {int} the circuit's database ID
+
+          Returns:
+              {list} List of circuit's latest race results (position, driver, constructor, points, and time)
+              {list} List fastest laps of all time
+              {string} Name of the latest race
+          """
     races_list = db.races.find({'circuitId': int(circuit_id)})  # Get all races held at this circuit
     races = []
     for race in races_list:
@@ -320,16 +389,7 @@ def circuit_instance():
     if len(fastest_lap_times) >= 5:
         fastest_lap_times = fastest_lap_times[:5]
 
-    # Get image
-    circuit_ref = circuit['circuitRef']
-    img_path = f'images/circuits/{circuit_ref}.png'
-    if not os.path.exists(f'./static/{img_path}'):
-        img_path = NO_IMG
-
-    return render_template('circuits-instance.html', name=name, lat=lat,
-                           long=longitude, locality=location, country=country, url=url,
-                           img_path=img_path, circuit_id=circuit_id, latest_results=driver_result_data,
-                           latest_race_name=latest_race_name, bio=bio, lap_times=fastest_lap_times)
+    return driver_result_data, fastest_lap_times, latest_race_name
 
 
 @app.route('/')
@@ -438,7 +498,7 @@ def get_driver_list(select, query):
     """
     driver_list = list()
     if query == '':
-        driver_list = list(db.drivers.find()) 
+        driver_list = list(db.drivers.find())
         return driver_list
     if select == 'constructor':
         field = 'constructor.name'
@@ -448,6 +508,7 @@ def get_driver_list(select, query):
     else:
         driver_list = driver_name_search(query)
     return driver_list
+
 
 def driver_name_search(query):
     """
@@ -482,6 +543,7 @@ def driver_name_search(query):
                     driver_list.append(driver)
     return driver_list
 
+
 def get_circuit_list(select, query):
     """
     Purpose:
@@ -498,12 +560,13 @@ def get_circuit_list(select, query):
     if query == '':
         circuit_list = list(db.circuits.find())
         return circuit_list
-    
+
     if select == 'name' or select == 'most_recent_race':
         circuit_list = list(db.circuits.find({select: {'$regex': f'.*{query}.*?', '$options': 'i'}}))
     else:
         circuit_list = circuit_location_search(query)
     return circuit_list
+
 
 def circuit_location_search(query):
     """
@@ -544,6 +607,7 @@ def circuit_location_search(query):
                     circuit_list.append(circuit)
     return circuit_list
 
+
 def search(field, collection, query):
     """
     Purpose:
@@ -562,6 +626,7 @@ def search(field, collection, query):
     else:
         return list(collection.find({field: {'$regex': f'.*{query}.*?', '$options': 'i'}}))
 
+
 def sort_models(models, sort, filtered):
     if sort == '' or sort == 'relevance':
         # sort by relevance
@@ -573,10 +638,11 @@ def sort_models(models, sort, filtered):
         if filtered == 'name' or filtered == '':
             if sort == 'alpha':
                 # alphabetical sort
-                return sorted(models, key=lambda x:(remove_accents(x['forename']), remove_accents(x['forename'])))
+                return sorted(models, key=lambda x: (remove_accents(x['forename']), remove_accents(x['forename'])))
             elif sort == 'reverse_alpha':
                 # reverse alphabetical sort
-                return sorted(models, key=lambda x:(remove_accents(x['forename']), remove_accents(x['forename'])), reverse=True)
+                return sorted(models, key=lambda x: (remove_accents(x['forename']), remove_accents(x['forename'])),
+                              reverse=True)
         elif filtered == 'nationality':
             if sort == 'alpha':
                 # alphabetical sort
@@ -610,9 +676,9 @@ def sort_models(models, sort, filtered):
             if sort == 'alpha':
                 # alphabetical sort
                 return sorted(models, key=lambda x: remove_accents(x['topDriverName']))
-            elif sort == 'reverse_alpha':   
+            elif sort == 'reverse_alpha':
                 # reverse alphabetical sort
-                return sorted(models, key=lambda x: remove_accents(x['topDriverName']), reverse=True)         
+                return sorted(models, key=lambda x: remove_accents(x['topDriverName']), reverse=True)
     elif 'circuitId' in models[0]:
         if filtered == 'name' or filtered == '':
             if sort == 'alpha':
@@ -624,10 +690,11 @@ def sort_models(models, sort, filtered):
         elif filtered == 'location':
             if sort == 'alpha':
                 # alphabetical sort
-                return sorted(models, key=lambda x:(remove_accents(x['location']), remove_accents(x['country'])))
+                return sorted(models, key=lambda x: (remove_accents(x['location']), remove_accents(x['country'])))
             elif sort == 'reverse_alpha':
                 # reverse alphabetical sort
-                return sorted(models, key=lambda x:(remove_accents(x['location']), remove_accents(x['country'])), reverse=True)
+                return sorted(models, key=lambda x: (remove_accents(x['location']), remove_accents(x['country'])),
+                              reverse=True)
         elif filtered == 'most_recent_race':
             if sort == 'alpha':
                 # alphabetical sort
@@ -640,6 +707,7 @@ def sort_models(models, sort, filtered):
 def remove_accents(input_str):
     nfkd_form = unicodedata.normalize('NFKD', input_str)
     return u"".join([c for c in nfkd_form if not unicodedata.combining(c)])
+
 
 if __name__ == '__main__':
     app.run(debug=True)
