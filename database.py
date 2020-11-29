@@ -1,11 +1,14 @@
 from flask_pymongo import pymongo
 
+from image_handler import ImageHandler
+image_handler = ImageHandler()
+
 class FormulaOneDatabase(object):
 
     def __init__(self , username , password):
         self.username = username
         self.password = password
-        self.CONNECTION_STRING = "mongodb+srv://" + username + ":" + password + "@formulaonedb.bue6f.gcp.mongodb.net/<dbname>?retryWrites=true&w=majority"
+        CONNECTION_STRING = "mongodb+srv://" + username + ":" + password + "@formulaonedb.bue6f.gcp.mongodb.net/<dbname>?retryWrites=true&w=majority"
         client = pymongo.MongoClient(CONNECTION_STRING)
         self.db = client.get_database('FormulaOneDB')
     
@@ -54,7 +57,7 @@ class FormulaOneDatabase(object):
 
     def get_constructor_standings_from_year(self,year):
         year = int(year)
-        results = db.results.find({'year': year})
+        results = self.db.results.find({'year': year})
         seasonConstructorStandings = {}
         for result in results:
             constructor = result['constructorId']
@@ -78,9 +81,7 @@ class FormulaOneDatabase(object):
             if 'circuitRef' in circuit.keys():
                 circuit_ref = circuit['circuitRef']
                 name = circuit['name']
-                image_path = f'images/circuits/{circuit_ref}.png'
-                if not os.path.exists(f'./static/{image_path}'):
-                    image_path = NO_IMG
+                image_path = image_handler.build_image_path(circuit_ref , 'circuits')
                 tempDict = {'circuit_ref': circuit_ref, 'name': name, 'image_path': image_path, 'id': circuit['circuitId']}
                 randomCircuits.append(tempDict)
         return randomCircuits
@@ -91,9 +92,7 @@ class FormulaOneDatabase(object):
         for driver in drivers:
             driver_ref = driver['driverRef']
             name = driver['forename'] + "  " + driver['surname']
-            image_path = f'images/drivers/{driver_ref}.png'
-            if not os.path.exists(f'./static/{image_path}'):
-                image_path = NO_IMG
+            image_path = image_handler.build_image_path(driver_ref , 'drivers')
             tempDict = {'driver_ref' : driver_ref, 'image_path' : image_path, 'name' : name, 'id': driver['driverId']}
             popularDrivers.append(tempDict)
         return popularDrivers
@@ -104,14 +103,14 @@ class FormulaOneDatabase(object):
         return lap_times
     
     def get_circuit_latest_race(self, circuitId):
-        races_list = db.races.find({'circuitId': int(circuitId)})  # Get all races held at this circuit
+        races_list = self.db.races.find({'circuitId': int(circuitId)})  # Get all races held at this circuit
         races = list(races_list)
         latest_race_info = ""
         results = None
 
         races = sorted(races, key=lambda i: i['date'], reverse=True)
         for race in races:
-            results = db.results.find({'raceId': race['raceId']})  # Results of the latest race
+            results = self.db.results.find({'raceId': race['raceId']})  # Results of the latest race
             results = list(results)
             if len(results) != 0:  # Ergast returns races that are scheduled for the future as well, so we have to make sure
                 # the latest race has actually happened
@@ -124,8 +123,21 @@ class FormulaOneDatabase(object):
         return list(constructors)
     
     def get_constructor_results(self,field,query):
-        races = db.constructor_results.find({field: query})
+        races = self.db.constructor_results.find({field: query})
         return list(races)
+    
+    def get_drivers_from_month(self,month):
+        regExDate = "....-" + month + "-.."
+        drivers = self.db.drivers.find({"dob" : {'$regex' : regExDate}})
+        drivers = list(drivers)
+        finalDriverList = []
+        for driver in drivers:
+            driver_ref = driver['driverRef']
+            name  = driver['forename'] + " " + driver['surname']
+            image_path = image_handler.build_image_path(driver_ref,'drivers')
+            tempDict = {'driver_ref': driver_ref, 'image_path': image_path, 'name': name, 'id': driver['driverId']}
+            finalDriverList.append(tempDict)
+        return finalDriverList
     
 
 

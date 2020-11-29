@@ -1,6 +1,5 @@
 # 1st party packages
 import json
-import os
 from collections import defaultdict
 from datetime import date
 import unicodedata
@@ -12,14 +11,12 @@ from flask_pymongo import pymongo
 # Self Written Modules
 from database import FormulaOneDatabase
 from image_handler import ImageHandler
+
 app = Flask(__name__)
 dbUsername = 'formulaOne'
 dbPassword = '0WpPVH6LdcHiwdct'
 db =  FormulaOneDatabase(dbUsername , dbPassword)
 image_handler = ImageHandler()
-
-# Default filelr image
-NO_IMG = 'images/no_img.png'
 
 @app.route('/about')
 def about():
@@ -63,9 +60,7 @@ def driver_model():
 
             # Get image
             driver_ref = driver['driverRef']
-            img_path = f'images/drivers/{driver_ref}.png'
-            if not os.path.exists(f'./static/{img_path}'):
-                img_path = NO_IMG
+            img_path = image_handler.build_image_path(driver_ref , 'drivers')
             drivers[-1].update({'imgpath': img_path})
 
     per_page = 18
@@ -100,9 +95,7 @@ def constructor_model():
 
             # Get image
             constructor_ref = constructor['constructorRef']
-            img_path = f'images/constructors/{constructor_ref}.png'
-            if not os.path.exists(f'./static/{img_path}'):
-                img_path = NO_IMG
+            img_path = image_handler.build_image_path(constructor_ref , 'constructors')
             constructors[-1].update({'imgpath': img_path})
     per_page = 18
     pages = int(len(constructors) / per_page)
@@ -147,9 +140,7 @@ def circuit_model():
 
             # Get image
             circuit_ref = circuit['circuitRef']
-            img_path = f'images/circuits/{circuit_ref}.png'
-            if not os.path.exists(f'./static/{img_path}'):
-                img_path = NO_IMG
+            img_path = image_handler.build_image_path(circuit_ref , 'circuits')
             circuits[-1].update({'imgpath': img_path})
     per_page = 16
     pages = int(len(circuits) / per_page)
@@ -185,10 +176,7 @@ def driver_instance():
 
     # Get image
     driver_ref = driver['driverRef']
-    img_path = f'images/drivers/{driver_ref}.png'
-    if not os.path.exists(f'./static/{img_path}'):
-        img_path = NO_IMG
-
+    img_path = image_handler.build_image_path(driver_ref , 'drivers')
     return render_template('drivers-instance.html', name=name, code=code,
                            dob=dob, nation=nationality, number=number, teams=teams,
                            url=url, img_path=img_path, victories=victories, latest=latest, bio=bio,
@@ -219,7 +207,7 @@ def constructor_instance():
 
     # Get image
     constructor_ref = constructor['constructorRef']
-    img_path = image_handler.build_image_path()
+    img_path = image_handler.build_image_path(constructor_ref , 'constructors')
 
     return render_template('constructors-instance.html', name=name, nation=nation,
                            drivers=team_drivers, wins=wins, img_path=img_path, url=url, bio=bio,
@@ -250,9 +238,7 @@ def circuit_instance():
 
     # Get image
     circuit_ref = circuit['circuitRef']
-    img_path = f'images/circuits/{circuit_ref}.png'
-    if not os.path.exists(f'./static/{img_path}'):
-        img_path = NO_IMG
+    img_path = image_handler.build_image_path(circuit_ref , 'circuits')
 
     return render_template('circuits-instance.html', name=name, lat=lat,
                            long=longitude, locality=location, country=country, url=url,
@@ -266,7 +252,7 @@ def home():
     currentDay = str(today).split("-")[2]
     currentYear = str(today).split("-")[0]
 
-    recentRaces = db.get_races_from_year(int(currentYear))
+    recentRaces = db.get_races('year',int(currentYear))
     currentMonthDrivers = db.get_drivers_from_month(currentMonth)
     popularDrivers = db.get_random_drivers()
     popularCircuits = db.get_random_circuits()
@@ -307,21 +293,6 @@ def get_driver_list(select, query):
     else:
         driver_list = driver_name_search(query)
     return driver_list
-
-def get_drivers_from_month(month):
-    regExDate = "....-" + month + "-.."
-    drivers = db.drivers.find({"dob" : {'$regex' : regExDate}})
-    drivers = list(drivers)
-    finalDriverList = []
-    for driver in drivers:
-        driver_ref = driver['driverRef']
-        name  = driver['forename'] + " " + driver['surname']
-        image_path = f'images/drivers/{driver_ref}.png'
-        if not os.path.exists(f'./static/{image_path}'):
-            image_path = NO_IMG
-        tempDict = {'driver_ref': driver_ref, 'image_path': image_path, 'name': name, 'id': driver['driverId']}
-        finalDriverList.append(tempDict)
-    return finalDriverList
 
 def driver_name_search(query):
     """
@@ -516,6 +487,3 @@ def remove_accents(input_str):
 
 if __name__ == '__main__':
     app.run(debug=True)
-
-#Move all database calls to functions
-#hidden information is the database
