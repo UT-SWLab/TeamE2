@@ -16,6 +16,26 @@ class FormulaOneDatabase(object):
         driver = self.db.drivers.find_one({field : query})
         return driver
     
+    def get_regex_drivers(self, field, regex_query):
+        drivers = self.db.drivers.find({field: {'$regex': f'.*{regex_query}.*?', '$options' : 'i'}})
+        return list(drivers)
+    
+    def get_regex_circuits(self, field, regex_query):
+        circuits = self.db.circuits.find({field: {'$regex': f'.*{regex_query}.*?', '$options' : 'i'}})
+        return list(circuits)
+    
+    def get_all_drivers(self):
+        drivers = self.db.drivers.find()
+        return list(drivers)
+    
+    def get_all_circuits(self):
+        circuits = self.db.circuits.find()
+        return list(circuits)
+
+    def get_all_constructors(self):
+        constructors = self.db.constructors.find()
+        return list(constructors)
+
     def get_constructor(self, field, query):
         constructor = self.db.constructors.find_one({field : query})
         return constructor

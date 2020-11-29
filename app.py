@@ -75,7 +75,11 @@ def constructor_model():
     query = request.args.get('search', '', type=str).rstrip()
     filtered = request.args.get('filtered', '', type=str)
     sort = request.args.get('sort', '', type=str)
-    constructor_list = search(filtered, db.constructors, query)
+    constructor_list = []
+    if filtered == '':
+        constructor_list = db.get_all_constructors()
+    else:
+        constructor_list = db.get_constructors(filtered, query)
     constructor_list = sort_models(constructor_list, sort, filtered)
 
     page = request.args.get('page', 1, type=int)
@@ -111,9 +115,9 @@ def circuit_model():
     filtered = request.args.get('filtered', '', type=str)
     sort = request.args.get('sort', '', type=str)
     circuit_list = get_circuit_list(filtered, query)
-    print(len(circuit_list))
+    #print(len(circuit_list))
     circuit_list = sort_models(circuit_list, sort, filtered)
-    print(len(circuit_list))
+    #print(len(circuit_list))
 
     page = request.args.get('page', 1, type=int)
     page = page - 1
@@ -283,13 +287,13 @@ def get_driver_list(select, query):
     """
     driver_list = list()
     if query == '':
-        driver_list = list(db.drivers.find()) 
+        driver_list = db.get_all_drivers()
         return driver_list
     if select == 'constructor':
         field = 'constructor.name'
-        driver_list = list(db.drivers.find({field: {'$regex': f'.*{query}.*?', '$options': 'i'}}))
+        driver_list = db.get_regex_drivers(field,query)
     elif select == 'nationality':
-        driver_list = list(db.drivers.find({select: {'$regex': f'.*{query}.*?', '$options': 'i'}}))
+        driver_list = db.get_regex_drivers(select,query)
     else:
         driver_list = driver_name_search(query)
     return driver_list
@@ -307,24 +311,22 @@ def driver_name_search(query):
     """
     # Search token in forenames and surnames
     tokens = query.split()
+    driver_list = []
     if len(tokens) == 1:
-        driver_list = list(search('forename', db.drivers, query))
-        surname_list = search('surname', db.drivers, query)
-
+        forname_list = db.get_regex_drivers('forename', query)
+        surname_list = db.get_regex_drivers('surname' , query)
         for driver in surname_list:
-            if driver not in driver_list:
-                driver_list.append(driver)
+            if driver not in forname_list:
+                forname_list.append(driver)
+        driver_list = forname_list
     else:
         # Search first token in forenames, search other tokens in surnames
-        driver_list = list(db.drivers.find({'forename': {'$regex': f'{tokens[0]}?', '$options': 'i'}}))
-        surname_cursors = []
-
+        forename_list = db.get_regex_drivers('forename', query)
+        surname_list = []
+        
         for i in range(1, len(tokens)):
-            surname_cursors.append(db.drivers.find({'surname': {'$regex': f'{tokens[i]}?', '$options': 'i'}}))
-        for cursor in surname_cursors:
-            for driver in cursor:
-                if driver not in driver_list:
-                    driver_list.append(driver)
+            surname_list += db.get_regex_drivers('surname' , tokens[i])
+        driver_list = forename_list + surname_list
     return driver_list
 
 def get_circuit_list(select, query):
@@ -341,11 +343,11 @@ def get_circuit_list(select, query):
     """
     circuit_list = list()
     if query == '':
-        circuit_list = list(db.circuits.find())
+        circuit_list = db.get_all_circuits()
         return circuit_list
     
     if select == 'name' or select == 'most_recent_race':
-        circuit_list = list(db.circuits.find({select: {'$regex': f'.*{query}.*?', '$options': 'i'}}))
+        circuit_list = db.get_regex_circuits(select, query)
     else:
         circuit_list = circuit_location_search(query)
     return circuit_list
@@ -365,48 +367,26 @@ def circuit_location_search(query):
     tokens = query.split()
     circuit_list = list()
     if len(tokens) == 1:
-        location_list = list(search('location', db.circuits, query))
-        country_list = search('country', db.circuits, query)
+        location_list = db.get_circuit('location' , query)
+        country_list = db.get_circuit('country' , query)
 
         for circuit in country_list:
             if circuit not in location_list:
-                location_list.append(circuit)
+                location_list += circuit
         circuit_list = location_list
     else:
-        location_cursors = list()
-        country_cursors = list()
+        location_list = list()
+        country_list = list()
         for i in range(0, len(tokens)):
-            location_cursors.append(db.circuits.find({'location': {'$regex': f'{tokens[i]}?', '$options': 'i'}}))
-            country_cursors.append(db.circuits.find({'location': {'$regex': f'{tokens[i]}?', '$options': 'i'}}))
-
-        for cursor in location_cursors:
-            for circuit in cursor:
-                if circuit not in circuit_list:
-                    circuit_list.append(circuit)
-        for cursor in country_cursors:
-            for circuit in cursor:
-                if circuit not in circuit_list:
-                    circuit_list.append(circuit)
+            location_list += db.get_regex_circuits('location' , tokens[i])
+            country_list += db.get_regex_circuits('location' , tokens[i])
+        for circuit in location_list:
+            if circuit not in circuit_list:
+                circuit_list += circuit
+        for circuit in country_list:
+            if circuit not in country_list:
+                country_list += circuit
     return circuit_list
-
-def search(field, collection, query):
-    """
-    Purpose:
-        Search desired field with a query
-    
-    Args:
-        field:      {str}        field to search through   
-        collection: {collection} target PyMongo database collection
-        query:      {str}        data to be sarched for in the collection
-
-    Returns:
-        {list} List of search results
-    """
-    if query == '':
-        return list(collection.find())
-    else:
-        return list(collection.find({field: {'$regex': f'.*{query}.*?', '$options': 'i'}}))
-
 def sort_models(models, sort, filtered):
     if sort == '' or sort == 'relevance':
         # sort by relevance
