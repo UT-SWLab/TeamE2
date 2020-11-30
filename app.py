@@ -111,7 +111,10 @@ def driver_model():
     pages = int(len(drivers)/PER_PAGE)
     drivers = drivers[page*PER_PAGE: page*PER_PAGE+PER_PAGE]
 
-    return render_template(get_constructors)
+    return render_template(
+        'drivers-model.html', drivers=drivers, pages=pages, page=page, query=query,
+        filtered=filtered, sort=sort
+    )
 
 
 @app.route('/models_constructors')
