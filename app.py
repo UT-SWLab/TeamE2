@@ -253,8 +253,8 @@ def driver_instance():
             victories.append(result)
 
     # find driver's 5 latest races
-    victories = sorted(victories, key=lambda i: i['date'], reverse=True)
-    latest = sorted(results, key=lambda i: i['date'], reverse=True)
+    victories = sorted(victories, key=lambda i: i['raceDate'], reverse=True)
+    latest = sorted(results, key=lambda i: i['raceDate'], reverse=True)
     if len(latest) >= 5:
         latest = latest[:5]
 
@@ -287,14 +287,14 @@ def constructor_instance():
     
     # find 5 latest victories
     wins = data.get_constructor_standings_from_position(1, constructor_id)
-    wins = sorted(wins, key=lambda i: i['date'], reverse=True)
+    wins = sorted(wins, key=lambda i: i['raceDate'], reverse=True)
     total_wins = len(wins)
     if total_wins >= 5:
         wins = wins[:5]
 
     # find 5 latest races
     latest_races = data.get_constructor_results('constructorId' , constructor_id)
-    latest_races = sorted(latest_races, key=lambda i: i['date'], reverse=True)
+    latest_races = sorted(latest_races, key=lambda i: i['raceDate'], reverse=True)
     if len(latest_races) >= 5:
         latest_races = latest_races[:5]
 
@@ -315,7 +315,8 @@ def circuit_instance():
 
     # identify circuit and get information from db
     circuit_id = request.args['id']
-    circuit = data.get_circuit('circuitId' ,circuit_id)
+    circuit = data.get_circuit('circuitId', int(circuit_id))
+    print(circuit)
     name = circuit['name']
     location = circuit['location']
     lat = circuit['lat']
