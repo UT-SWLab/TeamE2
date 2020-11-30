@@ -6,11 +6,11 @@ from datetime import date
 from flask import Flask, render_template, request
 
 # Self Written Modules
-from models import F1_Database, Image_Handler
+from models import F1_Database, Image_Handler, Search, Sort
 
 app = Flask(__name__)
 data = F1_Database()
-
+search = Search(data)
 
 @app.route('/')
 def home():
@@ -41,8 +41,8 @@ def home():
 @app.route('/about')
 def about():
     # about page controller
-
     return render_template('about.html')
+
 
 @app.route('/models_drivers')
 def driver_model():
@@ -53,10 +53,11 @@ def driver_model():
     filtered = request.args.get('filtered', '', type=str)
     sort = request.args.get('sort', '', type=str)
 
-    # get drivers from search, filtering, and sorting
+    # filter drivers
     driver_list = get_driver_list(filtered, query)
     driver_list = sort_models(driver_list, sort, filtered)
 
+    # get driver card information
     drivers = []
     for driver in driver_list:
 
@@ -112,7 +113,8 @@ def driver_model():
 
     return render_template(
         'drivers-model.html', drivers=drivers, pages=pages, page=page, query=query,
-        filtered=filtered, sort=sort)
+        filtered=filtered, sort=sort
+    )
 
 
 @app.route('/models_constructors')
@@ -124,6 +126,7 @@ def constructor_model():
     filtered = request.args.get('filtered', '', type=str)
     sort = request.args.get('sort', '', type=str)
 
+    # filter constructors
     constructor_list = []
     if filtered == '':
         constructor_list = data.db.get_all_constructors()
@@ -131,14 +134,18 @@ def constructor_model():
         constructor_list = data.db.get_constructors(filtered, query)
     constructor_list = sort_models(constructor_list, sort, filtered)
 
+    # get constructor card information
     constructors = []
     for constructor in constructor_list:
+
         if 'constructorId' in constructor.keys():
+
             constructors.append({
                 'constructorId': constructor['constructorId'],
                 'constructorRef': constructor['constructorRef'],
                 'name': constructor['name'], 'nationality': constructor['nationality']
             })
+
             if 'topDriverName' in constructor.keys():
                 constructors[-1].update({'top_driver': constructor['topDriverName']})
             else:
@@ -157,12 +164,15 @@ def constructor_model():
     pages = int(len(constructors)/PER_PAGE)
     constructors = constructors[page*PER_PAGE: page*PER_PAGE+PER_PAGE]
 
-    return render_template('constructors-model.html', constructors=constructors, pages=pages,
-        page=page, query=query, filtered=filtered, sort=sort)
+    return render_template(
+        'constructors-model.html', constructors=constructors, pages=pages, page=page, 
+        query=query, filtered=filtered, sort=sort
+    )
 
 
 @app.route('/models_circuits')
 def circuit_model():
+    # circuit model page controller
 
     # get circuits from search, filtering, and sorting
     query = request.args.get('search', '', type=str).rstrip()
@@ -172,7 +182,7 @@ def circuit_model():
     circuit_list = get_circuit_list(filtered, query)
     circuit_list = sort_models(circuit_list, sort, filtered)
 
-    # collect relevant circuit information in list
+    # get circuit card information
     circuits = []
     for circuit in circuit_list:
 
@@ -222,8 +232,10 @@ def circuit_model():
         filtered=filtered, sort=sort
     )
 
+
 @app.route('/drivers')
 def driver_instance():
+    # driver instance page controller
 
     # identify driver and get information from db
     driver_id = int(request.args['id'])
@@ -244,22 +256,26 @@ def driver_instance():
         if result['position'] == 1:
             victories.append(result)
 
+    # find driver's 5 latest races
     victories = sorted(victories, key=lambda i: i['date'], reverse=True)
     latest = sorted(results, key=lambda i: i['date'], reverse=True)
     if len(latest) >= 5:
-        latest = latest[:5]  # List the driver's 5 latest races
+        latest = latest[:5]
 
     # Get image
     driver_ref = driver['driverRef']
     img_path = Image_Handler.build_image_path(driver_ref , 'drivers')
+
     return render_template(
         'drivers-instance.html', name=name, code=code, dob=dob, nation=nationality,
         number=number, teams=teams, url=url, img_path=img_path, victories=victories,
         latest=latest, bio=bio, constructor=cur_constructor
     )
 
+
 @app.route('/constructors')
 def constructor_instance():
+    #constructor instance page controller
 
     # identify constructor and get information from db
     constructor_id = int(request.args['id'])
@@ -290,12 +306,18 @@ def constructor_instance():
     constructor_ref = constructor['constructorRef']
     img_path = Image_Handler.build_image_path(constructor_ref , 'constructors')
 
-    return render_template('constructors-instance.html', name=name, nation=nation,
-                           drivers=team_drivers, wins=wins, img_path=img_path, url=url, bio=bio,
-                           total_wins=total_wins, top_driver=top_driver, latest_races=latest_races)
+    return render_template(
+        'constructors-instance.html', name=name, nation=nation, drivers=team_drivers, 
+        wins=wins, img_path=img_path, url=url, bio=bio, total_wins=total_wins,
+        top_driver=top_driver, latest_races=latest_races
+    )
+
 
 @app.route('/circuits')
 def circuit_instance():
+    # circuit instance page controller
+
+    # identify circuit and get information from db
     circuit_id = request.args['id']
     circuit = data.db.get_circuit('circuitId' ,circuit_id)
     name = circuit['name']
@@ -307,12 +329,14 @@ def circuit_instance():
     url = circuit['url']
     bio = circuit['bio']
 
+    # get latest race results
     latest_race = data.db.get_circuit_latest_race(circuit_id)
     latest_race_name = latest_race['name']
     latest_race_id = latest_race['raceId']
     latest_race_results = data.db.get_result('raceId' , latest_race_id)
     latest_race_results = sorted(latest_race_results, key=lambda i: i['position'])
 
+    # get 5 fastest laptimes
     fastest_lap_times = data.db.get_lap_times('circuitId' , circuit_id)
     if len(fastest_lap_times) >= 5:
         fastest_lap_times = fastest_lap_times[:5]
@@ -321,10 +345,12 @@ def circuit_instance():
     circuit_ref = circuit['circuitRef']
     img_path = Image_Handler.build_image_path(circuit_ref , 'circuits')
 
-    return render_template('circuits-instance.html', name=name, lat=lat,
-                           long=longitude, locality=location, country=country, url=url,
-                           img_path=img_path, circuit_id=circuit_id, latest_results=latest_race_results,
-                           latest_race_name=latest_race_name, bio=bio, lap_times=fastest_lap_times)
+    return render_template(
+        'circuits-instance.html', name=name, lat=lat, long=longitude, locality=location,
+        country=country, url=url, img_path=img_path, circuit_id=circuit_id,
+        latest_results=latest_race_results, latest_race_name=latest_race_name, bio=bio, 
+        lap_times=fastest_lap_times
+    )
 
 
 def get_driver_list(select, query):
