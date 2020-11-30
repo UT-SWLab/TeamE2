@@ -398,10 +398,10 @@ def sort_models(models, sort, filtered):
         if filtered == 'name' or filtered == '':
             if sort == 'alpha':
                 # alphabetical sort
-                return sorted(models, key=lambda x:(remove_accents(x['forename']), remove_accents(x['forename'])))
+                return sorted(models, key=lambda x:(remove_accents(x['surname']), remove_accents(x['forename'])))
             elif sort == 'reverse_alpha':
                 # reverse alphabetical sort
-                return sorted(models, key=lambda x:(remove_accents(x['forename']), remove_accents(x['forename'])), reverse=True)
+                return sorted(models, key=lambda x:(remove_accents(x['surname']), remove_accents(x['forename'])), reverse=True)
         elif filtered == 'nationality':
             if sort == 'alpha':
                 # alphabetical sort
