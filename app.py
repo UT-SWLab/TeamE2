@@ -10,7 +10,7 @@ from models import F1_Database, Image_Handler, Search, Sort
 
 app = Flask(__name__)
 data = F1_Database()
-search = Search(data)
+search = Search()
 
 @app.route('/')
 def home():

@@ -29,7 +29,6 @@ class F1_Database(object):
         CONNECTION_STRING = f"mongodb+srv://{username}:{password}@formulaonedb.bue6f.gcp.mongodb.net/<dbname>?retryWrites=true&w=majority"
         client = pymongo.MongoClient(CONNECTION_STRING)
         self.db = client.get_database('FormulaOneDB')
-        self.search = Search(self)
     
 
     def get_driver(self, field, query):
@@ -231,10 +230,10 @@ class F1_Database(object):
         return final_driver_list
     
 
-class Search(object):
+class Search(F1_Database):
 
-    def __init__(self, database):
-        self.data = database
+    def __init__(self):
+        super().__init__()
 
 
     def get_driver_list(self, select, query):
@@ -252,13 +251,13 @@ class Search(object):
 
         driver_list = list()
         if query == '':
-            driver_list = self.data.get_all_drivers()
+            driver_list = self.get_all_drivers()
             return driver_list
         if select == 'constructor':
             field = 'constructor.name'
-            driver_list = self.data.get_regex_drivers(field,query)
+            driver_list = self.get_regex_drivers(field,query)
         elif select == 'nationality':
-            driver_list = self.data.get_regex_drivers(select,query)
+            driver_list = self.get_regex_drivers(select,query)
         else:
             driver_list = self.driver_name_search(query)
 
@@ -282,8 +281,8 @@ class Search(object):
         driver_list = []
         if len(tokens) == 1:
 
-            forname_list = self.data.get_regex_drivers('forename', query)
-            surname_list = self.data.get_regex_drivers('surname' , query)
+            forname_list = self.get_regex_drivers('forename', query)
+            surname_list = self.get_regex_drivers('surname' , query)
 
             for driver in surname_list:
                 if driver not in forname_list:
@@ -294,11 +293,11 @@ class Search(object):
         else:
 
             # Search first token in forenames, search other tokens in surnames
-            forename_list = self.data.get_regex_drivers('forename', query)
+            forename_list = self.get_regex_drivers('forename', query)
             surname_list = []
             
             for i in range(1, len(tokens)):
-                surname_list += self.data.get_regex_drivers('surname' , tokens[i])
+                surname_list += self.get_regex_drivers('surname' , tokens[i])
 
             driver_list = forename_list + surname_list
 
@@ -319,9 +318,9 @@ class Search(object):
 
         constructor_list = list() 
         if query == '':
-            constructor_list = self.data.get_all_constructors()
+            constructor_list = self.get_all_constructors()
         else:
-            constructor_list = self.data.get_regex_constructors(select, query)
+            constructor_list = self.get_regex_constructors(select, query)
         
         return constructor_list
 
@@ -341,11 +340,11 @@ class Search(object):
 
         circuit_list = list()
         if query == '':
-            circuit_list = self.data.get_all_circuits()
+            circuit_list = self.get_all_circuits()
             return circuit_list
         
         if select == 'name' or select == 'most_recent_race':
-            circuit_list = self.data.get_regex_circuits(select, query)
+            circuit_list = self.get_regex_circuits(select, query)
         else:
             circuit_list = self.circuit_location_search(query)
 
@@ -369,8 +368,8 @@ class Search(object):
         circuit_list = list()
         if len(tokens) == 1:
             
-            location_list = self.data.get_regex_circuits('location' , query)
-            country_list = self.data.get_regex_circuits('country' , query)
+            location_list = self.get_regex_circuits('location' , query)
+            country_list = self.get_regex_circuits('country' , query)
 
             for circuit in country_list:
                 if circuit not in location_list:
@@ -381,8 +380,8 @@ class Search(object):
             country_list = list()
 
             for i in range(0, len(tokens)):
-                location_list += self.data.get_regex_circuits('location' , tokens[i])
-                country_list += self.data.get_regex_circuits('location' , tokens[i])
+                location_list += self.get_regex_circuits('location' , tokens[i])
+                country_list += self.get_regex_circuits('location' , tokens[i])
 
             circuit_list = location_list
 
